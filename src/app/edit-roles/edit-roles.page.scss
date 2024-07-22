@@ -1,0 +1,33 @@
+.rounded-5 {
+    border-radius: 0.5rem;
+}
+
+.shadow {
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+
+.input {
+    width: 100%;
+}
+
+.custom-green-button {
+    background-color: #e298ff; /* Cambia este valor al color de verde deseado */
+    color: #fff; /* Cambia este valor al color de texto deseado */
+    /* Puedes agregar más estilos según tus preferencias */
+}
+
+.custom-green-button:hover {
+    background-color: #c258ff; /* Cambia este valor al color de verde deseado al pasar el cursor */
+    /* Puedes ajustar la transición según tus preferencias */
+}
+
+.custom-green-button:active {
+    background-color: #851bff !important; /* Cambia este valor al color deseado al hacer clic */
+    /* Otros estilos si es necesario */
+}
+
+h1{
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 2em;
+}

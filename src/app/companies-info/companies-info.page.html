@@ -1,0 +1,109 @@
+<ion-content [fullscreen]="true">
+  <div class="container mt-4">
+    <div class="row justify-content-center">
+      <div class="back-button" (click)="goBack()">
+        <ion-icon name="arrow-back" ></ion-icon>
+      </div>
+      <div class="col-md-8 col-lg-10">
+        <div class="text-center pt-4">
+          <h5><strong>Empresas registradas en la página </strong></h5>
+
+        </div>
+        <div class="form-group">
+          <label for="searchField">Buscar por:</label>
+          <select class="form-control" id="searchField" [(ngModel)]="searchField" (change)="updatePlaceholder()">
+            <option value="nameCompany">Nombre de la Empresa</option>
+            <option value="companyRFC">RFC</option>
+            <option value="name">Nombre Legal</option>
+            <option value="username">Usuario Propietario</option>
+            <option value="email">Correo Electrónico</option>
+            <option value="phone">Número de Teléfono</option>
+            <option value="levelUserName">Tipo de Usuario</option>
+            <option value="fecha_inicio">Fecha de Inicio</option>
+            <option value="fecha_fin">Fecha de Fin</option>
+          </select>
+        </div>
+        <input type="text" class="form-control" [(ngModel)]="searchTerm" [placeholder]="searchPlaceholder" (input)="formatDateInput($event)">
+
+        <ul class="list-group mt-4">
+          <li class="list-group-item" *ngFor="let company of filteredCompanies">
+            <div>
+              <h5>{{ company.nameCompany }}</h5>
+              <p>RFC: {{ company.companyRFC }}</p>
+              <p>Nombre Legal: {{ company.name }}</p>
+              <p>Usuario Propietario: {{ company.username }}</p>
+              <p>Correo Electrónico: {{ company.email }}</p>
+              <p>Número de Teléfono: {{ company.phone }}</p>
+              <p>Tipo de Usuario: {{ company.levelUserName }}</p>
+              <p>Fecha de Inicio del Periodo: {{ company.fecha_inicio }}</p>
+              <p>Fecha de Fin del Periodo: {{ company.fecha_fin }}</p>
+              <p>Premium: {{ company.isPremium ? 'Sí' : 'No' }}</p>
+              <button type="button" class="btn btn-outline-primary" (click)="editarEmpresa(company)">Editar</button>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<style>
+  ion-header {
+    background-color: #f8f9fa;
+    padding: 20px;
+  }
+
+  ion-title {
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .form-group {
+    margin-top: 20px;
+  }
+
+  .form-control {
+    margin-top: 10px;
+    margin-bottom: 20px;
+  }
+
+  .list-group-item {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 10px;
+    padding: 15px;
+  }
+
+  .list-group-item h5 {
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
+
+  .list-group-item p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #6c757d;
+  }
+
+  ion-content {
+    padding: 20px;
+  }
+
+  .back-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+</style>

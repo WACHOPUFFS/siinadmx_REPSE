@@ -1,0 +1,33 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Sistema REPSE Premium</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarModal()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="ion-padding">
+    <h2>Bienvenido al Servicio Financiero Premium</h2>
+    <p>
+      Nuestro servicio financiero premium ofrece una gama de ventajas diseñadas para optimizar tu experiencia financiera.
+      Descubre cómo puedes maximizar tus finanzas con nuestro servicio premium.
+    </p>
+    <p>
+      Al suscribirte a nuestro servicio financiero premium, podrás disfrutar de:
+    </p>
+    <ul>
+      <li>Asesoramiento financiero personalizado</li>
+      <li>Acceso a productos financieros exclusivos</li>
+      <li>Beneficios adicionales en transacciones</li>
+      <li>Seguridad mejorada para tus transacciones</li>
+      <li>y mucho más...</li>
+    </ul>
+    <ion-button expand="block" (click)="suscribirse()" routerLink="/registro-premium" color="primary">
+      Enviar solicitud
+    </ion-button>
+  </div>
+</ion-content>

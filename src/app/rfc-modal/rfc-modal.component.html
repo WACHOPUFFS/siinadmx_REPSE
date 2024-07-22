@@ -1,0 +1,123 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>RFC - Información Fiscal</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="container mt-4">
+    <form (ngSubmit)="onSubmit()" class="form-horizontal">
+      <div *ngFor="let rfcInfo of rfcInformacion; let i = index" class="mb-4 border rounded p-3">
+        <div class="form-group row">
+          <label class="col-sm-4 col-form-label">RFC</label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control" [(ngModel)]="rfcInfo.rfc" name="rfc{{i}}" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-4 col-form-label">CURP</label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control" [(ngModel)]="rfcInfo.curp" name="curp{{i}}" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-4 col-form-label">Domicilio Fiscal</label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control" [(ngModel)]="rfcInfo.domicilioFiscal" name="domicilioFiscal{{i}}" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-4 col-form-label">Tipo de Régimen</label>
+          <div class="col-sm-8">
+            <select class="form-control" [(ngModel)]="rfcInfo.tipoRegimen" name="tipoRegimen{{i}}" required>
+              <option value="fisica">Física</option>
+              <option value="moral">Moral</option>
+            </select>
+          </div>
+        </div>
+        <div *ngIf="rfcInfo.tipoRegimen === 'fisica'" class="form-group row">
+          <label class="col-sm-4 col-form-label">Régimen</label>
+          <div class="col-sm-8">
+            <select class="form-control" [(ngModel)]="rfcInfo.regimen" name="regimen{{i}}" required>
+              <option value="Régimen de Incorporación Fiscal">Régimen de Incorporación Fiscal</option>
+              <option value="Actividades empresariales">Actividades empresariales</option>
+              <option value="Arrendamiento de inmuebles">Arrendamiento de inmuebles</option>
+              <option value="Servicios profesionales">Servicios profesionales</option>
+            </select>
+          </div>
+        </div>
+        <div *ngIf="rfcInfo.tipoRegimen === 'moral'" class="form-group row">
+          <label class="col-sm-4 col-form-label">Régimen</label>
+          <div class="col-sm-8">
+            <select class="form-control" [(ngModel)]="rfcInfo.regimen" name="regimen{{i}}" required>
+              <option value="Régimen General de Ley">Régimen General de Ley</option>
+              <option value="Régimen de Actividad Agrícola, Ganadera, Silvícola y Pesquera">Régimen de Actividad Agrícola, Ganadera, Silvícola y Pesquera</option>
+              <option value="Régimen de Incorporación Fiscal (RIF)">Régimen de Incorporación Fiscal (RIF)</option>
+              <option value="Régimen de Sociedades Cooperativas de Producción">Régimen de Sociedades Cooperativas de Producción</option>
+              <option value="Régimen de Entidades Controladoras">Régimen de Entidades Controladoras</option>
+            </select>
+          </div>
+        </div>
+        <div class="text-center">
+          <button type="button" class="btn btn-danger btn-block mt-2" (click)="removeRfcInfo(i)" *ngIf="rfcInformacion.length > 1">Eliminar RFC</button>
+        </div>
+      </div>
+      <div class="text-center">
+        <button type="button" class="btn btn-primary mb-2" (click)="addRfcInfo()">Agregar RFC</button>
+        <button type="submit" class="btn btn-success mb-2 ms-2" [disabled]="isSubmitting">Enviar</button>
+      </div>
+    </form>
+  </div>
+</ion-content>
+
+<style>
+  .container {
+  max-width: 600px;
+  margin: auto;
+}
+
+.form-horizontal .form-group {
+  margin-bottom: 1rem;
+}
+
+.form-horizontal .form-group label {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mb-4 {
+  margin-bottom: 1.5rem;
+}
+
+.border {
+  border: 1px solid #dee2e6;
+}
+
+.rounded {
+  border-radius: 0.25rem;
+}
+
+.p-3 {
+  padding: 1rem;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+
+</style>

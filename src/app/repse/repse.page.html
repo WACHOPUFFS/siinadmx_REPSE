@@ -1,0 +1,412 @@
+<ion-split-pane contentId="main-content">
+  <!-- Menú lateral -->
+  <style>
+    /* Reutilizamos los estilos existentes */
+    .responsive-header {
+      display: none;
+    }
+
+    @media (max-width: 991px) {
+      .responsive-header {
+        display: block;
+      }
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .menu-content {
+      padding: 20px;
+    }
+
+    .ion-note {
+      font-size: 0.9rem;
+      color: #6c757d;
+    }
+
+    .btn-container {
+      margin-top: 20px;
+    }
+
+    .btn-custom {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .icon-img {
+      width: 24px;
+      height: 24px;
+    }
+
+    .sidebar {
+      width: 300px;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background-color: #f8f9fa;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .profile-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .profile-info img {
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      margin-bottom: 15px;
+    }
+
+    .sidebar .sections a {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      text-align: center;
+    }
+
+    .main-content {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .app-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 20px;
+    }
+
+    .app-grid a {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: white;
+      background-color: #007bff;
+      padding: 20px;
+      border-radius: 10px;
+      height: 150px;
+      transition: background-color 0.3s ease;
+    }
+
+    .app-grid a:hover {
+      background-color: #0056b3;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        display: none;
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+
+      .hamburger-menu {
+        display: block;
+        cursor: pointer;
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        text-align: center;
+      }
+    }
+
+    @media (min-width: 769px) {
+      .hamburger-menu {
+        display: none;
+      }
+    }
+  </style>
+
+  <style>
+    .main-content {
+      text-align: center;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .app-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      width: 100%;
+      max-width: 1200px;
+      /* Puedes ajustar el ancho máximo según sea necesario */
+    }
+
+    .app-grid a {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: white;
+      background-color: #007bff;
+      padding: 20px;
+      border-radius: 10px;
+      height: 150px;
+      transition: background-color 0.3s ease;
+      width: 150px;
+      /* Ajusta el ancho de los elementos según sea necesario */
+    }
+
+    .app-grid a:hover {
+      background-color: #0056b3;
+    }
+
+
+    /* Estilo para el botón de regreso */
+    .back-button {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      background-color: #007bff;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      /* Fondo semi-transparente */
+      z-index: 999;
+    }
+
+    .floating-options {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+
+    .floating-options button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: white;
+      background-color: #007bff;
+
+      border-radius: 10px;
+      height: 150px;
+      transition: background-color 0.3s ease;
+      width: 150px;
+    }
+
+    .floating-options button:hover {
+      background-color: #0056b3;
+    }
+
+    .floating-options .close-btn {
+      background-color: #dc3545;
+    }
+
+    .floating-options .close-btn:hover {
+      background-color: #c82333;
+    }
+  </style>
+
+
+
+  <!-- Contenido principal -->
+  <ion-content id="main-content" [fullscreen]="true" class="ion-padding">
+    <!-- Encabezado de la página principal -->
+
+
+    <!-- Botón de regreso -->
+    <div class="back-button" (click)="goBack()">
+      <ion-icon name="arrow-back"></ion-icon>
+    </div>
+    <!-- Contenido principal de la página -->
+    <div class="main-content">
+      <div class="pt-4">
+        <h5><strong>Sistema REPSE</strong></h5>
+      </div>
+
+      <div class="app-grid mt-4">
+        <!-- Sección de Nominas -->
+        <a *ngIf="hasPermission('repse', 'Nominas')" (click)="toggleNominasSubsections()">
+          <img src="/assets/image/nomina-de-sueldos.png" alt="nominas" style="height: 60px;">
+          <span>Sistema de nominas</span>
+        </a>
+        <div *ngIf="showNominasSubsections" class="backdrop" (click)="closeNominasOptions()"></div>
+        <div *ngIf="showNominasSubsections" class="floating-options text-center">
+          <button routerLink="/view-files/ICOSOE">
+            <img src="/assets/image/icosoe.png" alt="ICOSOE Logo" style="height: 60px;">
+            <span>Reporte ICOSOE</span>
+          </button>
+          <button routerLink="/view-files/CIR">
+            <img src="/assets/image/cir.png" alt="CIR Logo" style="height: 60px;">
+            <span>Lista tabular CIR</span>
+          </button>
+          <button routerLink="/view-files/ParteVariable">
+            <img src="/assets/image/parte-variable.png" alt="Parte Variable Logo" style="height: 60px;">
+            <span>Parte variable CIR</span>
+          </button>
+        </div>
+    
+        <a *ngIf="hasPermission('repse', 'Nominas Proveedor')" (click)="toggleNominasSubsectionsProveedor()">
+          <img src="/assets/image/nomina-de-sueldos.png" alt="nominas" style="height: 60px;">
+          <span>Sistema de nominas para proveedor</span>
+        </a>
+        <div *ngIf="showNominasSubsections" class="backdrop" (click)="closeNominasOptionsProveedor()"></div>
+        <div *ngIf="showNominasSubsections" class="floating-options text-center">
+          <button routerLink="/view-files/ICOSOE">
+            <img src="/assets/image/icosoe.png" alt="ICOSOE Logo" style="height: 60px;">
+            <span>Reporte ICOSOE</span>
+          </button>
+          <button routerLink="/view-files/CIR">
+            <img src="/assets/image/cir.png" alt="CIR Logo" style="height: 60px;">
+            <span>Lista tabular CIR</span>
+          </button>
+          <button routerLink="/view-files/ParteVariable">
+            <img src="/assets/image/parte-variable.png" alt="Parte Variable Logo" style="height: 60px;">
+            <span>Parte variable CIR</span>
+          </button>
+        </div>
+
+        <a *ngIf="hasPermission('repse', 'Nominas Cliente')" (click)="toggleNominasSubsectionsCliente()">
+          <img src="/assets/image/nomina-de-sueldos.png" alt="nominas" style="height: 60px;">
+          <span>Sistema de nominas para proveedor</span>
+        </a>
+        <div *ngIf="showNominasSubsections" class="backdrop" (click)="closeNominasOptionsCliente()"></div>
+        <div *ngIf="showNominasSubsections" class="floating-options text-center">
+          <button routerLink="/view-files/ICOSOE">
+            <img src="/assets/image/icosoe.png" alt="ICOSOE Logo" style="height: 60px;">
+            <span>Reporte ICOSOE</span>
+          </button>
+          <button routerLink="/view-files/CIR">
+            <img src="/assets/image/cir.png" alt="CIR Logo" style="height: 60px;">
+            <span>Lista tabular CIR</span>
+          </button>
+          <button routerLink="/view-files/ParteVariable">
+            <img src="/assets/image/parte-variable.png" alt="Parte Variable Logo" style="height: 60px;">
+            <span>Parte variable CIR</span>
+          </button>
+        </div>
+
+        
+        <!-- Sección de SUA -->
+        <a *ngIf="hasPermission('repse', 'SUA')" (click)="toggleSUASubsections()">
+          <img src="/assets/image/sua.png" alt="sua" style="height: 60px;">
+          <span>Sistema SUA</span>
+        </a>
+        <div *ngIf="showSUASubsections" class="backdrop" (click)="closeSUAOptions()"></div>
+        <div *ngIf="showSUASubsections" class="floating-options text-center">
+          <button routerLink="/view-files/DatosEmpresa">
+            <img src="/assets/image/datos-empresa.png" alt="Datos Empresa Logo" style="height: 60px;">
+            <span>Datos Empresa</span>
+          </button>
+          <button routerLink="/view-files/DatosMovimiento">
+            <img src="/assets/image/datos-movimiento.png" alt="Datos Movimiento Logo" style="height: 60px;">
+            <span>Datos Movimiento</span>
+          </button>
+          <button routerLink="/view-files/DatosSumarios">
+            <img src="/assets/image/datos-sumarios.png" alt="Datos Sumarios Logo" style="height: 60px;">
+            <span>Datos Sumarios</span>
+          </button>
+          <button routerLink="/view-files/DatosTrabajador">
+            <img src="/assets/image/datos-trabajador.png" alt="Datos Trabajador Logo" style="height: 60px;">
+            <span>Datos Trabajador</span>
+          </button>
+        </div>
+
+        <a *ngIf="hasPermission('repse', 'SUA Cliente')" (click)="toggleSUASubsectionsCliente()">
+          <img src="/assets/image/sua.png" alt="sua" style="height: 60px;">
+          <span>Sistema SUA</span>
+        </a>
+        <div *ngIf="showSUASubsections" class="backdrop" (click)="closeSUAOptionsCliente()"></div>
+        <div *ngIf="showSUASubsections" class="floating-options text-center">
+          <button routerLink="/view-files/DatosEmpresa">
+            <img src="/assets/image/datos-empresa.png" alt="Datos Empresa Logo" style="height: 60px;">
+            <span>Datos Empresa</span>
+          </button>
+          <button routerLink="/view-files/DatosMovimiento">
+            <img src="/assets/image/datos-movimiento.png" alt="Datos Movimiento Logo" style="height: 60px;">
+            <span>Datos Movimiento</span>
+          </button>
+          <button routerLink="/view-files/DatosSumarios">
+            <img src="/assets/image/datos-sumarios.png" alt="Datos Sumarios Logo" style="height: 60px;">
+            <span>Datos Sumarios</span>
+          </button>
+          <button routerLink="/view-files/DatosTrabajador">
+            <img src="/assets/image/datos-trabajador.png" alt="Datos Trabajador Logo" style="height: 60px;">
+            <span>Datos Trabajador</span>
+          </button>
+        </div>
+
+        <a *ngIf="hasPermission('repse', 'SUA Proveedor')" (click)="toggleSUASubsectionsProveedor()">
+          <img src="/assets/image/sua.png" alt="sua" style="height: 60px;">
+          <span>Sistema SUA</span>
+        </a>
+        <div *ngIf="showSUASubsections" class="backdrop" (click)="closeSUAOptionProveedor()"></div>
+        <div *ngIf="showSUASubsections" class="floating-options text-center">
+          <button routerLink="/view-files/DatosEmpresa">
+            <img src="/assets/image/datos-empresa.png" alt="Datos Empresa Logo" style="height: 60px;">
+            <span>Datos Empresa</span>
+          </button>
+          <button routerLink="/view-files/DatosMovimiento">
+            <img src="/assets/image/datos-movimiento.png" alt="Datos Movimiento Logo" style="height: 60px;">
+            <span>Datos Movimiento</span>
+          </button>
+          <button routerLink="/view-files/DatosSumarios">
+            <img src="/assets/image/datos-sumarios.png" alt="Datos Sumarios Logo" style="height: 60px;">
+            <span>Datos Sumarios</span>
+          </button>
+          <button routerLink="/view-files/DatosTrabajador">
+            <img src="/assets/image/datos-trabajador.png" alt="Datos Trabajador Logo" style="height: 60px;">
+            <span>Datos Trabajador</span>
+          </button>
+        </div>
+      </div>
+      
+
+
+    </div>
+
+  </ion-content>
+</ion-split-pane>
+
+<!--"authService.selectedLevelUser === 'adminS' && hasPermission('configEmpresa', 'logo Empresa')"-->

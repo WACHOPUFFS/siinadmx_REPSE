@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .sidebar {
+            width: 300px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #f8f9fa;
+            padding: 20px; /* Añadido padding */
+            box-sizing: border-box; /* Para incluir el padding en el ancho total */
+        }
+        .sidebar .profile-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .sidebar .profile-info img {
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            margin-bottom: 15px;
+        }
+        .sidebar .sections a {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        .main-content {
+            text-align: center;
+            margin-left: 300px;
+            padding: 20px;
+        }
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        .app-grid a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: white;
+            background-color: #007bff;
+            padding: 20px;
+            border-radius: 10px;
+            height: 150px;
+            transition: background-color 0.3s ease;
+        }
+        .app-grid a:hover {
+            background-color: #0056b3;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                display: none;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .hamburger-menu {
+                display: block;
+                cursor: pointer;
+                padding: 10px;
+                background-color: #007bff;
+                color: white;
+                text-align: center;
+            }
+        }
+        @media (min-width: 769px) {
+            .hamburger-menu {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hamburger-menu" onclick="toggleSidebar()">☰ Menú</div>
+    <div class="sidebar">
+        <div class="profile-info">
+            <img src="profile-picture-url" alt="Foto de Perfil">
+            <div>
+                <h5>Bienvenido, <span id="userName">Nombre del Usuario</span></h5>
+                <p>Empresa: <span id="companyName">Nombre de la Empresa</span></p>
+                <p>RFC: <span id="companyRFC">RFC de la Empresa</span></p>
+                <p>Nivel de Usuario: <span id="userLevel">Nivel del Usuario</span></p>
+            </div>
+        </div>
+        <div>
+            <img src="company-logo-url" alt="Logo de la Empresa" style="height: 50px;">
+        </div>
+        <button class="btn btn-danger mt-3 w-100">Cerrar Sesión</button>
+    </div>
+    <div class="main-content">
+        <div class="app-grid mt-4">
+            <a href="#">
+                <img src="repse-icon-url" alt="Sistema REPSE" style="height: 50px;">
+                <span>Sistema REPSE</span>
+            </a>
+            <a href="#">
+                <img src="obras-icon-url" alt="Control de Obras" style="height: 50px;">
+                <span>Control de Obras</span>
+            </a>
+            <a href="#">
+                <img src="asistencias-icon-url" alt="Sistema de Asistencias" style="height: 50px;">
+                <span>Sistema de Asistencias</span>
+            </a>
+            <a href="#">
+                <img src="costos-icon-url" alt="Costos" style="height: 50px;">
+                <span>Costos</span>
+            </a>
+            <a href="#">
+                <img src="ventas-icon-url" alt="Ventas" style="height: 50px;">
+                <span>Ventas</span>
+            </a>
+            <a href="#">
+                <img src="empresa-icon-url" alt="Configuración de la Empresa" style="height: 50px;">
+                <span>Configuración de la Empresa</span>
+            </a>
+            <a href="#">
+                <img src="empleado-icon-url" alt="Configuración del Empleado" style="height: 50px;">
+                <span>Configuración del Empleado</span>
+            </a>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.style.display = sidebar.style.display === 'block' ? 'none' : 'block';
+        }
+    </script>
+</body>
+</html>

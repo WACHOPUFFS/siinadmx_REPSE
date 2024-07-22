@@ -1,0 +1,59 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Asignar empresa adicional a usuarioss</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Asignar empresa adicional a usuarios</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-item>
+    <ion-label>Select Company</ion-label>
+    <ion-select (ionChange)="onCompanyChange($event)">
+      <ion-select-option *ngFor="let company of companies" [value]="company.idCompany">
+        {{ company.nameCompany }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item *ngIf="selectedCompanyId">
+    <ion-label>Select User</ion-label>
+    <ion-select (ionChange)="onUserChange($event)">
+      <ion-select-option *ngFor="let user of users" [value]="user.id">
+        {{ user.name }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item *ngIf="selectedUser">
+    <ion-label>Select Level User</ion-label>
+    <ion-select [(ngModel)]="selectedLevelUser">
+      <ion-select-option *ngFor="let level of levelUsers" [value]="level.id">
+        {{ level.levelUserName }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-button *ngIf="selectedUser && selectedLevelUser" (click)="assignSecondaryCompany()">Assign Secondary Company</ion-button>
+
+  <ion-modal [isOpen]="isModalOpen" (didDismiss)="closeModal()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Assign Secondary Company</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <ion-list>
+          <ion-item *ngFor="let company of secondaryCompanies" (click)="assignCompanyToUser(company)">
+            {{ company.nameCompany }}
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

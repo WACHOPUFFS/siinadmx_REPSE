@@ -1,0 +1,47 @@
+.login-section {
+   
+  
+    .heading {
+      margin-bottom: 20px;
+  
+      h1 {
+        font-size: 1.2rem; /* Ajuste de tamaño de fuente */
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+  
+      p {
+        font-size: 0.9rem; /* Ajuste de tamaño de fuente */
+        color: #666;
+      }
+    }
+  
+    .login-form {
+      ion-item {
+        margin-bottom: 15px;
+      }
+  
+      ion-label {
+        font-size: 0.9rem; /* Ajuste de tamaño de fuente */
+      }
+  
+      ion-input {
+        font-size: 0.9rem; /* Ajuste de tamaño de fuente */
+      }
+  
+      ion-icon {
+        font-size: 1.2rem; /* Ajuste de tamaño de icono */
+        color: #666;
+        margin-right: 5px;
+      }
+    }
+  
+    .action-button {
+      ion-button {
+        width: 100%;
+        font-size: 0.9rem; /* Ajuste de tamaño de fuente */
+        font-weight: bold;
+      }
+    }
+  }
+  

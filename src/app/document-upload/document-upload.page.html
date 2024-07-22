@@ -1,0 +1,127 @@
+<ion-content>
+  <div class="container">
+    <div class="header-title">Subir documentos anuales</div>
+    <div class="text-center">
+      <h5>{{authService.selectedCompany}}</h5>
+    </div>
+
+    <div class="alert alert-warning text-center" role="alert">
+      Primero suba la información requerida en el formulario antes de subir el documento.
+    </div>
+
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Tarea</th>
+            <th>Archivo</th>
+            <th>Status</th>
+            <th>Estado</th>
+            <th>Comentarios</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let tarea of tareas" [ngClass]="{
+                  'cargado': tarea.estado === 'cargado',
+                  'completo': tarea.estado === 'aceptado',
+                  'rechazado': tarea.estado === 'rechazado',
+                  'pendiente': tarea.estado === 'pendiente' || !tarea.estado
+                }">
+            <td>{{ tarea.nombre }}</td>
+            <td>
+              <input type="file" (change)="onFileSelected($event, tarea)" style="display: none;"
+                id="fileInput{{tarea.id}}">
+              <button class="btn btn-link" (click)="triggerFileInput(tarea.id)"
+                [disabled]="tarea.estado === 'aceptado' || tarea.estado === 'cargado'">Cargar documento</button>
+            </td>
+            <td><input type="checkbox" [checked]="tarea.cargado" disabled></td>
+            <td>{{ tarea.estado || 'No cargado' }}</td>
+            <td>{{ tarea.comentario || 'Sin comentarios' }}</td>
+            <td>
+              <div class="p-1">
+                <button class="btn btn-primary btn-block" (click)="openModal(tarea)"
+                  [disabled]="tarea.estado === 'aceptado' || tarea.estado === 'cargado'">Subir Información</button>
+              </div>
+              <div class="p-1">
+                <button class="btn btn-secondary btn-block" (click)="descargarArchivo(tarea)">Descargar documento</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="text-center mb-4">
+      <ion-badge class="m-2" color="success">Cargados: {{ cargados }}</ion-badge>
+      <ion-badge class="m-2" color="primary">Completos: {{ completos }}</ion-badge>
+      <ion-badge class="m-2" color="danger">Incompletos: {{ incompletos }}</ion-badge>
+      <ion-badge class="m-2" color="warning">No cargados: {{ noCargados }}</ion-badge>
+    </div>
+  </div>
+</ion-content>
+
+<style>
+  .btn-block {
+    width: 100%;
+  }
+
+  .container {
+    margin-top: 20px;
+  }
+
+  .header-title {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .table thead th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+  }
+
+  .table td,
+  .table th {
+    vertical-align: middle;
+    text-align: center;
+  }
+
+  .form-control {
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  .m-2 {
+    margin: 5px;
+  }
+
+  .cargado {
+    background-color: #d4edda;
+    /* light green */
+    color: green;
+  }
+
+  .completo {
+    background-color: #d1ecf1;
+    /* light blue */
+    color: blue;
+  }
+
+  .rechazado {
+    background-color: #f8d7da;
+    /* light red */
+    color: red;
+  }
+
+  .pendiente {
+    background-color: #fff3cd;
+    /* light yellow */
+    color: yellow;
+  }
+</style>

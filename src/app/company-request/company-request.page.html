@@ -1,0 +1,28 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Procesador REPSE</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-card>
+    <ion-card-header>
+      Fill out the request form
+    </ion-card-header>
+    <ion-card-content>
+      <!-- Mostrar el nombre del usuario -->
+      <p>Usuario: {{ authService.username }}</p>
+      <!-- Mostrar el nombre de la empresa -->
+      <p>Empresa: {{ authService.selectedCompany }}</p> 
+      <form #requestForm="ngForm" (ngSubmit)="enviarMensaje(requestForm.value.message)">
+        <ion-item>
+          <ion-label position="floating">Message</ion-label>
+          <ion-textarea name="message" ngModel required></ion-textarea>
+        </ion-item>    
+        <ion-button type="submit" expand="full">Submit Request</ion-button>
+      </form>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

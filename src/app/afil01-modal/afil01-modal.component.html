@@ -1,0 +1,121 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>AFIL01 - Seguro Social</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="container mt-4">
+    <form (ngSubmit)="onSubmit()" class="form-horizontal">
+      <div *ngFor="let noPatronal of noPatronales; let i = index" class="mb-4 border rounded p-3">
+        <div class="form-group row">
+          <label class="col-sm-4 col-form-label">No. Patronal</label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control" [(ngModel)]="noPatronal.noPatronal" name="noPatronal{{i}}" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-4 col-form-label">No. Reg. Patronal</label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control" [(ngModel)]="noPatronal.noRegPatronal" name="noRegPatronal{{i}}" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-4 col-form-label">División</label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control" [(ngModel)]="noPatronal.division" name="division{{i}}" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-4 col-form-label">Grupo</label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control" [(ngModel)]="noPatronal.grupo" name="grupo{{i}}" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-4 col-form-label">Fracción</label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control" [(ngModel)]="noPatronal.fraccion" name="fraccion{{i}}" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-4 col-form-label">Clase</label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control" [(ngModel)]="noPatronal.clase" name="clase{{i}}" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-4 col-form-label">Actividad</label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control" [(ngModel)]="noPatronal.actividad" name="actividad{{i}}" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-4 col-form-label">Descripción</label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control" [(ngModel)]="noPatronal.descripcion" name="descripcion{{i}}" required>
+          </div>
+        </div>
+        <div class="text-center">
+          <button type="button" class="btn btn-danger btn-block mt-2" (click)="removeNoPatronal(i)" *ngIf="noPatronales.length > 1">Eliminar No. Patronal</button>
+        </div>
+      </div>
+      <div class="text-center">
+        <button type="button" class="btn btn-primary mb-2" (click)="addNoPatronal()">Agregar No. Patronal</button>
+        <button type="submit" class="btn btn-success mb-2 ms-2" [disabled]="isSubmitting">Enviar</button>
+      </div>
+    </form>
+  </div>
+</ion-content>
+
+<style>
+
+.container {
+  max-width: 600px;
+  margin: auto;
+}
+
+.form-horizontal .form-group {
+  margin-bottom: 1rem;
+}
+
+.form-horizontal .form-group label {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mb-4 {
+  margin-bottom: 1.5rem;
+}
+
+.border {
+  border: 1px solid #dee2e6;
+}
+
+.rounded {
+  border-radius: 0.25rem;
+}
+
+.p-3 {
+  padding: 1rem;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+</style>

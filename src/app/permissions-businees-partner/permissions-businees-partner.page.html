@@ -1,0 +1,101 @@
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="back-button" (click)="goBack()" >
+    <ion-icon name="arrow-back"></ion-icon>
+  </div>
+
+  <div class="container mt-4">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="text-center pt-4">
+          <h5><strong>Administrar secciones a empresas</strong></h5>
+        </div>
+        <div class="card shadow-lg p-4 mt-4">
+          <ion-item>
+            <ion-label>Seleccionar empresa</ion-label>
+            <ion-select (ionChange)="onCompanyChange($event)" [(ngModel)]="selectedCompanyId" placeholder="Selecciona una empresa">
+              <ion-select-option *ngFor="let company of companies" [value]="company.idCompany">{{ company.nameCompany }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>Asignar sección</ion-label>
+            <ion-select (ionChange)="onSectionChange($event)" [(ngModel)]="selectedSections" multiple="true" placeholder="Selecciona secciones">
+              <ion-select-option *ngFor="let section of sections" [value]="section">{{ section }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-button expand="full" (click)="addPermission()" [disabled]="!selectedCompanyId || !selectedSections || selectedSections.length === 0">Añadir</ion-button>
+        </div>
+        <ion-list class="list-group mt-4">
+          <ion-item *ngFor="let permission of permissions">
+            {{ permission.NameSection }}
+            <ion-button slot="end" color="danger" (click)="removePermission(permission.NameSection)">Quitar</ion-button>
+          </ion-item>
+        </ion-list>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<style>
+  .container {
+    max-width: 800px;
+  }
+
+  .card {
+    border-radius: 10px;
+    background-color: #ffffff;
+  }
+
+  .list-group-item {
+    border: none;
+    padding: 10px 0;
+  }
+
+  .btn-primary {
+    background-color: #007bff;
+    border: none;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-primary:hover {
+    background-color: #0056b3;
+  }
+
+  .btn-danger {
+    background-color: #dc3545;
+    border: none;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-danger:hover {
+    background-color: #c82333;
+  }
+
+  .form-control {
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    padding: 10px;
+  }
+
+  .back-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .back-button:hover {
+    color: #0056b3;
+  }
+</style>

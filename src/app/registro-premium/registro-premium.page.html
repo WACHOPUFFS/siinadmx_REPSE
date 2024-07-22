@@ -1,0 +1,98 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Solicitud de registro</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content (keyup.enter)="onEnterPressed()">
+  <div class="login-section ion-padding">
+    <div class="heading ">
+      <h1>Solicitud de registro</h1>
+      <p>Los datos cargados son los datos proporcionados anteriormente</p>
+    </div>
+    <div class="login-form ion-padding">
+      <div class="form-input">
+        <ion-item>
+          <ion-label>{{labelTipoRFC}}</ion-label>
+          <ion-select [(ngModel)]="tipoRFC" (ionChange)="onChangeTipoRFC()">
+            <ion-select-option value="fisica">{{labelPersonaFisica}}</ion-select-option>
+            <ion-select-option value="moral">{{labelPersonaMoral}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </div>
+
+      <!-- Campo para RFC -->
+      <div style="display: flex; flex-direction: column;">
+        <div class="form-input" style="display: flex;">
+          <ion-item style="flex: 1;">
+            <ion-label position="floating">{{labelRFC}}</ion-label>
+            <ion-input name="rfc" type="text" required [(ngModel)]="usuario.rfc"
+              (input)="validateRFC($event)"></ion-input>
+          </ion-item>
+          <ion-button style="margin-left: 5px; padding: 5px 10px; font-size: 12px;"
+            (click)="buscarEmpresaPorRFC()">Buscar</ion-button>
+        </div>
+        <div *ngIf="rfcLengthError" class="error-message" style="margin-top: 5px;">
+          {{ rfcLengthError }}
+        </div>
+      </div>
+
+      <!-- Campo para el nombre de la empresa o persona física -->
+      <div class="form-input">
+        <ion-item>
+          <ion-label position="floating">{{ tipoRFC === 'fisica' ? 'Nombre de la persona física' : 'Nombre de la empresa' }}</ion-label>
+          <ion-input name="nombreEmpresa" type="text" required [(ngModel)]="usuario.nombreEmpresa"
+            (ngModelChange)="showMessage()" (ionBlur)="hideMessage()" (ionFocus)="resetMessage()"></ion-input>
+        </ion-item>
+        <div *ngIf="showMessageFlag" class="message">
+          {{labelComoApareceConstanciaFiscal}}
+        </div>
+      </div>
+      <div class="form-input">
+        <ion-item>
+          <ion-label position="floating">{{labelAliasUsuario}}</ion-label>
+          <ion-input name="nombreU" type="text" required [(ngModel)]="usuario.nombreUsuario"></ion-input>
+        </ion-item>
+      </div>
+      <div class="form-input">
+        <ion-item>
+          <ion-label position="floating">{{labelNombreCompletoUsuario}}</ion-label>
+          <ion-input name="nombreC" type="text" required [(ngModel)]="usuario.nombreCompleto"></ion-input>
+        </ion-item>
+      </div>
+      <div class="form-input">
+        <ion-item>
+          <ion-label position="floating">{{labelCorreo}}</ion-label>
+          <ion-input name="correoElectronico" type="email" required [(ngModel)]="usuario.correo"></ion-input>
+        </ion-item>
+        <div *ngIf="usuario.correo && (!usuario.correo.includes('@') || !isValidEmail(usuario.correo))"
+          class="error-message">
+          {{labelValidacionCorreo}}
+        </div>
+      </div>
+      <div class="form-input">
+        <ion-item>
+          <ion-label position="floating">Número de teléfono</ion-label>
+          <ion-input name="numeroTelefonico" type="text" required [(ngModel)]="usuario.numTelefonico" maxlength="10"></ion-input>
+        </ion-item>
+      </div>
+      <div class="form-input">
+        <ion-item>
+          <ion-label position="floating">Fecha de registro</ion-label>
+          <ion-input name="fechaInicio" type="date" required [(ngModel)]="fechaInicioRequest" readonly></ion-input>
+        </ion-item>
+      </div>
+    </div>
+
+    <div class="action-button ion-padding">
+      <p>Al pulsar el botón "Enviar solicitud", el usuario acepta expresamente compartir sus datos personales con un administrador designado para revisar dicha solicitud. Se le notificará por el correo electrónico dado, sobre el estado de su solicitud una vez que haya sido procesada.</p>
+      <!-- Modificación en el botón de registro -->
+      <ion-button size="large" class="login-button" [disabled]="!camposCompletos()"
+        (click)="registrarUsuario()">Enviar Solicitud</ion-button>
+    </div>
+  </div>
+</ion-content>

@@ -1,0 +1,55 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Información del socio comercial</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-list>
+    <ion-item *ngFor="let user of userData">
+      <ion-label>Nombre de Usuario:</ion-label>
+      <ion-text>{{ user.username }}</ion-text>
+    </ion-item>
+    <ion-item *ngFor="let user of userData">
+      <ion-label>Nombre:</ion-label>
+      <ion-text>{{ user.name }}</ion-text>
+    </ion-item>
+    <ion-item *ngFor="let user of userData">
+      <ion-label>Correo electrónico:</ion-label>
+      <ion-text>{{ user.email }}</ion-text>
+    </ion-item>
+    <ion-item *ngFor="let user of userData">
+      <ion-label>Nombre de la empresa:</ion-label>
+      <ion-text>{{ user.nameCompany }}</ion-text>
+    </ion-item>
+    <ion-item *ngFor="let user of userData">
+      <ion-label>RFC de la empresa:</ion-label>
+      <ion-text>{{ user.companyRFC }}</ion-text>
+    </ion-item>
+    <ion-item *ngFor="let user of userData">
+      <ion-label>Rol:</ion-label>
+      <ion-text>{{ user.roleName }}</ion-text>
+    </ion-item>
+    <ion-item *ngFor="let user of userData">
+      <ion-label>Fecha de inicio:</ion-label>
+      <ion-text>{{ user.fecha_inicio }}</ion-text>
+    </ion-item>
+    <ion-item *ngFor="let user of userData">
+      <ion-label>Fecha de fin:</ion-label>
+      <ion-text>{{ user.fecha_fin }}</ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label>Rol:</ion-label>
+      <ion-select [(ngModel)]="selectedRole">
+        <ion-select-option value="proveedor">Proveedor</ion-select-option>
+        <ion-select-option value="cliente">Cliente</ion-select-option>
+        <ion-select-option value="clienteProveedor">Cliente - Proveedor</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <!-- Botones Aceptar y Cancelar -->
+    <ion-button (click)="addSocioComercialAssociation()" expand="block">Aceptar</ion-button>
+  </ion-list>
+</ion-content>

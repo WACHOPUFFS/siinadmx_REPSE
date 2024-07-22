@@ -1,0 +1,87 @@
+/* Estilos para el header */
+ion-header {
+  ion-toolbar {
+    background-color: #3b82f6; // Cambia el color de fondo del toolbar
+    ion-title {
+      color: #000000; // Cambia el color del título
+      text-align: center;
+      font-size: 1.5em;
+    }
+  }
+}
+
+/* Estilos para el contenido */
+ion-content {
+  padding: 20px;
+  background-color: #f0f4f8; // Cambia el color de fondo del contenido
+
+  div {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    
+    h2 {
+      color: #3b82f6; // Cambia el color del encabezado
+      font-size: 1.2em;
+      margin-bottom: 15px;
+    }
+
+    p {
+      font-size: 1em;
+      margin-bottom: 10px;
+    }
+
+    input[type="file"] {
+      margin-bottom: 15px;
+      display: block;
+    }
+
+    ion-button {
+      margin-top: 10px;
+      background-color: #3b82f6; // Cambia el color del botón
+      color: #ffffff;
+      &:hover {
+        background-color: #2563eb; // Cambia el color del botón al pasar el mouse
+      }
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 5px;
+    }
+
+    ion-select {
+      width: 100%;
+      margin-bottom: 15px;
+    }
+  }
+
+  #tableContainer {
+    overflow-x: auto; // Permite el desplazamiento horizontal si el contenido es demasiado ancho
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      min-width: 600px; // Ajusta según el tamaño mínimo deseado de la tabla
+
+      th, td {
+        border: 1px solid #ccc;
+        padding: 10px;
+        text-align: left;
+      }
+
+      th {
+        background-color: #3b82f6; // Cambia el color de fondo de los encabezados
+        color: #ffffff; // Cambia el color del texto de los encabezados
+      }
+
+      tr:nth-child(even) {
+        background-color: #f9fafb; // Cambia el color de fondo de las filas pares
+      }
+    }
+  }
+}

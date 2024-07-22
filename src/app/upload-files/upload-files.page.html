@@ -1,0 +1,45 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Procesador REPSE</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="content-container">
+    <h2 class="section-title">Sistemas Nóminas</h2>
+    <div class="form-container">
+      <p>Seleccionar archivo CSV:</p>
+      <input type="file" id="fileInput" accept=".csv" class="file-input" (change)="onFileSelected($event)">
+    </div>
+    <div class="form-container">
+      <p>Seleccionar empresa a enviar:</p>
+      <select id="empresaSelect" class="empresa-select">
+        <option *ngFor="let empresa of empresas" [value]="empresa">{{ empresa }}</option>
+      </select>
+    </div>
+    <div class="form-container">
+      <button ion-button (click)="onUploadFile()">Subir</button>
+    </div>
+    
+  </div>
+
+  <div class="table-container" *ngIf="tableData.length > 0">
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th *ngFor="let header of tableHeaders">{{ header }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of tableData">
+            <td *ngFor="let cell of row">{{ cell }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</ion-content>

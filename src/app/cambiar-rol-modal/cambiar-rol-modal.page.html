@@ -1,0 +1,50 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Cambiar Rol</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list lines="full">
+    <!-- Muestra el nombre y el ID del socio comercial -->
+    <ion-item>
+      <ion-label>Nombre del socio comercial:</ion-label>
+      <ion-text>{{ socioComercial?.name }}</ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label>RFC del socio comercial:</ion-label>
+      <ion-text>{{ socioComercial?.companyRFC }}</ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label>ID:</ion-label>
+      <ion-text>{{ socioComercial?.company_id }}</ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label>Rol actual:</ion-label>
+      <ion-text>{{ getRoleDisplayName(socioComercial?.role) }}</ion-text>
+    </ion-item>
+
+    <!-- Selector de rol -->
+    <ion-item>
+      <ion-label>Selecciona rol nuevo:</ion-label>
+      <ion-select [(ngModel)]="nuevoRol">
+        <ion-select-option value="proveedor">Proveedor</ion-select-option>
+        <ion-select-option value="cliente">Cliente</ion-select-option>
+        <ion-select-option value="clienteProveedor">cliente - Proveedor</ion-select-option>
+        <!-- Agrega más opciones según tus necesidades -->
+      </ion-select>
+    </ion-item>
+    
+    
+  </ion-list>
+
+  <!-- Botón para guardar cambios -->
+  <div class="ion-padding">
+    <ion-button expand="block" (click)="guardarCambios()">Guardar Cambios</ion-button>
+  </div>
+</ion-content>

@@ -1,0 +1,89 @@
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="back-button" (click)="goBack()">
+    <ion-icon name="arrow-back"></ion-icon>
+  </div>
+
+  <div class="container mt-4">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="text-center pt-4">
+          <h5><strong>Subir Logo de Empresa</strong></h5>
+        </div>
+        <div class="card shadow-lg p-4">
+          <div class="card-body text-center">
+            <ion-item *ngIf="currentLogo" class="mb-3">
+              <ion-label>Logo actual:</ion-label>
+              <img [src]="currentLogo" alt="Logo actual" class="img-thumbnail mt-2" width="100">
+            </ion-item>
+
+            <ion-item class="mb-3">
+              <ion-label>Seleccionar nuevo logo:</ion-label>
+              <input type="file" accept="image/*" (change)="onFileSelected($event)" class="form-control">
+            </ion-item>
+
+            <ion-item *ngIf="previewLogo" class="mb-3">
+              <ion-label>Nuevo logo:</ion-label>
+              <img [src]="previewLogo" alt="Nuevo logo" class="img-thumbnail mt-2" width="100">
+            </ion-item>
+
+            <ion-button expand="block" class="btn-primary mt-4" (click)="uploadLogo()">Subir</ion-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<style>
+  .container {
+    max-width: 800px;
+    margin-top: 20px;
+  }
+
+  .card {
+    border-radius: 10px;
+    background-color: #ffffff;
+  }
+
+  .card-title {
+    font-size: 1.5rem;
+    color: #007bff;
+  }
+
+  .form-control {
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    padding: 10px;
+  }
+
+  .btn-primary {
+    background-color: #007bff;
+    border: none;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-primary:hover {
+    background-color: #0056b3;
+  }
+
+  .back-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .back-button:hover {
+    color: #0056b3;
+  }
+</style>

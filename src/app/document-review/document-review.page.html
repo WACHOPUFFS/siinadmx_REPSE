@@ -1,0 +1,156 @@
+
+
+<ion-content>
+  <div class="container">
+    <div class="header-title">Revisar documentos anuales</div>
+    <div class="text-center"> <h5>{{authService.selectedCompany}}</h5></div>
+
+
+
+    <div class="text-center mb-3">
+      <div class="btn-group">
+        <button (click)="setFilter('cargados')" [class.active]="filter === 'cargados'" class="btn btn-secondary ms-2">Cargados</button>
+        <button (click)="setFilter('aceptados')" [class.active]="filter === 'aceptados'" class="btn btn-success ms-2">Aceptados</button>
+        <button (click)="setFilter('rechazados')" [class.active]="filter === 'rechazados'" class="btn btn-danger ms-2">Rechazados</button>
+      </div>
+    </div>
+
+    <div *ngIf="filter === 'cargados'" class="table-responsive">
+      <h3>Cargados</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Tarea</th>
+            <th>Archivo</th>
+            <th>Fecha de Subida</th>
+            <th>Subido Por</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let archivo of archivosCargados">
+            <td>{{ archivo.tarea_nombre }}</td>
+            <td>{{ archivo.file_path }}</td>
+            <td>{{ archivo.upload_date }}</td>
+            <td>{{ archivo.uploaded_by }}</td>
+            <td>{{ archivo.estado }}</td>
+            <td>
+              <a [href]="'https://siinad.mx/php/' + archivo.file_path" target="_blank" class="btn btn-primary">Revisar</a>
+              <button class="btn btn-success" (click)="aceptarArchivo(archivo)">Aceptar</button>
+              <button class="btn btn-danger" (click)="rechazarArchivo(archivo)">Rechazar</button>
+              <button class="btn btn-info" (click)="revisarInformacionAdicional(archivo)">Revisar Información Adicional</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="filter === 'aceptados'" class="table-responsive">
+      <h3>Aceptados</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Tarea</th>
+            <th>Archivo</th>
+            <th>Fecha de Subida</th>
+            <th>Subido Por</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let archivo of archivosAceptados">
+            <td>{{ archivo.tarea_nombre }}</td>
+            <td>{{ archivo.file_path }}</td>
+            <td>{{ archivo.upload_date }}</td>
+            <td>{{ archivo.uploaded_by }}</td>
+            <td>{{ archivo.estado }}</td>
+            <td>
+              <a [href]="'https://siinad.mx/php/' + archivo.file_path" target="_blank" class="btn btn-primary">Revisar</a>
+              <button class="btn btn-info" (click)="revisarInformacionAdicional(archivo)">Revisar Información Adicional</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="filter === 'rechazados'" class="table-responsive">
+      <h3>Rechazados</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Tarea</th>
+            <th>Archivo</th>
+            <th>Fecha de Subida</th>
+            <th>Subido Por</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let archivo of archivosRechazados">
+            <td>{{ archivo.tarea_nombre }}</td>
+            <td>{{ archivo.file_path }}</td>
+            <td>{{ archivo.upload_date }}</td>
+            <td>{{ archivo.uploaded_by }}</td>
+            <td>{{ archivo.estado }}</td>
+            <td>
+              <a [href]="'https://siinad.mx/php/' + archivo.file_path" target="_blank" class="btn btn-primary">Revisar</a>
+              <button class="btn btn-info" (click)="revisarInformacionAdicional(archivo)">Revisar Información Adicional</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="text-center mb-4">
+      <ion-badge class="m-2" color="success">Cargados: {{ cargados }}</ion-badge>
+      <ion-badge class="m-2" color="primary">Completos: {{ completos }}</ion-badge>
+      <ion-badge class="m-2" color="danger">Incompletos: {{ incompletos }}</ion-badge>
+      <ion-badge class="m-2" color="warning">No cargados: {{ noCargados }}</ion-badge>
+    </div>
+  </div>
+</ion-content>
+
+<style>
+  .container {
+    margin-top: 20px;
+  }
+
+  .header-title {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .table thead th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+  }
+
+  .table td,
+  .table th {
+    vertical-align: middle;
+    text-align: center;
+  }
+
+  .form-control {
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  .m-2 {
+    margin: 5px;
+  }
+
+  .btn-group .btn.active {
+    background-color: #007bff;
+    color: white;
+  }
+</style>

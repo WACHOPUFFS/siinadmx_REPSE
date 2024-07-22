@@ -1,0 +1,128 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Procesador REPSE</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Sección ICOSOE -->
+  <div *ngIf="section === 'ICOSOE'">
+    <h2>Reporte ICOSOE</h2>
+    <div>
+      <p>Reporte ICOSOE</p>
+      <input type="file" (change)="onFileChange($event)" accept=".csv">
+      <ion-button (click)="processCSV()">Procesar CSV</ion-button>
+      <label for="destinatario">Destinatario:</label>
+      <ion-select [(ngModel)]="selectedDestinatario">
+        <ion-select-option *ngFor="let option of destinatarios" [value]="option">{{ option }}</ion-select-option>
+      </ion-select>
+      <ion-button (click)="enviarDatos()">Enviar Datos</ion-button>
+    </div>
+  </div>
+
+  <!-- Sección CIR -->
+  <div *ngIf="section === 'CIR'">
+    <h2>Lista Tabular CIR</h2>
+    <div>
+      <p>Lista Tabular CIR</p>
+      <input type="file" (change)="onFileChange($event)" accept=".csv">
+      <ion-button (click)="processCSV()">Procesar CSV</ion-button>
+      <label for="destinatario">Destinatario:</label>
+      <ion-select [(ngModel)]="selectedDestinatario">
+        <ion-select-option *ngFor="let option of destinatarios" [value]="option">{{ option }}</ion-select-option>
+      </ion-select>
+      <ion-button (click)="enviarDatos()">Enviar Datos</ion-button>
+    </div>
+  </div>
+
+  <!-- Sección Parte Variable CIR -->
+  <div *ngIf="section === 'ParteVariable'">
+    <h2>Parte Variable CIR</h2>
+    <div>
+      <p>Parte Variable CIR</p>
+      <input type="file" (change)="onFileChange($event)" accept=".csv">
+      <ion-button (click)="processCSV()">Procesar CSV</ion-button>
+      <label for="destinatario">Destinatario:</label>
+      <ion-select [(ngModel)]="selectedDestinatario">
+        <ion-select-option *ngFor="let option of destinatarios" [value]="option">{{ option }}</ion-select-option>
+      </ion-select>
+      <ion-button (click)="enviarDatos()">Enviar Datos</ion-button>
+    </div>
+  </div>
+
+  <!-- Sección Datos Empresa -->
+  <div *ngIf="section === 'DatosEmpresa'">
+    <h2>Datos Empresa</h2>
+    <div>
+      <p>Datos Empresa</p>
+      <input type="file" (change)="onFileChange($event)" accept=".csv">
+      <ion-button (click)="processCSV()">Procesar CSV</ion-button>
+      <label for="destinatario">Destinatario:</label>
+      <ion-select [(ngModel)]="selectedDestinatario">
+        <ion-select-option *ngFor="let option of destinatarios" [value]="option">{{ option }}</ion-select-option>
+      </ion-select>
+      <ion-button (click)="enviarDatos()">Enviar Datos</ion-button>
+    </div>
+  </div>
+
+  <!-- Sección Datos Movimiento -->
+  <div *ngIf="section === 'DatosMovimiento'">
+    <h2>Datos Movimiento</h2>
+    <div>
+      <p>Datos Movimiento</p>
+      <input type="file" (change)="onFileChange($event)" accept=".csv">
+      <ion-button (click)="processCSV()">Procesar CSV</ion-button>
+      <label for="destinatario">Destinatario:</label>
+      <ion-select [(ngModel)]="selectedDestinatario">
+        <ion-select-option *ngFor="let option of destinatarios" [value]="option">{{ option }}</ion-select-option>
+      </ion-select>
+      <ion-button (click)="enviarDatos()">Enviar Datos</ion-button>
+    </div>
+  </div>
+
+  <!-- Sección Datos Sumarios -->
+  <div *ngIf="section === 'DatosSumarios'">
+    <h2>Datos Sumarios</h2>
+    <div>
+      <p>Datos Sumarios</p>
+      <input type="file" (change)="onFileChange($event)" accept=".csv">
+      <ion-button (click)="processCSV()">Procesar CSV</ion-button>
+      <label for="destinatario">Destinatario:</label>
+      <ion-select [(ngModel)]="selectedDestinatario">
+        <ion-select-option *ngFor="let option of destinatarios" [value]="option">{{ option }}</ion-select-option>
+      </ion-select>
+      <ion-button (click)="enviarDatos()">Enviar Datos</ion-button>
+    </div>
+  </div>
+
+  <!-- Sección Datos Trabajador -->
+  <div *ngIf="section === 'DatosTrabajador'">
+    <h2>Datos Trabajador</h2>
+    <div>
+      <p>Datos Trabajador</p>
+      <input type="file" (change)="onFileChange($event)" accept=".csv">
+      <ion-button (click)="processCSV()">Procesar CSV</ion-button>
+      <label for="destinatario">Destinatario:</label>
+      <ion-select [(ngModel)]="selectedDestinatario">
+        <ion-select-option *ngFor="let option of destinatarios" [value]="option">{{ option }}</ion-select-option>
+      </ion-select>
+      <ion-button (click)="enviarDatos()">Enviar Datos</ion-button>
+    </div>
+  </div>
+
+  <!-- Tabla de datos CSV -->
+  <div *ngIf="csvData.length > 0" id="tableContainer">
+    <table>
+      <thead>
+        <tr>
+          <th *ngFor="let header of csvHeaders">{{ header }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of csvData">
+          <td *ngFor="let cell of row">{{ cell }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</ion-content>

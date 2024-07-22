@@ -1,0 +1,18 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Confirmar Rechazo</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancelar()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item *ngIf="mostrarMotivoRechazo">
+    <ion-label position="stacked">Motivo de Rechazo</ion-label>
+    <ion-textarea [(ngModel)]="motivo"></ion-textarea>
+  </ion-item>
+  <ion-button expand="block" (click)="confirmarRechazo()">Confirmar</ion-button>
+</ion-content>

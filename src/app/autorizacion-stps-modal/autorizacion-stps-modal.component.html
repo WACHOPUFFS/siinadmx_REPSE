@@ -1,0 +1,101 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Autorización STPS</ion-title>
+    <ion-buttons slot="end">
+      <ion-button [disabled]="isSubmitting" (click)="dismiss()">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="container mt-4">
+    <form (ngSubmit)="onSubmit()" class="form-horizontal">
+      <div class="form-group row">
+        <label class="col-sm-4 col-form-label">Fecha Autorización</label>
+        <div class="col-sm-8">
+          <ion-datetime  presentation="date" displayFormat="YYYY-MM-DD" [(ngModel)]="fechaAutorizacion" name="fechaAutorizacion" required></ion-datetime>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-4 col-form-label">Registro Autorización</label>
+        <div class="col-sm-8">
+          <ion-input type="text" class="form-control" [(ngModel)]="registroAutorizacion" name="registroAutorizacion" required></ion-input>
+        </div>
+      </div>
+
+      <div *ngFor="let actividad of actividades; let i = index" class="mb-4 border rounded p-3">
+        <div class="form-group row">
+          <label class="col-sm-4 col-form-label">Actividad</label>
+          <div class="col-sm-8">
+            <ion-input type="text" class="form-control" [(ngModel)]="actividad.actividad" name="actividad{{i}}" required></ion-input>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-4 col-form-label">Folio</label>
+          <div class="col-sm-8">
+            <ion-input type="text" class="form-control" [(ngModel)]="actividad.folio" name="folio{{i}}" required></ion-input>
+          </div>
+        </div>
+        <div class="text-center">
+          <button type="button" class="btn btn-danger btn-block mt-2" (click)="removeActividad(i)" *ngIf="actividades.length > 1">Eliminar Actividad</button>
+        </div>
+      </div>
+
+      <div class="text-center">
+        <button type="button" class="btn btn-primary mb-2" (click)="addActividad()">Agregar Actividad</button>
+        <button type="submit" class="btn btn-success mb-2 ms-2" [disabled]="isSubmitting">Enviar</button>
+      </div>
+    </form>
+  </div>
+</ion-content>
+
+
+<style>
+ .container {
+  max-width: 600px;
+  margin: auto;
+}
+
+.form-horizontal .form-group {
+  margin-bottom: 1rem;
+}
+
+.form-horizontal .form-group label {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mb-4 {
+  margin-bottom: 1.5rem;
+}
+
+.border {
+  border: 1px solid #dee2e6;
+}
+
+.rounded {
+  border-radius: 0.25rem;
+}
+
+.p-3 {
+  padding: 1rem;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+
+
+</style>

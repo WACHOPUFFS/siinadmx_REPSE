@@ -1,20 +1,188 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-menu contentId="main-content" type="overlay" class="custom-menu-width">
+    <ion-content class="menu-content">
+        <!-- Contenido del menú lateral -->
+        <div class="profile-info p-4">
+            <img [src]="currentAvatar" alt="Foto de Perfil">
+            <div class="text-center">
+                <h5><strong>Bienvenido(a), {{ username }}</strong></h5>
+                <p>Empresa: <span id="companyName">{{ authService.selectedCompany }}</span></p>
+                <p>RFC: <span id="companyRFC">{{authService.selectedRFC}}</span></p>
+                <p>Nivel de Usuario: <span id="userLevel">
+                        <span *ngIf="authService.selectedLevelUser === 'adminS'">
+                            {{ labelNivelUsuarioAdministradorGeneral }}
+                        </span>
+                        <span *ngIf="authService.selectedLevelUser === 'adminE'">
+                            {{ labelNivelUsuarioAdministradorEmpresaGeneral }}
+                        </span>
+                        <span *ngIf="authService.selectedLevelUser === 'admin'">
+                            {{ labelNivelUsuarioAdministradorEmpresa }}
+                        </span>
+                        <span *ngIf="authService.selectedLevelUser === 'adminU'">
+                            {{ labelNivelUsuarioAdministrativoEmpresa }}
+                        </span>
+                        <span *ngIf="authService.selectedLevelUser === 'superV'">
+                            {{ labelNivelUsuarioSupervisorEmpresa }}
+                        </span>
+                        <span *ngIf="authService.selectedLevelUser === 'adminEE'">
+                            Administrador único de la Empresa (Socio Comercial)
+                        </span>
+                        <span *ngIf="authService.selectedLevelUser === 'adminPE'">
+                            Administrador único de la Empresa (Socio Comercial - Premium)
+                        </span>
+                    </span></p>
+            </div>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+            <div *ngIf="currentLogo" class="text-center">
+                <img [src]="currentLogo" alt="Logo de la Empresa" width="100">
+            </div>
+            <div class="text-center pt-4">
+                <label for="company-select">Cambiar de empresa</label>
+                <select [(ngModel)]="selectedCompany" (change)="selectCompany()" id="company-select" class="form-select custom-select">
+                    <option *ngFor="let company of principalCompanies" [value]="company.name">
+                        {{ company.name }}
+                    </option>
+                </select>
+            </div>
+            
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
-</ion-content>
+            <div class="card-body">
+                <h5 class="card-title">Mis socios</h5>
+                <h6 class="section-title">Aceptadas:</h6>
+                <ul class="company-list" *ngIf="authService.nonPrincipalCompanies.length > 0">
+                    <ng-container *ngFor="let company of authService.nonPrincipalCompanies">
+                        <ng-container *ngIf="company.status === '1'">
+                            <li>
+                                Empresa: {{ company.name }},
+                                Rol:
+                                <ng-container *ngIf="company.role === 'proveedor'">Proveedor</ng-container>
+                                <ng-container *ngIf="company.role === 'cliente'">Cliente</ng-container>
+                                <ng-container *ngIf="company.role === 'clienteProveedor'">Cliente -
+                                    Proveedor</ng-container>,
+                                RFC: {{ company.rfc }},
+                                Aceptada
+                            </li>
+                        </ng-container>
+                    </ng-container>
+                </ul>
+                <ng-template *ngIf="noEmpresasAceptadas()">
+                    <li>No hay empresas aceptadas</li>
+                </ng-template>
+
+                <h6 class="section-title mt-3">Pendientes:</h6>
+                <ul class="company-list" *ngIf="authService.nonPrincipalCompanies.length > 0">
+                    <ng-container *ngFor="let company of authService.nonPrincipalCompanies">
+                        <ng-container *ngIf="company.status === '0'">
+                            <li>
+                                Empresa: {{ company.name }},
+                                Rol:
+                                <ng-container *ngIf="company.role === 'proveedor'">Proveedor</ng-container>
+                                <ng-container *ngIf="company.role === 'cliente'">Cliente</ng-container>
+                                <ng-container *ngIf="company.role === 'clienteProveedor'">Cliente -
+                                    Proveedor</ng-container>,
+                                RFC: {{ company.rfc }},
+                                Pendiente
+                            </li>
+                        </ng-container>
+                    </ng-container>
+                </ul>
+                <ng-template *ngIf="noEmpresasPendientes()">
+                    <li>No hay empresas pendientes</li>
+                </ng-template>
+            </div>
+            <button class="btn btn-danger mt-3 w-100" (click)="logout()">Cerrar Sesión</button>
+            <button class="btn  mt-3 w-100" (click)="abrirModal()"
+                *ngIf="authService.selectedLevelUser === 'adminEE'">Ser parte del sistema REPSE</button>
+        </div>
+    </ion-content>
+</ion-menu>
+
+<ion-split-pane contentId="main-content">
+    <!-- Contenido principal -->
+    <ion-content id="main-content" [fullscreen]="true" class="ion-padding">
+        <div class="header-container">
+            <ion-buttons slot="start">
+                <ion-menu-button></ion-menu-button>
+            </ion-buttons>
+            <div class="img-user">
+                <img [src]="currentAvatar" alt="Foto de Perfil">
+            </div>
+            <div class="user-info" *ngIf="isFullScreen">
+
+                <span><strong>Bienvenido(a), {{ username }}</strong></span>
+                <span>Empresa: {{ authService.selectedCompany }}</span>
+            </div>
+            <!--
+            <div class="header-buttons">
+                <div class="header-button">
+                    <ion-icon name="home"></ion-icon>
+                    <span>Inicio</span>
+                </div>
+                <div class="header-button">
+                    <ion-icon name="settings"></ion-icon>
+                    <span>Gestión</span>
+                </div>
+                <div class="header-button">
+                    <ion-icon name="people"></ion-icon>
+                    <span>Proveedores</span>
+                </div>
+                <div class="header-button">
+                    <ion-icon name="people"></ion-icon>
+                    <span>Clientes</span>
+                </div>
+            </div>
+            -->
+            <div class="notification-button">
+                <ion-icon name="notifications"></ion-icon>
+                <span>Notificaciones</span>
+            </div>
+            
+        </div>
+
+        <!-- Contenido principal de la página -->
+        <div class="main-content">
+            <h5><strong>Inicio</strong></h5>
+            <p class="current-date-time">{{ currentDateTime }}</p>
+            <div class="app-grid mt-4">
+                <a routerLink="/repse" *ngIf="hasPermission('repse')">
+                    <img src="/assets/image/hoja-de-calculo.png" alt="Sistema REPSE" style="height: 60px;">
+                    <span>Sistema REPSE</span>
+                </a>
+                <a href="/works-control" *ngIf="hasPermission('obras')">
+                    <img src="/assets//image/bosquejo.png" alt="Control de Obras" style="height: 60px;">
+                    <span>Control de Obras</span>
+                </a>
+                <a href="#" *ngIf="hasPermission('asistencias')">
+                    <img src="/assets/image/pautas.png" alt="Sistema de Asistencias" style="height: 60px;">
+                    <span>Sistema de Asistencias</span>
+                </a>
+                <a href="#" *ngIf="hasPermission('costos')">
+                    <img src="/assets/image/presupuesto.png " alt="Costos" style="height: 60px;">
+                    <span>Costos</span>
+                </a>
+                <a href="#" *ngIf="hasPermission('ventas')">
+                    <img src="/assets/image/bolsa-de-valores.png" alt="Ventas" style="height: 60px;">
+                    <span>Ventas</span>
+                </a>
+                <a routerLink="/company-settings">
+                    <img src="/assets/image/actualizacion-del-sistema.png" alt="Configuración de la Empresa"
+                        style="height: 60px;">
+                    <span>Gestionar mi empresa</span>
+                </a>
+                <a routerLink="/user-settings">
+                    <img src="/assets/image/ajustes-de-perfil.png" alt="Configuración del Empleado"
+                        style="height: 60px;">
+                    <span>Configuración de mi perfil</span>
+                </a>
+                <!--
+                <a href="/page-settings">
+                    <img src="/assets/image/config.png" alt="Configuración del Empleado" style="height: 60px;">
+                    <span>Configuración de la página</span>
+                </a>
+                 -->
+
+
+            </div>
+
+        </div>
+    </ion-content>
+</ion-split-pane>
