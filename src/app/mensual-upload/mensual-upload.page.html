@@ -1,0 +1,78 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>MensualUpload</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="container">
+    <div class="header-title">Subir documentos mensuales</div>
+    <div class="text-center">
+      <h5>{{authService.selectedCompany}}</h5>
+    </div>
+
+    <ion-alert message="Primero suba la información requerida en el formulario antes de subir el documento." color="warning" class="text-center"></ion-alert>
+
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Documento</th>
+            <th *ngFor="let mes of meses">{{ mes }}</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let tarea of tareas">
+            <td>{{ tarea.nombre }}</td>
+            <td *ngFor="let mes of meses">
+              <ion-checkbox [checked]="tarea[mes]" disabled></ion-checkbox>
+            </td>
+            <td>
+              <button ion-button (click)="triggerFileInput(tarea.id)" [disabled]="tarea['cargado']">Cargar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="text-center mb-4">
+      <ion-badge class="m-2" color="success">Cargados: {{ cargados }}</ion-badge>
+      <ion-badge class="m-2" color="primary">Completos: {{ completos }}</ion-badge>
+      <ion-badge class="m-2" color="danger">Incompletos: {{ incompletos }}</ion-badge>
+      <ion-badge class="m-2" color="warning">No cargados: {{ noCargados }}</ion-badge>
+    </div>
+  </div>
+</ion-content>
+
+<style>
+  .container {
+    margin-top: 20px;
+  }
+
+  .header-title {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .table thead th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+  }
+
+  .table td,
+  .table th {
+    vertical-align: middle;
+    text-align: center;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  .m-2 {
+    margin: 5px;
+  }
+</style>

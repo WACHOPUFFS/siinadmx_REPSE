@@ -180,6 +180,10 @@ const routes: Routes = [
     path: 'document-review',
     loadChildren: () => import('./document-review/document-review.module').then( m => m.DocumentReviewPageModule)
   },
+  {
+    path: 'mensual-upload',
+    loadChildren: () => import('./mensual-upload/mensual-upload.module').then( m => m.MensualUploadPageModule)
+  },
 ];
 
 @NgModule({
