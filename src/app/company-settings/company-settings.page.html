@@ -96,6 +96,20 @@
     <img src="/assets/image/interfaz-de-usuario.png" alt="Visible Sections" style="height: 60px;">
     <span>Revisar tareas anuales de empresas</span>
   </a>
+
+  <a routerLink="/add-employee" *ngIf="authService.selectedLevelUser === 'adminS' || authService.selectedLevelUser === 'adminE' || authService.selectedLevelUser === 'adminEE' || authService.selectedLevelUser === 'adminPE'  || authService.selectedLevelUser === 'superV' && hasPermission('configEmpresa', 'Registrar una solicitud de empleado') || hasPermission('configEmpresa', 'Registrar una solicitud de empleado')" >
+    <img src="/assets/image/interfaz-de-usuario.png" alt="Visible Sections" style="height: 60px;">
+    <span>Registrar solicitudes de empleados</span>
+  </a>
+
+  <a routerLink="/edit-employee" *ngIf="authService.selectedLevelUser === 'adminS' || authService.selectedLevelUser === 'adminE' || authService.selectedLevelUser === 'adminEE' || authService.selectedLevelUser === 'adminPE'  || authService.selectedLevelUser === 'superV' && hasPermission('configEmpresa', 'Actualizar solicitudes de empleados') || hasPermission('configEmpresa', 'Actualizar solicitudes de empleados')">
+    <img src="/assets/image/interfaz-de-usuario.png" alt="Visible Sections" style="height: 60px;" >
+    <span>{{ editEmployee }}</span>
+  </a>
+
+
+
+
 </div>
 
 

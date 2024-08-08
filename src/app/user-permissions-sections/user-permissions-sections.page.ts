@@ -111,7 +111,7 @@ export class UserPermissionsSectionsPage implements OnInit {
   async loadSubSections(section: string) {
     const subSectionsMap: { [key: string]: string[] } = {
       'repse': ['Nominas', 'SUA', 'Informes IMSS','Informes INFONAVIT'],
-      'obras': ['sub4', 'sub5', 'sub6'],
+      'obras': ['Asignacion diaria de empleados a obras', 'Visor de incidencias', 'Control diario de empleados', 'Visualizar obras'],
       'asistencias': ['sub7', 'sub8'],
       'costos': ['sub9', 'sub10'],
       'ventas': ['sub11', 'sub12'],

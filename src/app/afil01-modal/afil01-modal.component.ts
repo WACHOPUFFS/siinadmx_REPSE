@@ -12,7 +12,7 @@ export class Afil01ModalComponent implements OnInit {
   @Input() userId: string;
   @Input() companyId: string;
 
-  noPatronales: any[] = [{ noPatronal: '', noRegPatronal: '', division: '', grupo: '', fraccion: '', clase: '', actividad: '', descripcion: '' }];
+  noPatronales: any[] = [{noRegPatronal: '', division: '', grupo: '', fraccion: '', clase: '', actividad: '', descripcion: '' }];
   isSubmitting: boolean = false; // Para manejar el estado de envío
 
   constructor(private http: HttpClient, private modalController: ModalController) { }
@@ -33,7 +33,7 @@ export class Afil01ModalComponent implements OnInit {
   }
 
   addNoPatronal() {
-    this.noPatronales.push({ noPatronal: '', noRegPatronal: '', division: '', grupo: '', fraccion: '', clase: '', actividad: '', descripcion: '' });
+    this.noPatronales.push({noRegPatronal: '', division: '', grupo: '', fraccion: '', clase: '', actividad: '', descripcion: '' });
   }
 
   removeNoPatronal(index: number) {

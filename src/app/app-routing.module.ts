@@ -184,6 +184,22 @@ const routes: Routes = [
     path: 'mensual-upload',
     loadChildren: () => import('./mensual-upload/mensual-upload.module').then( m => m.MensualUploadPageModule)
   },
+  {
+    path: 'control-works',
+    loadChildren: () => import('./control-works/control-works.module').then( m => m.ControlWorksPageModule)
+  },
+  {
+    path: 'add-employee',
+    loadChildren: () => import('./add-employee/add-employee.module').then( m => m.AddEmployeePageModule)
+  },
+  {
+    path: 'edit-employee',
+    loadChildren: () => import('./edit-employee/edit-employee.module').then( m => m.EditEmployeePageModule)
+  },
+  {
+    path: 'manage-weeks',
+    loadChildren: () => import('./manage-weeks/manage-weeks.module').then( m => m.ManageWeeksPageModule)
+  },
 ];
 
 @NgModule({

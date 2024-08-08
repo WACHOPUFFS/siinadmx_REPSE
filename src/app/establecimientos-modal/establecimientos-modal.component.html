@@ -1,3 +1,54 @@
-<p>
-  establecimientos-modal works!
-</p>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Establecimientos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form (ngSubmit)="onSubmit()">
+    <div *ngFor="let address of addresses; let i = index">
+      <ion-item>
+        <ion-label position="stacked">Calle</ion-label>
+        <ion-input [(ngModel)]="address.street" name="street-{{i}}" required></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Número Interior</ion-label>
+        <ion-input [(ngModel)]="address.interiorNumber" name="interiorNumber-{{i}}"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Número Exterior</ion-label>
+        <ion-input [(ngModel)]="address.exteriorNumber" name="exteriorNumber-{{i}}" required></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Colonia</ion-label>
+        <ion-input [(ngModel)]="address.neighborhood" name="neighborhood-{{i}}" required></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Estado</ion-label>
+        <ion-input [(ngModel)]="address.state" name="state-{{i}}" required></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Ciudad</ion-label>
+        <ion-input [(ngModel)]="address.city" name="city-{{i}}" required></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Código Postal</ion-label>
+        <ion-input [(ngModel)]="address.postalCode" name="postalCode-{{i}}" required></ion-input>
+      </ion-item>
+
+      <ion-button color="danger" (click)="removeAddress(i)" *ngIf="addresses.length > 1">Eliminar</ion-button>
+    </div>
+
+    <ion-button (click)="addAddress()">Agregar Dirección</ion-button>
+    <ion-button type="submit" [disabled]="isSubmitting">Enviar</ion-button>
+  </form>
+</ion-content>

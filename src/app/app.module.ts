@@ -30,7 +30,7 @@ import { ReviewInfoModalComponent } from './review-info-modal/review-info-modal.
     EstablecimientosModalComponent,
     ContratoModalComponent,
     RfcModalComponent,
-    ReviewInfoModalComponent,
+    ReviewInfoModalComponent
   ],
   imports: [
     BrowserModule,

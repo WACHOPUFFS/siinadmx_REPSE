@@ -12,11 +12,13 @@ export class CompanySettingsPage implements OnInit {
 
   showSubsections = false;
   permissions: { section: string, subSection: string | null }[] = [];
+  editEmployee: string = '';
 
-  constructor(private navCtrl: NavController, public authService: AuthService, private http: HttpClient) {}
+  constructor(private navCtrl: NavController, public authService: AuthService, private http: HttpClient) { }
 
   ngOnInit() {
     this.loadPermissions();
+    this.setTitulo();
   }
 
   goBack() {
@@ -66,6 +68,37 @@ export class CompanySettingsPage implements OnInit {
   handleOption2() {
     console.log('Opción 2 seleccionada');
     // Aquí puedes agregar la lógica para la opción 2.
+  }
+
+  setTitulo() {
+    const levelUser = this.authService.selectedLevelUser;
+
+    switch (levelUser) {
+      case 'adminS':
+        this.editEmployee = 'Configuraciones de la empresa para AdminS';
+        break;
+      case 'adminE':
+        this.editEmployee = 'Configuraciones de la empresa para AdminE';
+        break;
+      case 'adminEE':
+        this.editEmployee = 'Configuraciones de la empresa para AdminEE';
+        break;
+      case 'adminPE':
+        this.editEmployee = 'Configuraciones de la empresa para AdminPE';
+        break;
+      case 'superV':
+        this.editEmployee = 'Actualizar solicitudes de empleados';
+        break;
+      case 'admin':
+        this.editEmployee = 'Solicitudes de empleados';
+        break;
+      case 'adminU':
+        this.editEmployee = 'Solicitudes de empleados';
+        break;
+      default:
+        this.editEmployee = 'Configuraciones de la empresa';
+        break;
+    }
   }
 
 }

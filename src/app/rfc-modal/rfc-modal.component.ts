@@ -12,7 +12,7 @@ export class RfcModalComponent implements OnInit {
   @Input() userId: string;
   @Input() companyId: string;
 
-  rfcInformacion: any[] = [{ rfc: '', curp: '', domicilioFiscal: '', tipoRegimen: '', regimen: '' }];
+  rfcInformacion: any[] = [{ rfc: '', curp: '', tipoRegimen: '', regimen: '' }];
   isSubmitting: boolean = false;
 
   constructor(private http: HttpClient, private modalController: ModalController) { }
@@ -33,7 +33,7 @@ export class RfcModalComponent implements OnInit {
   }
 
   addRfcInfo() {
-    this.rfcInformacion.push({ rfc: '', curp: '', domicilioFiscal: '', tipoRegimen: '', regimen: '' });
+    this.rfcInformacion.push({ rfc: '', curp: '', tipoRegimen: '', regimen: '' });
   }
 
   removeRfcInfo(index: number) {
