@@ -14,7 +14,7 @@ if (!isset($_GET['department_id'])) {
 $department_id = intval($_GET['department_id']);
 
 // Consulta SQL para obtener los puestos de un departamento específico
-$sql = "SELECT position_id, position_name FROM positions WHERE department_id = ?";
+$sql = "SELECT * FROM positions WHERE department_id = ?";
 $stmt = $mysqli->prepare($sql);
 $stmt->bind_param("i", $department_id);
 $stmt->execute();

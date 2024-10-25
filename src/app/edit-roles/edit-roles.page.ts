@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ToastController, ModalController } from '@ionic/angular'; // Importa ModalController y ToastController
+import { ToastController } from '@ionic/angular'; 
 import { AuthService } from '../auth.service';
-import { CambiarRolModalPage } from '../cambiar-rol-modal/cambiar-rol-modal.page';
 import { NavController } from '@ionic/angular';
 
 @Component({
@@ -12,46 +11,61 @@ import { NavController } from '@ionic/angular';
 })
 export class EditRolesPage implements OnInit {
   sociosComerciales: any[] = [];
+  rolesDisponibles: any[] = []; // Ahora se cargan desde el backend
+  usuarioSeleccionado: string = '';
+  socioComercialSeleccionado: any = null;
+  nuevoRol: string = ''; // Capturará el id del rol
 
-
-  constructor( private navCtrl: NavController, private http: HttpClient, private toastController: ToastController, private modalController: ModalController, public authService: AuthService) { }
+  constructor(
+    private navCtrl: NavController, 
+    private http: HttpClient, 
+    private toastController: ToastController, 
+    public authService: AuthService
+  ) { }
 
   ngOnInit() {
-    // Llama a la función obtenerSociosComerciales() cuando la página se inicialice
+    // Llama a la función obtenerSociosComerciales y obtenerRoles() cuando la página se inicialice
     this.obtenerSociosComerciales();
+    this.obtenerRoles(); // Nueva función para obtener roles desde el backend
   }
-
 
   goBack() {
     this.navCtrl.back();
   }
 
-
   async obtenerSociosComerciales() {
     const data = {
-      companyId: this.authService.selectedId // Corrige el nombre del parámetro a companyId
+      association_id: this.authService.selectedId // Cambia el parámetro por association_id
     };
 
-    // Realiza la solicitud POST al archivo PHP con los datos proporcionados
-    this.http.post('https://siinad.mx/php/searchUserRoles.php', data).subscribe(
+    // Realiza la solicitud GET al archivo PHP con el parámetro association_id
+    this.http.get('https://siinad.mx/php/getBusinessPartner.php', { params: data }).subscribe(
       async (response: any) => {
-        if (response.success) {
-          // Maneja la respuesta exitosa aquí si es necesario
-          this.sociosComerciales = response.businessPartners;
-          console.log('Socios comerciales obtenidos:', response.businessPartners);
+        if (response.length > 0) {
+          this.sociosComerciales = response;
         } else {
-          // Error en la solicitud, muestra un mensaje de error al usuario
-          await this.mostrarToast(response.error, 'danger');
+          await this.mostrarToast('No se encontraron socios comerciales', 'warning');
         }
       },
       (error) => {
-        // Maneja errores de red u otros errores
         console.error('Error al realizar la solicitud:', error);
         this.mostrarToast('Error al realizar la solicitud', 'danger');
       }
     );
   }
 
+  async obtenerRoles() {
+    // Realiza la solicitud GET para obtener los roles desde el backend
+    this.http.get('https://siinad.mx/php/getRoles.php').subscribe(
+      (response: any) => {
+        this.rolesDisponibles = response; // Asigna los roles obtenidos desde el backend
+      },
+      (error) => {
+        console.error('Error al obtener los roles:', error);
+        this.mostrarToast('Error al obtener los roles', 'danger');
+      }
+    );
+  }
 
   async mostrarToast(mensaje: string, color: string) {
     const toast = await this.toastController.create({
@@ -62,38 +76,30 @@ export class EditRolesPage implements OnInit {
     toast.present();
   }
 
-  async openModal() {
-    const usuarioSeleccionado = (document.getElementById('usuario_a_editar') as HTMLSelectElement).value;
-    
-    // Verifica si hay un usuario seleccionado y si hay socios comerciales cargados
-    if (usuarioSeleccionado && this.sociosComerciales.length > 0) {
-      const socioComercialSeleccionado = this.sociosComerciales.find(socio => socio.id === usuarioSeleccionado);
-    
-      const modal = await this.modalController.create({
-        component: CambiarRolModalPage,
-        componentProps: {
-          socioComercial: socioComercialSeleccionado
+  mostrarDatosSocioComercial() {
+    this.socioComercialSeleccionado = this.sociosComerciales.find(socio => socio.businessPartnerId === this.usuarioSeleccionado);
+  }
+
+  async actualizarRol() {
+    const data = {
+      companyId: this.authService.selectedId, 
+      socioComercialId: this.socioComercialSeleccionado.businessPartnerId,
+      nuevoRol: this.nuevoRol // Se pasa el id del rol seleccionado
+    };
+
+    // Realiza la solicitud POST al archivo PHP para actualizar el rol
+    this.http.post('https://siinad.mx/php/saveUserRoles.php', data).subscribe(
+      async (response: any) => {
+        if (response.success) {
+          this.mostrarToast(response.message, 'success');
+        } else {
+          this.mostrarToast(response.error || 'Error al actualizar el rol', 'danger');
         }
-      });
-    
-      return await modal.present();
-    } else {
-      // Muestra un mensaje o realiza alguna acción cuando no haya nada para mostrar en el modal
-      await this.mostrarToast('No hay elementos seleccionables para mostrar en el modal.', 'warning');
-    }
+      },
+      (error) => {
+        console.error('Error al realizar la solicitud:', error);
+        this.mostrarToast('Error al realizar la solicitud', 'danger');
+      }
+    );
   }
-  
-getRoleDisplayName(roleName: string): string {
-    if (roleName === 'proveedor') {
-      return 'Cliente';
-    } else if (roleName === 'cliente') {
-      return 'Proveedor';
-    } else if (roleName === 'clienteProveedor') {
-      return 'Cliente - Proveedor';
-    } else {
-      return roleName; // Por si hay algún otro rol que no hayas considerado
-    }
-  }
-
-
 }

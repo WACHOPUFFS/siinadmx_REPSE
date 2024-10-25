@@ -1,40 +1,28 @@
 <?php
 include_once 'cors.php';
-// Incluir el archivo de conexión
-include 'conexion.php';
+include_once 'conexion.php';
 
-// Leer datos de la solicitud POST
-$data = json_decode(file_get_contents('php://input'), true);
+$data = json_decode(file_get_contents("php://input"));
 
-$employeeId = $data['employeeId'];
+// Verificar si se recibió el dato esperado
+if (isset($data->employeeId)) {
+    // Escapar los datos para prevenir inyección SQL
+    $employeeId = $mysqli->real_escape_string($data->employeeId);
 
-// Preparar y ejecutar consulta SQL para eliminar el código
-$sql = "DELETE FROM employee_codes WHERE employee_id = ?";
-$stmt = $mysqli->prepare($sql);
+    // Eliminar el código asociado al employeeId en la tabla user_codes
+    $sqlDeleteCode = "DELETE FROM user_codes WHERE user_id = '$employeeId'";
 
-if ($stmt === false) {
-    header('Content-Type: application/json');
-    echo json_encode(array("error" => "Error en la preparación de la consulta: " . $mysqli->error));
-    exit();
-}
-
-$stmt->bind_param("s", $employeeId);
-
-$response = [];
-
-if ($stmt->execute()) {
-    $response['success'] = true;
-    $response['message'] = "Código eliminado correctamente.";
+    // Ejecutar la consulta de eliminación
+    if ($mysqli->query($sqlDeleteCode)) {
+        echo json_encode(array("success" => true, "message" => "Code deleted successfully."));
+    } else {
+        echo json_encode(array("success" => false, "message" => "Error deleting code: " . $mysqli->error));
+    }
 } else {
-    $response['success'] = false;
-    $response['error'] = $stmt->error;
+    // No se recibieron los datos esperados
+    echo json_encode(array("success" => false, "message" => "Provide all necessary data for deleting the code."));
 }
 
-// Cerrar conexiones
-$stmt->close();
+// Cerrar la conexión a la base de datos
 $mysqli->close();
-
-// Devolver respuesta en formato JSON
-header('Content-Type: application/json');
-echo json_encode($response);
 ?>

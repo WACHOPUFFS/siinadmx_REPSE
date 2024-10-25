@@ -1,0 +1,87 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Cambiar Horas</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="container">
+    <!-- Hora de Entrada -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-6">
+        <label class="form-label"><strong>Hora de Entrada</strong></label>
+      </div>
+      <div class="col-6 text-end">
+        <ion-datetime-button datetime="entry-datetime"></ion-datetime-button>
+      </div>
+    </div>
+
+    <!-- Modal para Hora de Entrada -->
+    <ion-modal [keepContentsMounted]="true">
+      <ng-template>
+        <ion-datetime id="entry-datetime" [(ngModel)]="entryTime" presentation="time"></ion-datetime>
+      </ng-template>
+    </ion-modal>
+
+    <!-- Hora de Inicio de Comida -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-6">
+        <label class="form-label"><strong>Hora de Inicio de Comida</strong></label>
+      </div>
+      <div class="col-6 text-end">
+        <ion-datetime-button datetime="lunch-start-datetime"></ion-datetime-button>
+      </div>
+    </div>
+
+    <!-- Modal para Hora de Inicio de Comida -->
+    <ion-modal [keepContentsMounted]="true">
+      <ng-template>
+        <ion-datetime id="lunch-start-datetime" [(ngModel)]="lunchStart" presentation="time"></ion-datetime>
+      </ng-template>
+    </ion-modal>
+
+    <!-- Hora de Fin de Comida -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-6">
+        <label class="form-label"><strong>Hora de Fin de Comida</strong></label>
+      </div>
+      <div class="col-6 text-end">
+        <ion-datetime-button datetime="lunch-end-datetime"></ion-datetime-button>
+      </div>
+    </div>
+
+    <!-- Modal para Hora de Fin de Comida -->
+    <ion-modal [keepContentsMounted]="true">
+      <ng-template>
+        <ion-datetime id="lunch-end-datetime" [(ngModel)]="lunchEnd" presentation="time"></ion-datetime>
+      </ng-template>
+    </ion-modal>
+
+    <!-- Hora de Salida -->
+    <div class="row mb-3 align-items-center">
+      <div class="col-6">
+        <label class="form-label"><strong>Hora de Salida</strong></label>
+      </div>
+      <div class="col-6 text-end">
+        <ion-datetime-button datetime="exit-datetime"></ion-datetime-button>
+      </div>
+    </div>
+
+    <!-- Modal para Hora de Salida -->
+    <ion-modal [keepContentsMounted]="true">
+      <ng-template>
+        <ion-datetime id="exit-datetime" [(ngModel)]="exitTime" presentation="time"></ion-datetime>
+      </ng-template>
+    </ion-modal>
+
+    <!-- Botón Guardar -->
+    <div class="row">
+      <div class="col text-center">
+        <ion-button color="primary" expand="block" (click)="saveHours()">Guardar</ion-button>
+      </div>
+    </div>
+  </div>
+</ion-content>

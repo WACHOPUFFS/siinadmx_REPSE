@@ -11,7 +11,7 @@ if ($employee_id === null) {
     exit;
 }
 
-$upload_dir = 'uploads/'; // Directorio donde se guardarán los archivos
+$upload_dir = 'uploads/employee_files/'; // Directorio donde se guardarán los archivos
 
 $allowed_types = ['ineFrente', 'ineReverso', 'constanciaFiscal', 'numSeguroSocialArchivo', 'actaNacimiento', 'comprobanteDomicilio', 'cuentaInterbancaria', 'retencionInfonavit', 'antecedentesPenales', 'comprobanteEstudios'];
 

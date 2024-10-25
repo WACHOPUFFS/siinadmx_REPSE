@@ -1,5 +1,11 @@
 <ion-content [fullscreen]="true" class="ion-padding">
-  <div class="back-button" (click)="goBack()" >
+  <ion-breadcrumbs>
+    <ion-breadcrumb routerLink="/home">Inicio</ion-breadcrumb>
+    <ion-breadcrumb routerLink="/settings">Configuraciones</ion-breadcrumb>
+    <ion-breadcrumb routerLink="/business-partner-settings">Configuración de perfiles</ion-breadcrumb>
+    <ion-breadcrumb routerLink="/permissions-businees-partner">Secciones visibles de mis socios comerciales</ion-breadcrumb>
+  </ion-breadcrumbs>
+  <div class="back-button" (click)="goBack()">
     <ion-icon name="arrow-back"></ion-icon>
   </div>
 
@@ -7,29 +13,53 @@
     <div class="row justify-content-center">
       <div class="col-md-8 col-lg-6">
         <div class="text-center pt-4">
-          <h5><strong>Administrar secciones a empresas</strong></h5>
+          <h5><strong>Secciones visibles de mis socios comerciales</strong></h5>
         </div>
         <div class="card shadow-lg p-4 mt-4">
           <ion-item>
             <ion-label>Seleccionar empresa</ion-label>
-            <ion-select (ionChange)="onCompanyChange($event)" [(ngModel)]="selectedCompanyId" placeholder="Selecciona una empresa">
-              <ion-select-option *ngFor="let company of companies" [value]="company.idCompany">{{ company.nameCompany }}</ion-select-option>
+            <ion-select (ionChange)="onCompanyChange($event)" [(ngModel)]="businessPartnerId" placeholder="Selecciona una empresa">
+              <ion-select-option *ngFor="let company of companies" [value]="company.businessPartnerId">{{ company.nameCompany }}</ion-select-option>
             </ion-select>
           </ion-item>
 
-          <ion-item>
-            <ion-label>Asignar sección</ion-label>
-            <ion-select (ionChange)="onSectionChange($event)" [(ngModel)]="selectedSections" multiple="true" placeholder="Selecciona secciones">
-              <ion-select-option *ngFor="let section of sections" [value]="section">{{ section }}</ion-select-option>
-            </ion-select>
-          </ion-item>
+          <!-- Secciones para Clientes -->
+          <div *ngIf="selectedRoleName === 'cliente'">
+            <ion-item>
+              <ion-label>Secciones para Clientes</ion-label>
+              <ion-select (ionChange)="onSectionChange($event)" [(ngModel)]="selectedSections" multiple="true" placeholder="Selecciona secciones">
+                <ion-select-option *ngFor="let section of sectionsCliente" [value]="section">{{ section }}</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </div>
 
-          <ion-button expand="full" (click)="addPermission()" [disabled]="!selectedCompanyId || !selectedSections || selectedSections.length === 0">Añadir</ion-button>
+          <!-- Secciones para Proveedores -->
+          <div *ngIf="selectedRoleName === 'proveedor'">
+            <ion-item>
+              <ion-label>Secciones para Proveedores</ion-label>
+              <ion-select (ionChange)="onSectionChange($event)" [(ngModel)]="selectedSections" multiple="true" placeholder="Selecciona secciones">
+                <ion-select-option *ngFor="let section of sectionsProveedor" [value]="section">{{ section }}</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </div>
+
+          <!-- Secciones para Cliente-Proveedor -->
+          <div *ngIf="selectedRoleName === 'clienteProveedor'">
+            <ion-item>
+              <ion-label>Secciones para Cliente-Proveedor</ion-label>
+              <ion-select (ionChange)="onSectionChange($event)" [(ngModel)]="selectedSections" multiple="true" placeholder="Selecciona secciones">
+                <ion-select-option *ngFor="let section of sectionsClienteProveedor" [value]="section">{{ section }}</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </div>
+
+          <ion-button expand="full" (click)="addPermission()" [disabled]="!businessPartnerId || !selectedSections || selectedSections.length === 0">Añadir</ion-button>
         </div>
+
         <ion-list class="list-group mt-4">
           <ion-item *ngFor="let permission of permissions">
-            {{ permission.NameSection }}
-            <ion-button slot="end" color="danger" (click)="removePermission(permission.NameSection)">Quitar</ion-button>
+            {{ permission.name_section }}
+            <ion-button slot="end" color="danger" (click)="removePermission(permission.name_section)">Quitar</ion-button>
           </ion-item>
         </ion-list>
       </div>
@@ -96,6 +126,6 @@
   }
 
   .back-button:hover {
-    color: #0056b3;
+    background-color: #0056b3;
   }
 </style>

@@ -1,4 +1,13 @@
 <ion-content [fullscreen]="true" class="ion-padding">
+  <ion-breadcrumbs>
+    <ion-breadcrumb routerLink="/home">Inicio</ion-breadcrumb>
+    <ion-breadcrumb routerLink="/employee-management">Gestión de Empleados
+    </ion-breadcrumb>
+    <ion-breadcrumb routerLink="/employee-control">Control de empleados
+    </ion-breadcrumb>
+    <ion-breadcrumb routerLink="/add-employee">Registrar solicitudes de empleados
+    </ion-breadcrumb>
+  </ion-breadcrumbs>
   <div class="back-button" (click)="goBack()">
     <ion-icon name="arrow-back"></ion-icon>
   </div>

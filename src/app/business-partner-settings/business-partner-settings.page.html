@@ -1,0 +1,44 @@
+<ion-split-pane contentId="main-content">
+
+
+  <!-- Contenido principal -->
+  <ion-content id="main-content" [fullscreen]="true" class="ion-padding">
+    <ion-breadcrumbs>
+      <ion-breadcrumb routerLink="/home">Inicio</ion-breadcrumb>
+      <ion-breadcrumb routerLink="/settings">Configuraciones</ion-breadcrumb>
+      <ion-breadcrumb routerLink="/business-partner-settings">Configuración de perfiles</ion-breadcrumb>
+    </ion-breadcrumbs>
+    <div class="back-button" (click)="goBack()">
+      <ion-icon name="arrow-back"></ion-icon>
+    </div>
+    <!-- Contenido principal de la página -->
+    <div class="main-content">
+      <div class="pt-4">
+        <h5><strong>Configuración de socios comerciales</strong></h5>
+      </div>
+      
+      <div class="app-grid mt-4" >
+        <a routerLink="/cp-auth"
+        *ngIf="sharedService.hasPermission('Configuracion de socios comerciales', 'Autorizar socio comercial')">
+          <img src="/assets/icons/user-confirmed.png" alt="Assign Logo" style="height: 60px;">
+          <span>Autorizar socio comercial</span>
+        </a>
+        <a routerLink="/edit-roles"
+        *ngIf="sharedService.hasPermission('Configuracion de socios comerciales', 'Editar roles de los socios comerciales')">
+          <img src="/assets/icons/001-avatar-de-usuario.png" alt="Assign Logo" style="height: 60px;">
+          <span>Editar roles de socios comercial</span>
+        </a>
+        <a routerLink="/business-partner-register"
+        *ngIf="sharedService.hasPermission('Configuracion de socios comerciales', 'Registrar socio comercial')">
+          <img src="/assets/icons/013-avatar-de-usuario-3.png" alt="Assign Logo" style="height: 60px;">
+          <span>Registrar socio comercial</span>
+        </a>
+        <a routerLink="/permissions-businees-partner"
+        *ngIf="sharedService.hasPermission('Configuracion de socios comerciales', 'Secciones visibles de los socios comerciales')">
+          <img src="/assets/icons/user-eye.png" alt="Assign Logo" style="height: 60px;">
+          <span>Secciones visibles de mis socios comerciales</span>
+        </a>
+      </div>
+    </div>
+  </ion-content>
+</ion-split-pane>

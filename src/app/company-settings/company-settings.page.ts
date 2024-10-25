@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { AuthService } from '../auth.service';
-import { HttpClient } from '@angular/common/http';
+import { SharedService } from '../shared.service'; // Importa el servicio compartido
+
 
 @Component({
   selector: 'app-company-settings',
@@ -11,14 +12,31 @@ import { HttpClient } from '@angular/common/http';
 export class CompanySettingsPage implements OnInit {
 
   showSubsections = false;
-  permissions: { section: string, subSection: string | null }[] = [];
   editEmployee: string = '';
 
-  constructor(private navCtrl: NavController, public authService: AuthService, private http: HttpClient) { }
+  constructor(
+    private navCtrl: NavController,
+    public authService: AuthService,
+    public sharedService: SharedService,
+   
+  ) { }
 
   ngOnInit() {
-    this.loadPermissions();
-    this.setTitulo();
+    this.sharedService.loadPermissions().subscribe(
+      (response: any) => {
+        if (response.success) {
+          // Asigna los permisos cargados al servicio compartido
+          this.sharedService.permissions = response.permissions.map((perm: any) => ({ section: perm.section, subSection: perm.subSection }));
+          console.log('Permisos cargados:', this.sharedService.permissions); // Depuración
+        } else {
+          console.error(response.error);
+        }
+      },
+      (error) => {
+        console.error('Error en la solicitud POST:', error);
+      }
+    );
+    this.editEmployee = this.sharedService.setTitulo(this.authService.selectedLevelUser);
   }
 
   goBack() {
@@ -33,72 +51,8 @@ export class CompanySettingsPage implements OnInit {
     this.showSubsections = false;
   }
 
-  loadPermissions() {
-    const userId = this.authService.userId;
-    const companyId = this.authService.selectedId;
-    const data = { userId: userId, companyId: companyId };
-
-    this.http.post('https://siinad.mx/php/loadPermissions.php', data).subscribe(
-      (response: any) => {
-        if (response.success) {
-          this.permissions = response.permissions.map((perm: any) => ({ section: perm.section, subSection: perm.subSection }));
-        } else {
-          console.error(response.error);
-        }
-      },
-      (error) => {
-        console.error('Error en la solicitud POST:', error);
-      }
-    );
-  }
-
   hasPermission(section: string, subSection: string | null = null): boolean {
-    if (subSection) {
-      return this.permissions.some(perm => perm.section === section && perm.subSection === subSection);
-    } else {
-      return this.permissions.some(perm => perm.section === section);
-    }
+    // Llama al método del servicio compartido para verificar el permiso
+    return this.sharedService.hasPermission(section, subSection);
   }
-
-  handleOption1() {
-    console.log('Opción 1 seleccionada');
-    // Aquí puedes agregar la lógica para la opción 1.
-  }
-
-  handleOption2() {
-    console.log('Opción 2 seleccionada');
-    // Aquí puedes agregar la lógica para la opción 2.
-  }
-
-  setTitulo() {
-    const levelUser = this.authService.selectedLevelUser;
-
-    switch (levelUser) {
-      case 'adminS':
-        this.editEmployee = 'Configuraciones de la empresa para AdminS';
-        break;
-      case 'adminE':
-        this.editEmployee = 'Configuraciones de la empresa para AdminE';
-        break;
-      case 'adminEE':
-        this.editEmployee = 'Configuraciones de la empresa para AdminEE';
-        break;
-      case 'adminPE':
-        this.editEmployee = 'Configuraciones de la empresa para AdminPE';
-        break;
-      case 'superV':
-        this.editEmployee = 'Actualizar solicitudes de empleados';
-        break;
-      case 'admin':
-        this.editEmployee = 'Solicitudes de empleados';
-        break;
-      case 'adminU':
-        this.editEmployee = 'Solicitudes de empleados';
-        break;
-      default:
-        this.editEmployee = 'Configuraciones de la empresa';
-        break;
-    }
-  }
-
 }

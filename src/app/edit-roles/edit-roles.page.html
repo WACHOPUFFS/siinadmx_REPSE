@@ -1,5 +1,11 @@
-
 <ion-content [fullscreen]="true" class="ion-padding">
+  <ion-breadcrumbs>
+    <ion-breadcrumb routerLink="/home">Inicio</ion-breadcrumb>
+    <ion-breadcrumb routerLink="/settings">Configuraciones</ion-breadcrumb>
+    <ion-breadcrumb routerLink="/business-partner-settings">Configuración de perfiles</ion-breadcrumb>
+    <ion-breadcrumb routerLink="/edit-roles">Editar roles de socios comercial</ion-breadcrumb>
+  </ion-breadcrumbs>
+  
   <div class="back-button" (click)="goBack()"> 
     <ion-icon name="arrow-back"></ion-icon>
   </div>
@@ -8,19 +14,32 @@
     <div class="row justify-content-center">
       <div class="col-md-6">
         <div class="text-center pt-4">
-          <h5><strong>Seleccionar socio comercial</strong></h5>
+          <h5><strong>Editar roles de socios comercial</strong></h5>
         </div>
         <div class="card shadow-lg p-4 rounded-5">
           <ion-item class="mb-3">
             <ion-label for="usuario_a_editar" class="form-label">Selecciona el socio comercial a editar:</ion-label>
-            <ion-select class="rounded-pill form-select" name="usuario_a_editar" id="usuario_a_editar" required>
+            <ion-select class="rounded-pill form-select" name="usuario_a_editar" id="usuario_a_editar" [(ngModel)]="usuarioSeleccionado" (ionChange)="mostrarDatosSocioComercial()">
               <ion-select-option value="" disabled selected>Selecciona un socio comercial</ion-select-option>
               <ng-container *ngFor="let socioComercial of sociosComerciales">
-                <ion-select-option [value]="socioComercial.id">{{ socioComercial.name }} - {{ getRoleDisplayName(socioComercial.role) }}</ion-select-option>
+                <ion-select-option [value]="socioComercial.businessPartnerId">{{ socioComercial.nameCompany }} - {{ socioComercial.roleName }}</ion-select-option>
               </ng-container>
             </ion-select>
           </ion-item>
-          <button expand="block" class="custom-green-button mt-4" (click)="openModal()">Editar socio comercial</button>
+
+          <!-- Aquí se mostrarán los detalles del socio comercial seleccionado -->
+          <div *ngIf="socioComercialSeleccionado">
+            <h5>Nombre del socio: {{ socioComercialSeleccionado.nameCompany }}</h5>
+            <h6>Rol actual: {{ socioComercialSeleccionado.roleName }}</h6>
+            <ion-item class="mb-3">
+              <ion-label for="nuevo_rol" class="form-label">Cambiar rol:</ion-label>
+              <ion-select class="rounded-pill form-select" name="nuevo_rol" id="nuevo_rol" [(ngModel)]="nuevoRol">
+                <ion-select-option value="" disabled selected>Selecciona un nuevo rol</ion-select-option>
+                <ion-select-option *ngFor="let rol of rolesDisponibles" [value]="rol.id">{{ rol.roleName }}</ion-select-option>
+              </ion-select>
+            </ion-item>
+            <button expand="block" class="custom-green-button mt-4" (click)="actualizarRol()">Actualizar Rol</button>
+          </div>
 
         </div>
       </div>
@@ -28,74 +47,4 @@
   </div>
 </ion-content>
 
-<style>
-  .container {
-    max-width: 800px;
-    margin-top: 20px;
-  }
 
-  .card {
-    border-radius: 10px;
-    background-color: #ffffff;
-  }
-
-  .card-body {
-    padding: 20px;
-  }
-
-  .form-control, .form-select {
-    border: 1px solid #ced4da;
-    border-radius: 5px;
-    padding: 10px;
-  }
-
-  .btn-primary {
-    background-color: #007bff;
-    border: none;
-    transition: background-color 0.3s ease;
-  }
-
-  .btn-primary:hover {
-    background-color: #0056b3;
-  }
-
-  .rounded-5 {
-    border-radius: 1.5rem !important;
-  }
-
-  .custom-green-button {
-  background-color: #28a745 !important;
-  color: white !important;
-  border-radius: 25px; /* Esto crea el efecto redondeado */
-  font-weight: bold;
-  width: 100%;
-  padding: 10px 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease;
-}
-
-.custom-green-button:hover {
-  background-color: #218838 !important;
-}
-
-  .back-button {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 40px;
-    height: 40px;
-    background-color: #007bff;
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-
-  .back-button:hover {
-    color: #0056b3;
-  }
-</style>

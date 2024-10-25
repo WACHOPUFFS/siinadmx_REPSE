@@ -1,0 +1,38 @@
+<ion-split-pane contentId="main-content">
+  <!-- Contenido principal -->
+  <ion-content id="main-content" [fullscreen]="true" class="ion-padding">
+
+    <div class="back-button" (click)="goBack()">
+      <ion-icon name="arrow-back"></ion-icon>
+    </div>
+    <!-- Contenido principal de la página -->
+    <div class="main-content">
+      <div class="pt-4">
+        <h5><strong>Configuración de sitio</strong></h5>
+      </div>
+
+      <div class="app-grid mt-4">
+        <a routerLink="/company-permissions-sections"
+        *ngIf="authService.selectedLevelUser === 'adminS'">
+          <img src="/assets/icons/building-eye.png" alt="Assign Logo" style="height: 60px;">
+          <span>Secciones visibles de empresas</span>
+        </a>
+        <a routerLink="/companies-info"
+        *ngIf="authService.selectedLevelUser === 'adminS'">
+          <img src="/assets/icons/003-edificio.png" alt="Register Additional User" style="height: 60px;">
+          <span>Empresas registradas en la página</span>
+        </a>
+        <a routerLink="/register-admin-s"
+        *ngIf="authService.selectedLevelUser === 'adminS'">
+          <img src="/assets/icons/building-plus.png" alt="Assign Logo" style="height: 60px;">
+          <span>Registrar empresas</span>
+        </a>
+        <a routerLink="/premium-auth"
+        *ngIf="authService.selectedLevelUser === 'adminS'">
+          <img src="/assets/icons/shooting-star.png" alt="Visible Sections" style="height: 60px;">
+          <span>Confirmar solicitudes premium</span>
+        </a>
+      </div>
+    </div>
+  </ion-content>
+</ion-split-pane>

@@ -1,0 +1,88 @@
+<ion-content id="main-content" [fullscreen]="true" class="ion-padding">
+  <!-- Encabezado de pasos -->
+  <ion-breadcrumbs class="steps-container">
+    <ion-breadcrumb routerLink="/home">Inicio</ion-breadcrumb>
+    <ion-breadcrumb routerLink="/departamentos">Departamentos</ion-breadcrumb>
+    <ion-breadcrumb routerLink="/puestos">Puestos</ion-breadcrumb>
+    <ion-breadcrumb routerLink="/turnos">Turnos</ion-breadcrumb>
+  </ion-breadcrumbs>
+
+  <div class="container mt-4">
+    <div class="row">
+      <!-- Barra lateral izquierda: Departamentos, Puestos y Turnos -->
+      <div class="col-3">
+        <div class="sidebar-section">
+          <!-- Lista de Departamentos -->
+          <h6>Departamentos</h6>
+          <ion-list class="department-list">
+            <ion-item *ngFor="let departamento of departamentos"
+              [class.selected]="departamento === departamentoSeleccionado"
+              (click)="loadPuestos(departamento.department_id)" button>
+              <ion-label>
+                <h2>{{ departamento.department_name }}</h2>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+
+          <!-- Lista de Puestos (dependientes del departamento seleccionado) -->
+          <h6 *ngIf="puestos.length > 0">Puestos</h6>
+          <ion-list class="puesto-list" *ngIf="puestos.length > 0">
+            <ion-item *ngFor="let puesto of puestos" [class.selected]="puesto === puestoSeleccionado"
+              (click)="loadTurnos(puesto.position_id)" button>
+              <ion-label>
+                <h2>{{ puesto.position_name }}</h2>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+
+          <!-- Lista de Turnos (dependientes del puesto seleccionado) -->
+          <h6 *ngIf="turnos.length > 0">Turnos</h6>
+          <ion-list class="turno-list" *ngIf="turnos.length > 0">
+            <ion-item *ngFor="let turno of turnos" [class.selected]="turno === turnoSeleccionado"
+              (click)="loadEmpleadosPorTurno(turno.shift_id)" button>
+              <ion-label>
+                <h2>{{ turno.shift_name }}</h2>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+          
+        </div>
+      </div>
+
+      <!-- Detalles a la derecha: Lista de Empleados -->
+      <div class="col-9">
+        <!-- Campo de búsqueda -->
+        <ion-item>
+          <ion-label position="floating">Buscar empleados</ion-label>
+          <ion-input [(ngModel)]="searchQuery" (ionInput)="buscarEmpleados()"></ion-input>
+        </ion-item>
+
+        <ion-card *ngIf="empleadosFiltrados.length > 0">
+          <ion-card-header>
+            <ion-card-title class="text-center">Empleados</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-grid>
+              <ion-row class="table-header bg-primary text-white">
+                <ion-col size="2">Código de empleado</ion-col>
+                <ion-col size="4">Nombre</ion-col>
+                <ion-col size="4">Email</ion-col>
+                <ion-col size="2">Acciones</ion-col>
+              </ion-row>
+              <ion-row *ngFor="let empleado of empleadosFiltrados" [class.selected]="empleado === selectedEmployee"
+                (click)="selectEmployee(empleado)" class="table-row">
+                <ion-col size="2">{{ empleado.employee_code }}</ion-col>
+                <ion-col size="4">{{ empleado.first_name }} {{ empleado.middle_name}} {{ empleado.last_name }}</ion-col>
+                <ion-col size="4">{{ empleado.email }}</ion-col>
+                <ion-col size="2">
+                  <ion-button (click)="viewEmployeeDetails(empleado.employee_id)" fill="outline" size="small">Ver detalles</ion-button>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </div>
+  </div>
+</ion-content>
+

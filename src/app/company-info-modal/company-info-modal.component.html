@@ -1,0 +1,49 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Información del socio comercial</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-list>
+    <ion-item>
+      <ion-label>Nombre del representante:</ion-label>
+      <ion-text>{{ companyData.representante }}</ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label>Correo del representante:</ion-label>
+      <ion-text>{{ companyData.representanteCorreo }}</ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label>Número del representante:</ion-label>
+      <ion-text>{{ companyData.representanteTelefono }}</ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label>Nombre de la empresa:</ion-label>
+      <ion-text>{{ companyData.empresa }}</ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label>RFC de la empresa:</ion-label>
+      <ion-text>{{ companyData.rfcEmpresa }}</ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label>Rol del representante:</ion-label>
+      <ion-text>Representante principal</ion-text>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Rol de asociación:</ion-label>
+      <ion-select [(ngModel)]="selectedRole">
+        <ion-select-option value="proveedor">Proveedor</ion-select-option>
+        <ion-select-option value="cliente">Cliente</ion-select-option>
+        <ion-select-option value="clienteProveedor">Cliente - Proveedor</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- Botón Aceptar para agregar la asociación de socio comercial -->
+    <ion-button (click)="addSocioComercialAssociation()" expand="block">Aceptar</ion-button>
+  </ion-list>
+</ion-content>

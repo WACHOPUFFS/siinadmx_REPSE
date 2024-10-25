@@ -13,7 +13,7 @@ if (!isset($_GET['position_id'])) {
 $position_id = intval($_GET['position_id']);
 
 // Consulta SQL para obtener los turnos de un puesto específico
-$sql = "SELECT shift_id, shift_name FROM shifts WHERE position_id = ?";
+$sql = "SELECT * FROM shifts WHERE position_id = ?";
 $stmt = $mysqli->prepare($sql);
 $stmt->bind_param("i", $position_id);
 $stmt->execute();

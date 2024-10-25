@@ -1,0 +1,120 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title class="text-white">Procesar Listas Semanales</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="container mt-4 bg-light p-4 rounded shadow">
+    <!-- Selector de Semana Confirmada -->
+    <div class="mb-4">
+      <h5><strong>Seleccionar Semana Confirmada</strong></h5>
+      <ion-select [(ngModel)]="selectedWeek" (ionChange)="onWeekChange($event.detail.value)" interface="popover">
+        <ion-select-option *ngFor="let week of processedWeeks" [value]="week">
+          Semana {{ week.week_number }}
+          <span *ngIf="week?.start_date && week?.end_date">
+            ({{ week.start_date }} - {{ week.end_date }})
+          </span>
+        </ion-select-option>
+      </ion-select>
+    </div>
+
+    <!-- Tabla de Asistencia de la Semana Confirmada -->
+    <div class="table-responsive mt-4" *ngIf="selectedWeek">
+      <h5 class="text-center bg-primary text-white p-2 rounded">
+        Lista de Asistencia de la Semana {{ selectedWeek.week_number }}
+        ({{ selectedWeek.start_date }} - {{ selectedWeek.end_date }})
+      </h5>
+      <!-- Añadir ID para capturar la tabla con html2canvas -->
+      <table id="attendance-table" class="table table-bordered table-hover table-striped shadow-sm">
+        <thead class="thead-dark">
+          <tr>
+            <th rowspan="2" class="text-center align-middle">Código</th>
+            <th rowspan="2" class="text-center align-middle">Empleado</th>
+            <ng-container *ngFor="let dia of diasSemana">
+              <th colspan="6" class="text-center">{{ dia.display }} ({{ dia.date | date: 'dd/MM/yyyy' }})</th>
+            </ng-container>
+          </tr>
+          <tr>
+            <ng-container *ngFor="let dia of diasSemana">
+              <th class="text-center">Entrada</th>
+              <th class="text-center">Entrada Comida</th>
+              <th class="text-center">Salida Comida</th>
+              <th class="text-center">Salida</th>
+              <th class="text-center">Incidencia</th>
+              <th class="text-center">Empresa y Obra</th>
+            </ng-container>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let emp of empleadosSemana">
+            <td class="text-center">{{ emp.employee_code || 'N/A' }}</td>
+            <td>{{ emp.first_name || '' }} {{ emp.middle_name || '' }} {{ emp.last_name || '' }}</td>
+            <ng-container *ngFor="let dia of diasSemana">
+              <td class="text-center">{{ emp.work_hours?.[dia.date]?.entry_time || '--:--' }}</td>
+              <td class="text-center">{{ emp.work_hours?.[dia.date]?.lunch_start_time || '--:--' }}</td>
+              <td class="text-center">{{ emp.work_hours?.[dia.date]?.lunch_end_time || '--:--' }}</td>
+              <td class="text-center">{{ emp.work_hours?.[dia.date]?.exit_time || '--:--' }}</td>
+              <td class="text-center">{{ emp.work_hours?.[dia.date]?.incident || 'N/A' }}</td>
+              <td>{{ emp.work_hours?.[dia.date]?.project_name || 'No Asignado' }}</td>
+            </ng-container>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Sección de botones e input de archivo PDF -->
+    <div class="text-center mt-4" *ngIf="selectedWeek">
+      <!-- Input para seleccionar archivo PDF con estilo personalizado -->
+      <div class="custom-file mb-3 w-50 mx-auto">
+        <input type="file" class="custom-file-input" id="pdfUpload" (change)="onFileSelected($event)" accept="application/pdf">
+        <label class="custom-file-label" for="pdfUpload">Seleccionar archivo PDF</label>
+      </div>
+      <!-- Botones de acción con estilo de Bootstrap -->
+      <ion-button color="primary" (click)="generatePDF()" class="mr-2">Imprimir</ion-button>
+      <ion-button color="success" (click)="uploadPDF()">Subir PDF</ion-button>
+    </div>
+  </div>
+</ion-content>
+
+<style>
+  .table-primary {
+    background-color: #f0f8ff;
+    color: #333;
+  }
+
+  th,
+  td {
+    vertical-align: middle;
+  }
+
+  /* Personalización de la cabecera de la tabla */
+  .thead-dark th {
+    background-color: #343a40;
+    color: #fff;
+  }
+
+  /* Estilo personalizado para el input de archivo */
+  .custom-file-input {
+    cursor: pointer;
+  }
+
+  .custom-file-label::after {
+    content: "Subir";
+    cursor: pointer;
+  }
+
+  /* Estilo personalizado para los botones */
+  ion-button {
+    font-size: 16px;
+    padding: 10px 20px;
+    border-radius: 5px;
+  }
+
+  /* Estilo para contenedor principal */
+  .container {
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+</style>

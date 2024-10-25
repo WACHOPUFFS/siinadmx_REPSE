@@ -15,7 +15,7 @@ if (!isset($_GET['company_id'])) {
 $company_id = intval($_GET['company_id']);
 
 // Consulta SQL para obtener los departamentos de una compañía específica
-$sql = "SELECT department_id, department_name FROM departments WHERE company_id = ?";
+$sql = "SELECT * FROM departments WHERE company_id = ?";
 $stmt = $mysqli->prepare($sql);
 $stmt->bind_param("i", $company_id);
 $stmt->execute();

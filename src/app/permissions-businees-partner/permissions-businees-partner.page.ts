@@ -10,17 +10,20 @@ import { NavController } from '@ionic/angular';
 })
 export class PermissionsBusineesPartnerPage implements OnInit {
 
-  selectedCompanyId: string;
+  businessPartnerId: string;
   selectedSections: string[] = [];
   companies: any[] = [];
-  sections: string[] = ['repse', 'obras', 'asistencias', 'costos', 'ventas', 'configEmpresa'];
+  // Secciones por tipo de empresa
+  sectionsCliente: string[] = ['Sistema REPSE', 'Control de proyectos', 'Empleados'];
+  sectionsProveedor: string[] = ['Incidencias', 'Costos', 'Ventas'];
+  sectionsClienteProveedor: string[] = ['Sistema REPSE', 'Control de proyectos', 'Empleados', 'Incidencias', 'Costos', 'Ventas'];
   permissions: any[] = [];
+  selectedRoleName: string; // Almacena el roleName seleccionado
 
   constructor(private http: HttpClient, private authService: AuthService, private navCtrl: NavController) { }
 
   ngOnInit() {
     this.loadCompanies();
-    this.loadSections();
   }
 
   loadCompanies() {
@@ -41,7 +44,15 @@ export class PermissionsBusineesPartnerPage implements OnInit {
   }
 
   async onCompanyChange(event: any) {
-    await this.loadPermissions();
+    this.businessPartnerId = event.detail.value;
+
+    // Obtener el roleName de la empresa seleccionada
+    const selectedCompany = this.companies.find(company => company.businessPartnerId === this.businessPartnerId);
+    
+    if (selectedCompany) {
+      this.selectedRoleName = selectedCompany.roleName; // Guardar el roleName
+      await this.loadPermissions(); // Cargar los permisos para la empresa seleccionada
+    }
   }
 
   async onSectionChange(event: any) {
@@ -49,12 +60,12 @@ export class PermissionsBusineesPartnerPage implements OnInit {
   }
 
   async loadPermissions() {
-    const data = { companyId: this.selectedCompanyId };
+    const data = { businessPartnerId: this.businessPartnerId };
 
-    this.http.post('https://siinad.mx/php/loadCompanyPermissions.php', data).subscribe(
+    this.http.post('https://siinad.mx/php/loadBusinessSections.php', data).subscribe(
       async (response: any) => {
         if (response.success) {
-          this.permissions = response.permissions;
+          this.permissions = response.sections; // Cargar las secciones asignadas
         } else {
           console.error(response.error);
           await this.mostrarToast(response.error, 'danger');
@@ -67,45 +78,29 @@ export class PermissionsBusineesPartnerPage implements OnInit {
     );
   }
 
-
-  async loadSections() {
-    const companyId = this.authService.selectedId;
-    const data = { companyId: companyId };
-  
-    this.http.post('https://siinad.mx/php/loadCompanySections.php', data).subscribe(
-      async (response: any) => {
-        if (response.success) {
-          const allSections = ['repse', 'obras', 'asistencias', 'costos', 'ventas', 'configEmpresa'];
-          const assignedSections = response.sections.map((section: { NameSection: string }) => section.NameSection);
-          this.sections = allSections.filter(section => assignedSections.includes(section));
-          // Asegúrate de que 'configEmpresa' siempre esté en la lista de secciones
-          if (!this.sections.includes('configEmpresa')) {
-            this.sections.push('configEmpresa');
-          }
-        } else {
-          console.error(response.error);
-          await this.mostrarToast(response.error, 'danger');
-        }
-      },
-      async (error) => {
-        console.error('Error en la solicitud POST:', error);
-        await this.mostrarToast('Error al cargar secciones.', 'danger');
-      }
-    );
-  }
-
-
   async addPermission() {
+    if (!this.businessPartnerId) {
+      await this.mostrarToast('Por favor, seleccione un socio comercial válido.', 'warning');
+      return;
+    }
+
     const data = {
-      companyId: this.selectedCompanyId,
+      companyId: this.authService.selectedId,
+      businessPartnerId: this.businessPartnerId,
       sections: this.selectedSections,
     };
 
-    this.http.post('https://siinad.mx/php/addCompanyPermission.php', data).subscribe(
+    this.http.post('https://siinad.mx/php/addBusinessSections.php', data).subscribe(
       async (response: any) => {
         if (response.success) {
+          if (!Array.isArray(this.permissions)) {
+            this.permissions = [];
+          }
+
           this.selectedSections.forEach(section => {
-            this.permissions.push({ NameSection: section });
+            if (!this.permissions.some(p => p.name_section === section)) {
+              this.permissions.push({ name_section: section });
+            }
           });
         } else {
           console.error(response.error);
@@ -119,16 +114,16 @@ export class PermissionsBusineesPartnerPage implements OnInit {
     );
   }
 
-  async removePermission(NameSection: string) {
+  async removePermission(nameSection: string) {
     const data = {
-      companyId: this.selectedCompanyId,
-      section: NameSection,
+      businessPartnerId: this.businessPartnerId,
+      section: nameSection,
     };
 
-    this.http.post('https://siinad.mx/php/removeCompanyPermission.php', data).subscribe(
+    this.http.post('https://siinad.mx/php/removeBusinessSections.php', data).subscribe(
       async (response: any) => {
         if (response.success) {
-          this.permissions = this.permissions.filter(p => p.NameSection !== NameSection);
+          this.permissions = this.permissions.filter(p => p.name_section !== nameSection);
         } else {
           console.error(response.error);
           await this.mostrarToast(response.error, 'danger');
@@ -149,7 +144,6 @@ export class PermissionsBusineesPartnerPage implements OnInit {
     document.body.appendChild(toast);
     return toast.present();
   }
-
 
   goBack() {
     this.navCtrl.back();

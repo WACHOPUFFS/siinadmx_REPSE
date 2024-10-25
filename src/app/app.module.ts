@@ -5,7 +5,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { FilterPipe } from './filter.pipe';
 import { ModalSuccessComponent } from './modal-success/modal-success.component';
 import { RechazoModalComponent } from './rechazo-modal/rechazo-modal.component';
 import { FormsModule } from '@angular/forms';
@@ -17,11 +16,18 @@ import { EstablecimientosModalComponent } from './establecimientos-modal/estable
 import { ContratoModalComponent } from './contrato-modal/contrato-modal.component';
 import { RfcModalComponent } from './rfc-modal/rfc-modal.component';
 import { ReviewInfoModalComponent } from './review-info-modal/review-info-modal.component';
+import { AssignmentSummaryComponent } from './assignment-summary/assignment-summary.component';
+import { ReactiveFormsModule } from '@angular/forms'; // Importa ReactiveFormsModule
+
+import { IncidentModalComponent } from './incident-modal/incident-modal.component';
+import { ChangeHoursModalComponent } from './change-hours-modal/change-hours-modal.component';
+import { CompanyInfoModalComponent } from './company-info-modal/company-info-modal.component';
+
+import { EmployeeDetailsComponent } from './employee-details/employee-details.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    FilterPipe,
     ModalSuccessComponent,
     RechazoModalComponent,
     ActaConstitutivaModalComponent,
@@ -30,7 +36,12 @@ import { ReviewInfoModalComponent } from './review-info-modal/review-info-modal.
     EstablecimientosModalComponent,
     ContratoModalComponent,
     RfcModalComponent,
-    ReviewInfoModalComponent
+    ReviewInfoModalComponent,
+    AssignmentSummaryComponent,
+    IncidentModalComponent,
+    ChangeHoursModalComponent,
+    CompanyInfoModalComponent,
+    EmployeeDetailsComponent
   ],
   imports: [
     BrowserModule,
@@ -38,6 +49,7 @@ import { ReviewInfoModalComponent } from './review-info-modal/review-info-modal.
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
+    ReactiveFormsModule // Agrega ReactiveFormsModule aquí
    
   ],
   providers: [

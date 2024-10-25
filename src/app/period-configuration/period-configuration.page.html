@@ -1,0 +1,242 @@
+<ion-content id="main-content" [fullscreen]="true" class="ion-padding">
+  <ion-breadcrumbs>
+    <ion-breadcrumb routerLink="/home">Inicio</ion-breadcrumb>
+    <ion-breadcrumb routerLink="/settings">Configuraciones</ion-breadcrumb>
+    <ion-breadcrumb routerLink="/company-settings">Configuración de mi empresa</ion-breadcrumb>
+    <ion-breadcrumb routerLink="/upload-logo">Tipos de periodos</ion-breadcrumb>
+  </ion-breadcrumbs>
+
+  <div class="back-button" (click)="goBack()">
+    <ion-icon name="arrow-back"></ion-icon>
+  </div>
+  <div class="container mt-4">
+    <div class="d-flex justify-content-center mb-4">
+      <h5><strong>{{ selectedPeriod.period_type_id ? 'Editar Periodo' : 'Crear Nuevo Periodo' }}</strong></h5>
+    </div>
+    <div class="row justify-content-center">
+      <!-- Columna de la lista de periodos -->
+      <div class="col-md-4">
+        <div class="sticky-top">
+          <ion-list class="period-list">
+            <ion-item *ngFor="let period of periods" (click)="selectPeriod(period)" [class.selected]="period === selectedPeriod">
+              {{ period.period_type_name }}
+            </ion-item>
+            <ion-item (click)="createNewPeriod()">
+              <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+              Nuevo Periodo
+            </ion-item>
+          </ion-list>
+        </div>
+      </div>
+
+      <!-- Columna del formulario de configuración -->
+      <div class="col-md-8">
+        <form (ngSubmit)="savePeriodConfig()">
+          <ion-card>
+            <ion-card-content>
+              <div class="form-group">
+                <ion-label>Fecha de inicio del ejercicio</ion-label>
+                <ion-datetime 
+                displayFormat="DD/MM/YYYY" 
+                presentation="date" 
+                [(ngModel)]="selectedPeriod.fiscal_year_start" 
+                [min]="minDate" 
+                [max]="maxDate" 
+                name="fiscal_year_start">
+              </ion-datetime>
+              
+                <small class="form-text text-muted">Selecciona la fecha en la que inicia el ejercicio fiscal para este periodo.</small>
+              </div>
+
+              <div class="form-group">
+                <ion-label>Nombre</ion-label>
+                <ion-input [(ngModel)]="selectedPeriod.period_type_name" name="period_type_name"></ion-input>
+                <small class="form-text text-muted">Introduce un nombre descriptivo para este tipo de periodo, como "Semanal", "Quincenal", o "Personalizado".</small>
+              </div>
+
+              <!-- Campo de Días del periodo para opciones predefinidas -->
+              <div class="form-group" *ngIf="selectedPeriod.payment_frequency !== '99'">
+                <ion-label>Días del periodo</ion-label>
+                <ion-input type="number" [(ngModel)]="selectedPeriod.period_days" name="period_days" (ionChange)="updatePayrollPosition()"></ion-input>
+                <small class="form-text text-muted">Indica cuántos días dura cada periodo, por ejemplo, 7 para un periodo semanal.</small>
+              </div>
+
+              <!-- Campo de Longitud del periodo personalizado para la opción 'Otra Periodicidad' -->
+              <div class="form-group" *ngIf="selectedPeriod.payment_frequency === '99'">
+                <ion-label>Longitud del periodo personalizado</ion-label>
+                <ion-input type="number" [(ngModel)]="selectedPeriod.custom_period_length" name="custom_period_length" (ionChange)="updatePayrollPosition()"></ion-input>
+                <small class="form-text text-muted">Define la duración del periodo personalizado en días, semanas o meses.</small>
+              </div>
+
+              <div class="form-group">
+                <ion-label>Días de Pago</ion-label>
+                <ion-input type="number" [(ngModel)]="selectedPeriod.payment_days" name="payment_days"></ion-input>
+                <small class="form-text text-muted">Especifica cuántos días después del fin del periodo se realizará el pago.</small>
+              </div>
+
+              <div class="form-group">
+                <ion-label>Periodo de trabajo</ion-label>
+                <ion-input type="number" [(ngModel)]="selectedPeriod.work_period" name="work_period"></ion-input>
+                <small class="form-text text-muted">Define la cantidad de días laborables dentro de cada periodo.</small>
+              </div>
+
+              <div class="form-group">
+                <ion-label>Ajustar al mes calendario</ion-label>
+                <ion-select [(ngModel)]="selectedPeriod.adjust_calendar_periods" name="adjust_calendar_periods">
+                  <ion-select-option value="1">Sí</ion-select-option>
+                  <ion-select-option value="0">No</ion-select-option>
+                </ion-select>
+                <small class="form-text text-muted">Indica si el periodo debe ajustarse para coincidir con el fin de mes calendario.</small>
+              </div>
+
+              <div class="form-group">
+                <ion-label>Posición de los séptimos días</ion-label>
+                <ion-datetime
+                  presentation="date"
+                  [multiple]="true"
+                  [min]="minDate"
+                  [max]="maxDate"
+                  [(ngModel)]="selectedPeriod.rest_days_position"
+                  name="rest_days_position"
+                  (ionChange)="updateRestDays()"
+                ></ion-datetime>
+                <small class="form-text text-muted">
+                  Especifica la posición del séptimo día (día de descanso) dentro del periodo. Solo puedes seleccionar fechas dentro del rango de días del periodo.
+                </small>
+              </div>
+
+              <div class="form-group">
+                <ion-label>Posición del día de pago</ion-label>
+                <ion-input type="number" [(ngModel)]="selectedPeriod.payroll_position" name="payroll_position"></ion-input>
+                <small class="form-text text-muted">Este campo se rellena automáticamente, pero puedes modificarlo si es necesario.</small>
+              </div>
+
+              <div class="form-group">
+                <ion-label>Periodicidad de pago</ion-label>
+                <ion-select [(ngModel)]="selectedPeriod.payment_frequency" name="payment_frequency">
+                  <ion-select-option value="01">Diario</ion-select-option>
+                  <ion-select-option value="02">Semanal</ion-select-option>
+                  <ion-select-option value="03">Catorcenal</ion-select-option>
+                  <ion-select-option value="04">Quincenal</ion-select-option>
+                  <ion-select-option value="05">Mensual</ion-select-option>
+                  <ion-select-option value="99">Otra Periodicidad</ion-select-option>
+                </ion-select>
+                <small class="form-text text-muted">Selecciona la frecuencia con la que se realizarán los pagos. Si es personalizada, selecciona "Otra Periodicidad".</small>
+              </div>
+
+              <!-- Campo de Tipo de periodo personalizado -->
+              <div class="form-group" *ngIf="selectedPeriod.payment_frequency === '99'">
+                <ion-label>Tipo de periodo personalizado</ion-label>
+                <ion-select [(ngModel)]="selectedPeriod.custom_period_type" name="custom_period_type">
+                  <ion-select-option value="días">Días</ion-select-option>
+                  <ion-select-option value="semanas">Semanas</ion-select-option>
+                  <ion-select-option value="meses">Meses</ion-select-option>
+                </ion-select>
+                <small class="form-text text-muted">Selecciona si el periodo personalizado está basado en días, semanas o meses.</small>
+              </div>
+
+              <ion-button expand="block" type="submit">{{ selectedPeriod.period_type_id ? 'Guardar Cambios' : 'Crear Periodo' }}</ion-button>
+              <ion-button expand="block" color="danger" (click)="deletePeriod()" *ngIf="selectedPeriod.period_type_id">
+                Borrar Periodo
+              </ion-button>
+            </ion-card-content>
+          </ion-card>
+        </form>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<style>
+  .sticky-top {
+    max-height: 90vh; /* Limita la altura al 90% del viewport */
+    overflow-y: auto; /* Permite scroll en caso de que haya muchos elementos */
+  }
+
+  /* Estilo para el botón de regreso */
+  .back-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .period-list ion-item {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .period-list ion-item.selected {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  ion-card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  ion-card-title {
+    font-size: 1.5rem;
+    font-weight: 500;
+    text-align: center;
+    color: #333;
+  }
+
+  ion-label {
+    display: block;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #495057;
+  }
+
+  ion-input,
+  ion-select,
+  ion-datetime {
+    --padding-start: 1rem;
+    --padding-end: 1rem;
+    --border-radius: 5px;
+    --border-color: #ced4da;
+    --background: #f8f9fa;
+  }
+
+  ion-input::part(native), ion-select::part(native), ion-datetime::part(native) {
+    font-size: 1rem;
+    color: #495057;
+  }
+
+  ion-button {
+    margin-top: 1rem;
+    --border-radius: 5px;
+    --background: #007bff;
+    --background-focused: #0056b3;
+    --background-hover: #0056b3;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  ion-button[color="danger"] {
+    --background: #dc3545;
+    --background-hover: #c82333;
+  }
+
+  .form-text {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+  }
+</style>
