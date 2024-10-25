@@ -1,0 +1,227 @@
+<ion-content id="main-content" [fullscreen]="true" class="ion-padding">
+  <ion-breadcrumbs>
+    <ion-breadcrumb routerLink="/home">Inicio</ion-breadcrumb>
+    <ion-breadcrumb routerLink="/settings">Configuraciones</ion-breadcrumb>
+    <ion-breadcrumb routerLink="/company-settings">Configuración de mi empresa</ion-breadcrumb>
+    <ion-breadcrumb routerLink="/upload-logo">Catalogo de periodos</ion-breadcrumb>
+  </ion-breadcrumbs>
+  <div class="back-button" (click)="goBack()">
+    <ion-icon name="arrow-back"></ion-icon>
+  </div>
+  <div class="container mt-4">
+    <div class="d-flex justify-content-center mb-4">
+      <h5><strong>Catalogo de periodos</strong></h5>
+    </div>
+    <div class="row justify-content-center">
+      <ion-grid>
+        <ion-row>
+          <ion-col size="4">
+            <div class="sticky-top">
+              <ion-list class="period-list">
+                <ion-item *ngFor="let tipo of periodTypes" (click)="selectPeriodType(tipo)" button>
+                  <ion-label>
+                    <h2>{{ tipo.period_type_name }}</h2>
+                    <ion-list>
+                      <ion-item *ngFor="let year of tipo.years" (click)="selectYear(year)" button>
+                        <ion-label>{{ year }}</ion-label>
+                      </ion-item>
+                    </ion-list>
+                  </ion-label>
+                </ion-item>
+              </ion-list>
+            </div>
+          </ion-col>
+
+          <ion-col size="8">
+            <ion-card *ngIf="selectedYearPeriods.length > 0">
+              <ion-card-header>
+                <ion-card-title class="text-center">Periodos de {{ selectedYear }}</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <div class="table-container">
+                  <ion-grid>
+                    <ion-row class="table-header bg-primary text-white">
+                      <ion-col size="2"># Semana</ion-col>
+                      <ion-col size="3">Fecha Inicio</ion-col>
+                      <ion-col size="3">Fecha Fin</ion-col>
+                      <ion-col size="4">Días de Pago</ion-col>
+                    </ion-row>
+                    <ion-row *ngFor="let period of selectedYearPeriods" [class.selected]="period === selectedPeriod"
+                      (click)="selectPeriod(period)" class="table-row">
+                      <ion-col size="2">{{ period.period_number }}</ion-col>
+                      <ion-col size="3">{{ period.start_date | date: 'dd/MM/yyyy' }}</ion-col>
+                      <ion-col size="3">{{ period.end_date | date: 'dd/MM/yyyy' }}</ion-col>
+                      <ion-col size="4">{{ period.payment_date }}</ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </div>
+
+                <!-- Formulario debajo de la tabla -->
+                <ion-list>
+                  <!-- Campos del formulario -->
+                  <ion-item>
+                    <ion-label position="floating">Número periodo</ion-label>
+                    <ion-input type="number" [(ngModel)]="form.numeroPeriodo" name="numero-periodo"></ion-input>
+                  </ion-item>
+                  <ion-item>
+                    <ion-label position="floating">Fecha inicio</ion-label>
+                    <ion-datetime display-format="YYYY-MM-DD" [(ngModel)]="form.fechaInicio"
+                      name="fecha-inicio"></ion-datetime>
+                  </ion-item>
+                  <ion-item>
+                    <ion-label position="floating">Fecha fin</ion-label>
+                    <ion-datetime display-format="YYYY-MM-DD" [(ngModel)]="form.fechaFin"
+                      name="fecha-fin"></ion-datetime>
+                  </ion-item>
+                  <ion-item>
+                    <ion-label position="floating">Ejercicio</ion-label>
+                    <ion-input type="number" [(ngModel)]="form.ejercicio" name="ejercicio"></ion-input>
+                  </ion-item>
+                  <ion-item>
+                    <ion-label position="floating">Mes</ion-label>
+                    <ion-input type="number" [(ngModel)]="form.mes" name="mes"></ion-input>
+                  </ion-item>
+                  <ion-item>
+                    <ion-label position="floating">Días de pago</ion-label>
+                    <ion-input type="number" [(ngModel)]="form.diasPago" name="dias-pago"></ion-input>
+                  </ion-item>
+                  <ion-item>
+                    <ion-label >Inicio de mes</ion-label>
+                    <ion-checkbox slot="start" [(ngModel)]="form.inicioMes" name="inicio-mes"></ion-checkbox>
+                  </ion-item>
+                  <ion-item>
+                    <ion-label >Fin de mes</ion-label>
+                    <ion-checkbox slot="start" [(ngModel)]="form.finMes" name="fin-mes"></ion-checkbox>
+                  </ion-item>
+                  <ion-item>
+                    <ion-label >Inicio bimestre IMSS</ion-label>
+                    <ion-checkbox slot="start" [(ngModel)]="form.inicioBimestreIMSS"
+                      name="inicio-bimestre-imss"></ion-checkbox>
+                  </ion-item>
+                  <ion-item>
+                    <ion-label >Fin bimestre IMSS</ion-label>
+                    <ion-checkbox slot="start" [(ngModel)]="form.finBimestreIMSS"
+                      name="fin-bimestre-imss"></ion-checkbox>
+                  </ion-item>
+                  <ion-item>
+                    <ion-label >Inicio de ejercicio</ion-label>
+                    <ion-checkbox slot="start" [(ngModel)]="form.inicioEjercicio"
+                      name="inicio-ejercicio"></ion-checkbox>
+                  </ion-item>
+                  <ion-item>
+                    <ion-label>Fin de ejercicio</ion-label>
+                    <ion-checkbox slot="start" [(ngModel)]="form.finEjercicio" name="fin-ejercicio"></ion-checkbox>
+                  </ion-item>
+                </ion-list>
+
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+  </div>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-button expand="block" color="success">Guardar</ion-button>
+  </ion-toolbar>
+</ion-footer>
+
+<style>
+  .sticky-top {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  /* Estilo para el botón de regreso */
+  .back-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .back-button:hover {
+    background-color: #0056b3;
+  }
+
+  .table-container {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+  }
+
+  .selected {
+    background-color: #d3d3d3;
+  }
+
+  .table-header {
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .table-row {
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  .bg-primary {
+    background-color: #007bff !important;
+  }
+
+  .text-white {
+    color: white !important;
+  }
+
+  ion-card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  ion-card-title {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #333;
+  }
+
+  ion-label {
+    display: block;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #495057;
+  }
+
+
+
+
+  ion-checkbox {
+    --size: 20px;
+  }
+
+  ion-button {
+    margin-top: 1rem;
+    --border-radius: 5px;
+    --background: #28a745;
+    --background-hover: #218838;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+  }
+</style>

@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Agregar Incidencia</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="container">
+    <div class="row mb-3">
+      <div class="col">
+        <label for="incidentType" class="form-label"><strong>Tipo de Incidencia</strong></label>
+        <ion-select id="incidentType" [(ngModel)]="selectedIncident" placeholder="Seleccionar">
+          <ion-select-option *ngFor="let option of incidentOptions" [value]="option">
+            {{ option }}
+          </ion-select-option>
+        </ion-select>
+      </div>
+    </div>
+    
+    <div class="row mb-3">
+      <div class="col">
+        <label for="description" class="form-label"><strong>Descripción</strong></label>
+        <ion-textarea id="description" rows="4" [(ngModel)]="description" placeholder="Descripción de la incidencia"></ion-textarea>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col text-center">
+        <ion-button color="primary" expand="block" (click)="saveIncident()">Guardar Incidencia</ion-button>
+      </div>
+    </div>
+  </div>
+</ion-content>

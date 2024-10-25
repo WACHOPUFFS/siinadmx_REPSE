@@ -14,10 +14,10 @@ if (isset($data['company_id'])) {
     // Consulta para obtener las empresas no principales del usuario para una empresa específica
     $nonPrincipalCompanyQuery = "SELECT uc.status, c.nameCompany, c.rfc, r.roleName, l.levelUserName, uc.association_id, uc.company_id
         FROM user_company_roles uc
-        LEFT JOIN companies c ON uc.association_id = c.id
+        LEFT JOIN companies c ON uc.company_id = c.id
         LEFT JOIN roles r ON uc.role_id = r.id
         LEFT JOIN levelUser l ON uc.levelUser_id = l.id
-        WHERE uc.company_id = ?";
+        WHERE uc.association_id = ?";
     
     // Preparar y ejecutar la consulta SQL
     if ($stmt = $mysqli->prepare($nonPrincipalCompanyQuery)) {

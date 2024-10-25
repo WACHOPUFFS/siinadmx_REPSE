@@ -1,0 +1,130 @@
+<ion-split-pane contentId="main-content">
+  <!-- Contenido principal -->
+  <ion-content id="main-content" [fullscreen]="true" class="ion-padding">
+    <ion-breadcrumbs>
+      <ion-breadcrumb routerLink="/home">Inicio</ion-breadcrumb>
+      <ion-breadcrumb routerLink="/settings">Configuraciones
+      </ion-breadcrumb>
+      <ion-breadcrumb routerLink="/company-settings">Configuración de mi empresa
+      </ion-breadcrumb>
+      <ion-breadcrumb routerLink="/department-management">Mis departamentos
+      </ion-breadcrumb>
+    </ion-breadcrumbs>
+    <div class="back-button" (click)="goBack()">
+      <ion-icon name="arrow-back"></ion-icon>
+    </div>
+    <div class="container-fluid mt-4">
+      <div class="text-center pt-4">
+        <h5><strong>Mis departamentos</strong></h5>
+      </div>
+      <div class="row">
+        <!-- Departamentos -->
+        <div class="col-md-4 mb-3">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Departamentos</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-list>
+                <ion-item *ngFor="let department of departments" button (click)="selectDepartment(department)">
+                  {{ department.department_name }}
+                </ion-item>
+              </ion-list>
+              <ion-button expand="block" color="success" (click)="createNewDepartment()">Nuevo
+                Departamento</ion-button>
+
+              <!-- Formulario de Departamento -->
+              <div *ngIf="selectedDepartment" class="mt-3">
+                <ion-item>
+                  <ion-input placeholder="Nombre del Departamento"
+                    [(ngModel)]="selectedDepartment.department_name"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-textarea placeholder="Descripción" [(ngModel)]="selectedDepartment.description"></ion-textarea>
+                </ion-item>
+                <div class="d-flex justify-content-between mt-2">
+                  <ion-button color="primary" (click)="saveDepartmentConfig()">Guardar</ion-button>
+                  <ion-button color="danger" *ngIf="selectedDepartment?.department_id"
+                    (click)="deleteDepartment()">Eliminar</ion-button>
+                </div>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </div>
+
+        <!-- Puestos -->
+        <div class="col-md-4 mb-3" *ngIf="selectedDepartment">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Puestos</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-list>
+                <ion-item *ngFor="let position of positions" button (click)="selectPosition(position)">
+                  {{ position.position_name }}
+                </ion-item>
+              </ion-list>
+              <ion-button expand="block" color="success" (click)="startAddPosition()">Nuevo Puesto</ion-button>
+
+              <!-- Formulario de Puesto -->
+              <div *ngIf="isAddingPosition || selectedPosition" class="mt-3">
+                <ion-item>
+                  <ion-input placeholder="Nombre del Puesto"
+                    [(ngModel)]="getCurrentPosition().position_name"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-textarea placeholder="Descripción" [(ngModel)]="getCurrentPosition().description"></ion-textarea>
+                </ion-item>
+                <div class="d-flex justify-content-between mt-2">
+                  <ion-button color="primary" (click)="savePositionConfig()">Guardar</ion-button>
+                  <ion-button color="danger" *ngIf="selectedPosition?.position_id"
+                    (click)="deletePosition()">Eliminar</ion-button>
+                </div>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </div>
+
+        <!-- Turnos -->
+        <div class="col-md-4 mb-3" *ngIf="selectedPosition">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Turnos</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-list>
+                <ion-item *ngFor="let shift of shifts" button (click)="selectShift(shift)">
+                  {{ shift.shift_name }}
+                </ion-item>
+              </ion-list>
+              <ion-button expand="block" color="success" (click)="startAddShift()">Nuevo Turno</ion-button>
+
+              <!-- Formulario de Turno -->
+              <div *ngIf="isAddingShift || selectedShift" class="mt-3">
+                <ion-item>
+                  <ion-input placeholder="Nombre del Turno" [(ngModel)]="getCurrentShift().shift_name"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-textarea placeholder="Descripción" [(ngModel)]="getCurrentShift().description"></ion-textarea>
+                </ion-item>
+                <div class="mb-3">
+                  <label for="start_time">Hora de Inicio</label>
+                  <input id="start_time" type="time" class="form-control" [(ngModel)]="getCurrentShift().start_time" />
+                </div>
+                <div class="mb-3">
+                  <label for="end_time">Hora de Fin</label>
+                  <input id="end_time" type="time" class="form-control" [(ngModel)]="getCurrentShift().end_time" />
+                </div>
+                <div class="d-flex justify-content-between mt-2">
+                  <ion-button color="primary" (click)="saveShiftConfig()">Guardar</ion-button>
+                  <ion-button color="danger" *ngIf="selectedShift?.shift_id"
+                    (click)="deleteShift()">Eliminar</ion-button>
+                </div>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </div>
+      </div>
+    </div>
+  </ion-content>
+</ion-split-pane>

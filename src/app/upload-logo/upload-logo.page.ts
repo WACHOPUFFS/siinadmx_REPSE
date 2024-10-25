@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../auth.service';
-import { ToastController } from '@ionic/angular';
+import { ToastController, LoadingController } from '@ionic/angular';
 import { NavController } from '@ionic/angular';
 
 @Component({
@@ -18,7 +18,8 @@ export class UploadLogoPage implements OnInit {
     private http: HttpClient,
     public authService: AuthService,
     private toastController: ToastController,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private loadingController: LoadingController // Añadido el LoadingController
   ) {}
 
   ngOnInit() {
@@ -50,12 +51,18 @@ export class UploadLogoPage implements OnInit {
       return;
     }
 
+    const loading = await this.loadingController.create({
+      message: 'Subiendo logo...', // Mensaje mientras carga
+    });
+    await loading.present();
+
     const formData = new FormData();
     formData.append('companyId', companyId);
     formData.append('logo', this.selectedFile);
 
     this.http.post('https://siinad.mx/php/uploadLogo.php', formData).subscribe(
       async (response: any) => {
+        await loading.dismiss(); // Oculta el loading después de la respuesta
         if (response.success) {
           await this.mostrarToast(response.message, 'success');
           this.loadCurrentLogo(); // Recargar el logo actual
@@ -64,6 +71,7 @@ export class UploadLogoPage implements OnInit {
         }
       },
       async (error) => {
+        await loading.dismiss(); // Oculta el loading en caso de error
         console.error('Error en la solicitud POST:', error);
         await this.mostrarToast('Error al subir el logo.', 'danger');
       }
@@ -74,7 +82,7 @@ export class UploadLogoPage implements OnInit {
     const toast = await this.toastController.create({
       message: message,
       duration: 3000,
-      color: color
+      color: color,
     });
     toast.present();
   }

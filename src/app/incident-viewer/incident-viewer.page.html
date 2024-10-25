@@ -1,0 +1,95 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title class="ion-text-center">Visor de Incidencias</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="container">
+    <!-- Selector de Semana Laboral -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <h5 class="fw-bold">Selecciona la Semana Laboral</h5>
+        <ion-select [(ngModel)]="selectedWeek" (ionChange)="onWeekChange($event.detail.value)" interface="popover">
+          <ion-select-option *ngFor="let week of weeks" [value]="week">
+            {{ week.week_number }}
+          </ion-select-option>
+        </ion-select>
+      </div>
+    </div>
+
+    <!-- Selector de Día de la Semana -->
+    <div class="row mb-4" *ngIf="diasSemana.length > 0">
+      <div class="col-12">
+        <h5 class="fw-bold">Selecciona el Día</h5>
+        <ion-select [(ngModel)]="selectedDia" (ionChange)="onDiaChange($event.detail.value)" interface="popover">
+          <ion-select-option *ngFor="let dia of diasSemana" [value]="dia.date">
+            {{ dia.display }}
+          </ion-select-option>
+        </ion-select>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <!-- Empleados Asignados -->
+      <div class="col-md-6">
+        <h5 class="fw-bold">Empleados Asignados a Proyectos</h5>
+        <div class="card shadow-sm mb-3">
+          <div class="card-body">
+            <!-- Buscador de empleados asignados -->
+            <ion-searchbar [(ngModel)]="searchAssigned" placeholder="Buscar empleado asignado" (ionInput)="filterAssignedEmployees()"></ion-searchbar>
+            
+            <!-- Lista de empleados asignados con checkboxes -->
+            <ion-list *ngIf="filteredAssignedEmployees.length > 0" lines="full">
+              <ion-item *ngFor="let employee of filteredAssignedEmployees">
+                <ion-checkbox slot="start" [(ngModel)]="employee.selected"></ion-checkbox>
+                <ion-label>
+                  {{ employee.first_name }} {{ employee.middle_name }} {{ employee.last_name }}
+                </ion-label>
+              </ion-item>
+            </ion-list>
+            <p *ngIf="filteredAssignedEmployees.length === 0" class="text-muted">No hay empleados asignados a proyectos.</p>
+
+            <!-- Botones para asignar horas o incidencia a los empleados seleccionados -->
+            <ion-button color="secondary" (click)="changeHoursToSelected(true)" expand="block">
+              <ion-icon name="time-outline"></ion-icon> Asignar Horas a Seleccionados
+            </ion-button>
+            <ion-button color="danger" (click)="addIncidentToSelected(true)" expand="block">
+              <ion-icon name="alert-circle-outline"></ion-icon> Asignar Incidencia a Seleccionados
+            </ion-button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empleados No Asignados -->
+      <div class="col-md-6">
+        <h5 class="fw-bold">Empleados No Asignados a Proyectos</h5>
+        <div class="card shadow-sm mb-3">
+          <div class="card-body">
+            <!-- Buscador de empleados no asignados -->
+            <ion-searchbar [(ngModel)]="searchUnassigned" placeholder="Buscar empleado no asignado" (ionInput)="filterUnassignedEmployees()"></ion-searchbar>
+            
+            <!-- Lista de empleados no asignados con checkboxes -->
+            <ion-list *ngIf="filteredUnassignedEmployees.length > 0" lines="full">
+              <ion-item *ngFor="let employee of filteredUnassignedEmployees">
+                <ion-checkbox slot="start" [(ngModel)]="employee.selected"></ion-checkbox>
+                <ion-label>
+                  {{ employee.first_name }} {{ employee.middle_name }} {{ employee.last_name }}
+                </ion-label>
+              </ion-item>
+            </ion-list>
+            <p *ngIf="filteredUnassignedEmployees.length === 0" class="text-muted">No hay empleados no asignados a proyectos.</p>
+
+            <!-- Botones para asignar horas o incidencia a los empleados seleccionados -->
+            <ion-button color="secondary" (click)="changeHoursToSelected(false)" expand="block">
+              <ion-icon name="time-outline"></ion-icon> Asignar Horas a Seleccionados
+            </ion-button>
+            <ion-button color="danger" (click)="addIncidentToSelected(false)" expand="block">
+              <ion-icon name="alert-circle-outline"></ion-icon> Asignar Incidencia a Seleccionados
+            </ion-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

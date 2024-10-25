@@ -24,7 +24,7 @@ export class AppComponent implements OnDestroy {
     this.platform.ready().then(() => {
       console.log('Aplicación inicializada');
 
-      this.startPeriodicTasks();
+      // this.startPeriodicTasks();
     });
   }
 

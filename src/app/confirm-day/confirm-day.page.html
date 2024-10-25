@@ -1,0 +1,120 @@
+<ion-content [fullscreen]="true" class="ion-padding">
+  <!-- Breadcrumbs -->
+  <ion-breadcrumbs>
+    <ion-breadcrumb routerLink="/home">Inicio</ion-breadcrumb>
+    <ion-breadcrumb routerLink="/pending-days">Confirmación de Días</ion-breadcrumb>
+  </ion-breadcrumbs>
+
+  <!-- Botón de retroceso -->
+  <div class="back-button mt-3">
+    <ion-icon name="arrow-back"></ion-icon>
+  </div>
+
+  <div class="container mt-4">
+    <div class="d-flex justify-content-center mb-4">
+      <h5 *ngIf="!noDaysAvailable && !isLastConfirmedDay"><strong>Confirmación de Días Pendientes</strong></h5>
+      <h5 *ngIf="!noDaysAvailable && isLastConfirmedDay"><strong>Mostrando el Último Día Confirmado</strong></h5>
+      <h5 *ngIf="noDaysAvailable"><strong>No hay días pendientes ni días confirmados</strong></h5>
+    </div>
+    
+    
+
+    <!-- Diseño de dos columnas -->
+    <div class="row">
+      <!-- Columna izquierda con la información seleccionada -->
+      <div class="col-lg-4 col-md-5">
+        <div class="sticky-top p-3 mb-4 bg-light rounded shadow-sm">
+          <h6 class="fw-bold">Resumen de Selección</h6>
+          <p>Fecha: {{ currentFecha || 'No seleccionada' }}</p>
+          <p>Semana: {{ currentSemana || 'No disponible' }}</p> <!-- Aquí se muestra la semana -->
+          <p>Periodo: {{ periodStartDate || 'No disponible' }} - {{ periodEndDate || 'No disponible' }}</p>
+      
+          <!-- Cuadros que representan los días del periodo -->
+          <div class="days-container mt-3">
+            <div *ngFor="let dia of diasDelPeriodo" 
+                 class="day-box" 
+                 [ngClass]="{'confirmed': dia.status === 'confirmed', 'pending': dia.status === 'pending'}" 
+                 (click)="mostrarInfoDia(dia)">
+              {{ dia.date | date:'dd' }}
+            </div>
+          </div>
+          
+        </div>
+      </div>
+      
+      <!-- Columna derecha con la lista de días pendientes -->
+      <div class="col-lg-8 col-md-7">
+        <div class="card shadow-lg p-4 mb-4">
+          <div class="card-body">
+            <!-- Campo de búsqueda para filtrar por diferentes campos -->
+            <div class="mb-3 d-flex align-items-center justify-content-between">
+              <label for="searchTerm" class="form-label fw-bold">Buscar días pendientes:</label>
+              <ion-searchbar [(ngModel)]="searchTerm" placeholder="Buscar por empleado, obra, etc." showCancelButton="focus" 
+                (ionInput)="filterRecords()" name="searchTerm" class="custom-searchbar ms-auto" style="width: 70%;"></ion-searchbar>
+            </div>
+
+            <!-- Lista de días pendientes para la fecha más antigua -->
+            <div class="mb-3" style="max-height: 200px; overflow-y: auto;">
+              <ion-list>
+               
+                
+                <ion-item *ngFor="let dia of filteredDias" (click)="toggleConfirm(dia)" class="minimal-item">
+                  <ion-label>
+                    <h6 class="fw-bold">{{ dia.employee_code }} - {{ dia.first_name }} {{ dia.last_name }} {{dia.middle_name}}</h6>
+                    <p><small>Obra: {{ dia.project_name }}</small></p>
+                    <p><small>Estado: {{ dia.project_status }}</small></p>
+                    <p><small>Incidencia: {{ dia.incidence || 'N/A' }}</small></p>
+                  </ion-label>
+                  <!-- Eliminar empleado -->
+                  <ion-button slot="end" fill="clear" color="danger" (click)="eliminarDia(dia, $event)">
+                    <ion-icon name="trash"></ion-icon>
+                  </ion-button>
+                </ion-item>
+              </ion-list>
+            </div>
+
+            <!-- Botón para confirmar el día completo -->
+            <div class="d-flex justify-content-center mb-3">
+              <ion-button expand="block" color="tertiary" (click)="confirmarDias()" 
+                          [disabled]="isButtonDisabled || isLastConfirmedDay || noDaysAvailable">
+                Confirmar Día
+              </ion-button>
+            </div>
+            
+            
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<style>
+  .days-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .day-box {
+    width: 40px;
+    height: 40px;
+    margin: 5px;
+    text-align: center;
+    line-height: 40px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .day-box.confirmed {
+    background-color: green;
+    color: white;
+  }
+
+  .day-box.pending {
+    background-color: yellow;
+    color: black;
+  }
+</style>

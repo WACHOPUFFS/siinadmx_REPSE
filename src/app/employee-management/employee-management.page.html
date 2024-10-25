@@ -1,0 +1,33 @@
+<ion-split-pane contentId="main-content">
+  <!-- Contenido principal -->
+  <ion-content id="main-content" [fullscreen]="true" class="ion-padding">
+    <ion-breadcrumbs>
+      <ion-breadcrumb routerLink="/home">Inicio</ion-breadcrumb>
+      <ion-breadcrumb routerLink="/employee-management">Gestión de Empleados
+      </ion-breadcrumb>
+    </ion-breadcrumbs>
+    <div class="back-button" (click)="goBack()">
+      <ion-icon name="arrow-back"></ion-icon>
+    </div>
+    <!-- Contenido principal de la página -->
+    <div class="main-content">
+      <div class="pt-4">
+        <h5><strong>Gestión de Empleados</strong></h5>
+      </div>
+
+      <div class="app-grid mt-4">
+        <a routerLink="/employee-control"
+        *ngIf="hasPermission('Empleados')">
+          <img src="/assets/image/imagen.png" alt="Assign Logo" style="height: 60px;">
+          <span>Control de empleados</span>
+        </a>
+        <a routerLink="/incident-control"
+        *ngIf="hasPermission('Incidencias')">
+          <img src="/assets/image/seguidores.png" alt="Register Additional User" style="height: 60px;">
+          <span>Control de incidencias</span>
+        </a>
+        
+      </div>
+    </div>
+  </ion-content>
+</ion-split-pane>

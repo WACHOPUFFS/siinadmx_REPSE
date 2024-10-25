@@ -1,0 +1,35 @@
+.container {
+    padding: 20px;
+  }
+  
+  /* Ajusta las etiquetas */
+  .form-label {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 0;
+  }
+  
+  /* Estilo de ion-datetime-button */
+  ion-datetime-button {
+    --border-radius: 5px;
+    --background: #f0f0f0;
+    --color: #333;
+    padding: 8px;
+
+  }
+  
+  /* Ajuste para alinear botón con el texto */
+  .row.mb-3.align-items-center {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  /* Botón de guardar */
+  ion-button {
+    --border-radius: 5px;
+    --padding: 10px 15px;
+    font-size: 16px;
+    margin-top: 20px;
+  }
+  

@@ -1,0 +1,96 @@
+<ion-content [fullscreen]="true" class="ion-padding">
+  <!-- Breadcrumbs -->
+  <ion-breadcrumbs>
+    <ion-breadcrumb routerLink="/home">Inicio</ion-breadcrumb>
+    <ion-breadcrumb routerLink="/confirm-week">Confirmación de Semana</ion-breadcrumb>
+  </ion-breadcrumbs>
+
+  <!-- Título de la Página -->
+  <div class="container mt-4">
+    <div class="d-flex justify-content-center mb-4">
+      <h5><strong>Confirmación de Semana</strong></h5>
+    </div>
+
+    <!-- Resumen de la Semana -->
+    <div class="row">
+      <!-- Columna izquierda para mostrar información de la semana -->
+      <div class="col-lg-4 col-md-5">
+        <div class="sticky-top p-3 mb-4 bg-light rounded shadow-sm">
+          <h6 class="fw-bold">Resumen de la Semana</h6>
+          <p><strong>Semana:</strong> {{ currentSemana || 'No disponible' }}</p>
+          <p><strong>Inicio del Periodo:</strong> {{ periodStartDate || 'No disponible' }}</p>
+          <p><strong>Fin del Periodo:</strong> {{ periodEndDate || 'No disponible' }}</p>
+
+          <!-- Lista de Días Confirmados de la Semana -->
+          <div class="days-container mt-3">
+            <h6>Días confirmados:</h6>
+            <div *ngFor="let dia of diasSemana" class="day-box" [ngClass]="{'confirmed': dia.status === 'confirmed'}"
+              (click)="mostrarInfoDia(dia)">
+              {{ dia.date | date:'dd' }}
+            </div>
+          </div>
+          <div class="text-center mt-3">
+            <ion-button *ngIf="allDaysConfirmed()" (click)="confirmarSemana()" [disabled]="isWeekConfirmed">
+              Confirmar Semana
+            </ion-button>
+            
+          </div>
+          
+        </div>
+      </div>
+
+      <!-- Columna derecha con detalles de empleados por día -->
+      <div class="col-lg-8 col-md-7">
+        <div class="card shadow-lg p-4 mb-4">
+          <div class="card-body">
+            <h6>Lista de Empleados para el Día Seleccionado</h6>
+
+            <!-- Lista de empleados para el día seleccionado -->
+            <div class="mb-3" style="max-height: 200px; overflow-y: auto;">
+              <ion-list>
+                <ion-item *ngFor="let emp of empleadosDia">
+                  <ion-label>
+                    <h6 class="fw-bold">{{ emp.employee_code }} - {{ emp.first_name }} {{ emp.last_name }} {{ emp.middle_name }}</h6>
+                    <p><small>Obra: {{ emp.project_name }}</small></p>
+                    <p><small>Estado: {{ emp.project_status }}</small></p>
+                  </ion-label>
+                </ion-item>
+              </ion-list>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<!-- Estilo para los días confirmados -->
+<style>
+  .days-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .day-box {
+    width: 40px;
+    height: 40px;
+    margin: 5px;
+    text-align: center;
+    line-height: 40px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #e0e0e0;
+    border: 1px solid #ccc;
+  }
+
+  .day-box.confirmed {
+    background-color: #4caf50;
+    color: white;
+  }
+
+  .day-box:hover {
+    background-color: #81c784;
+  }
+</style>

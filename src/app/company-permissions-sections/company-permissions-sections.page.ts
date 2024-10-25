@@ -13,7 +13,7 @@ export class CompanyPermissionsSectionsPage implements OnInit {
   selectedCompanyId: string;
   selectedSections: string[] = [];
   companies: any[] = [];
-  sections: string[] = ['repse', 'obras', 'asistencias', 'costos', 'ventas', 'configEmpresa'];
+  sections: string[] = ['Sistema REPSE', 'Control de proyectos', 'Empleados', 'Incidencias', 'Costos', 'Ventas', 'Configuracion de mi empresa', 'Configuracion de socios comerciales', 'Configuracion de usuarios'];
   permissions: any[] = [];
 
   constructor(private http: HttpClient, private authService: AuthService, private navCtrl: NavController) { }

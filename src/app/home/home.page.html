@@ -2,29 +2,30 @@
     <ion-content class="menu-content">
         <!-- Contenido del menú lateral -->
         <div class="profile-info p-4">
-            <img [src]="currentAvatar" alt="Foto de Perfil">
-            <div class="text-center">
-                <h5><strong>Bienvenido(a), {{ username }}</strong></h5>
+            <!-- Foto de Perfil y Bienvenida -->
+            <div class="text-center mb-4">
+                <img [src]="currentAvatar" alt="Foto de Perfil" class="rounded-circle mb-2" width="100">
+                <h5 style="color: #8A9170;"><strong>Bienvenido(a), {{ username }}</strong></h5>
                 <p>Empresa: <span id="companyName">{{ authService.selectedCompany }}</span></p>
-                <p>RFC: <span id="companyRFC">{{authService.selectedRFC}}</span></p>
+                <p>RFC: <span id="companyRFC">{{ authService.selectedRFC }}</span></p>
                 <p>Nivel de Usuario: <span id="userLevel">
                         <span *ngIf="authService.selectedLevelUser === 'adminS'">
-                            {{ labelNivelUsuarioAdministradorGeneral }}
+                            Administrador senior de la página
                         </span>
                         <span *ngIf="authService.selectedLevelUser === 'adminE'">
-                            {{ labelNivelUsuarioAdministradorEmpresaGeneral }}
+                            Administrador único de la empresa
                         </span>
                         <span *ngIf="authService.selectedLevelUser === 'admin'">
-                            {{ labelNivelUsuarioAdministradorEmpresa }}
+                            Administrador de la empresa
                         </span>
                         <span *ngIf="authService.selectedLevelUser === 'adminU'">
-                            {{ labelNivelUsuarioAdministrativoEmpresa }}
+                            Administrativo de la empresa
                         </span>
                         <span *ngIf="authService.selectedLevelUser === 'superV'">
-                            {{ labelNivelUsuarioSupervisorEmpresa }}
+                            Supervisor de la empresa
                         </span>
                         <span *ngIf="authService.selectedLevelUser === 'adminEE'">
-                            Administrador único de la Empresa (Socio Comercial)
+                            Administrador único de la empresa de socio comercial
                         </span>
                         <span *ngIf="authService.selectedLevelUser === 'adminPE'">
                             Administrador único de la Empresa (Socio Comercial - Premium)
@@ -32,157 +33,273 @@
                     </span></p>
             </div>
 
-            <div *ngIf="currentLogo" class="text-center">
-                <img [src]="currentLogo" alt="Logo de la Empresa" width="100">
+            <!-- Logo de la Empresa -->
+            <div *ngIf="currentLogo" class="text-center mb-4">
+                <img [src]="currentLogo" alt="Logo de la Empresa" class="img-fluid" style="max-width: 150px;">
             </div>
-            <div class="text-center pt-4">
-                <label for="company-select">Cambiar de empresa</label>
-                <select [(ngModel)]="selectedCompany" (change)="selectCompany()" id="company-select" class="form-select custom-select">
+
+            <!-- Cambiar de empresa -->
+            <div class="mb-4">
+                <label for="company-select" class="form-label">Cambiar de empresa</label>
+                <select [(ngModel)]="selectedCompany" (change)="selectCompany()" id="company-select"
+                    class="form-select">
                     <option *ngFor="let company of principalCompanies" [value]="company.name">
                         {{ company.name }}
                     </option>
                 </select>
             </div>
-            
 
-            <div class="card-body">
-                <h5 class="card-title">Mis socios</h5>
-                <h6 class="section-title">Aceptadas:</h6>
-                <ul class="company-list" *ngIf="authService.nonPrincipalCompanies.length > 0">
-                    <ng-container *ngFor="let company of authService.nonPrincipalCompanies">
-                        <ng-container *ngIf="company.status === '1'">
-                            <li>
-                                Empresa: {{ company.name }},
-                                Rol:
-                                <ng-container *ngIf="company.role === 'proveedor'">Proveedor</ng-container>
-                                <ng-container *ngIf="company.role === 'cliente'">Cliente</ng-container>
-                                <ng-container *ngIf="company.role === 'clienteProveedor'">Cliente -
-                                    Proveedor</ng-container>,
-                                RFC: {{ company.rfc }},
-                                Aceptada
-                            </li>
-                        </ng-container>
-                    </ng-container>
-                </ul>
-                <ng-template *ngIf="noEmpresasAceptadas()">
-                    <li>No hay empresas aceptadas</li>
-                </ng-template>
-
-                <h6 class="section-title mt-3">Pendientes:</h6>
-                <ul class="company-list" *ngIf="authService.nonPrincipalCompanies.length > 0">
-                    <ng-container *ngFor="let company of authService.nonPrincipalCompanies">
-                        <ng-container *ngIf="company.status === '0'">
-                            <li>
-                                Empresa: {{ company.name }},
-                                Rol:
-                                <ng-container *ngIf="company.role === 'proveedor'">Proveedor</ng-container>
-                                <ng-container *ngIf="company.role === 'cliente'">Cliente</ng-container>
-                                <ng-container *ngIf="company.role === 'clienteProveedor'">Cliente -
-                                    Proveedor</ng-container>,
-                                RFC: {{ company.rfc }},
-                                Pendiente
-                            </li>
-                        </ng-container>
-                    </ng-container>
-                </ul>
-                <ng-template *ngIf="noEmpresasPendientes()">
-                    <li>No hay empresas pendientes</li>
-                </ng-template>
+            <!-- Seleccionar Tipo de Periodo -->
+            <div class="mb-4">
+                <label for="tipoPeriodo" class="form-label">Tipo de periodo:</label>
+                <select [(ngModel)]="authService.selectedPeriod" (ngModelChange)="onPeriodTypeChange($event)"
+                    class="form-select" id="tipoPeriodo">
+                    <option *ngFor="let type of periodTypes" [ngValue]="type">
+                        {{ type.period_type_name }} - Año Fiscal: {{ type.fiscal_year }}
+                    </option>
+                </select>
             </div>
-            <button class="btn btn-danger mt-3 w-100" (click)="logout()">Cerrar Sesión</button>
-            <button class="btn  mt-3 w-100" (click)="abrirModal()"
-                *ngIf="authService.selectedLevelUser === 'adminEE'">Ser parte del sistema REPSE</button>
+
+            <!-- Mis socios -->
+            <div class="mb-4">
+                <h5 class="card-title">Mis socios</h5>
+
+                <!-- Aceptadas -->
+                <h6 class="section-title">Aceptadas:</h6>
+                <ul class="list-group mb-2">
+                    <ng-container *ngIf="authService.nonPrincipalCompanies.length > 0; else noAceptadas">
+                        <ng-container *ngFor="let company of authService.nonPrincipalCompanies">
+                            <ng-container *ngIf="company.status === '1'">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        Empresa: {{ company.name }},
+                                        Rol:
+                                        <ng-container *ngIf="company.role === 'proveedor'">Proveedor</ng-container>
+                                        <ng-container *ngIf="company.role === 'cliente'">Cliente</ng-container>
+                                        <ng-container *ngIf="company.role === 'clienteProveedor'">Cliente -
+                                            Proveedor</ng-container>,
+                                        RFC: {{ company.rfc }},
+                                        Aceptada
+                                    </div>
+                                    <!-- Ícono de tareas (Ionicon) -->
+                                    <ion-icon name="list-outline" routerLink="/upload-logo"
+                                        style="font-size: 20px; cursor: pointer;"></ion-icon>
+                                </li>
+                            </ng-container>
+                        </ng-container>
+                    </ng-container>
+                    <ng-template #noAceptadas>
+                        <li class="list-group-item">No hay empresas aceptadas</li>
+                    </ng-template>
+                </ul>
+
+
+                <!-- Pendientes -->
+                <h6 class="section-title">Pendientes:</h6>
+                <ul class="list-group">
+                    <ng-container *ngIf="authService.nonPrincipalCompanies.length > 0; else noPendientes">
+                        <ng-container *ngFor="let company of authService.nonPrincipalCompanies">
+                            <ng-container *ngIf="company.status === '0'">
+                                <li>
+                                    Empresa: {{ company.name }},
+                                    Rol:
+                                    <ng-container *ngIf="company.role === 'proveedor'">Proveedor</ng-container>
+                                    <ng-container *ngIf="company.role === 'cliente'">Cliente</ng-container>
+                                    <ng-container *ngIf="company.role === 'clienteProveedor'">Cliente -
+                                        Proveedor</ng-container>,
+                                    RFC: {{ company.rfc }},
+                                    Pendiente
+                                </li>
+                            </ng-container>
+                        </ng-container>
+                    </ng-container>
+                    <ng-template #noPendientes>
+                        <li class="list-group-item">No hay empresas pendientes</li>
+                    </ng-template>
+                </ul>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="d-grid gap-2">
+                <button class="logout-btn" (click)="logout()">Cerrar Sesión</button>
+                <button class="btn btn-primary" (click)="abrirModal()"
+                    *ngIf="authService.selectedLevelUser === 'adminEE'">Ser parte del sistema REPSE</button>
+            </div>
         </div>
+
     </ion-content>
 </ion-menu>
 
 <ion-split-pane contentId="main-content">
     <!-- Contenido principal -->
     <ion-content id="main-content" [fullscreen]="true" class="ion-padding">
-        <div class="header-container">
+        <div class="header-container p-4">
             <ion-buttons slot="start">
                 <ion-menu-button></ion-menu-button>
             </ion-buttons>
             <div class="img-user">
                 <img [src]="currentAvatar" alt="Foto de Perfil">
             </div>
-            <div class="user-info" *ngIf="isFullScreen">
+            <div class="user-info">
 
-                <span><strong>Bienvenido(a), {{ username }}</strong></span>
+                <span style="color: #8A9170;"><strong>Bienvenido(a), {{ username }}</strong></span>
                 <span>Empresa: {{ authService.selectedCompany }}</span>
+                <span style="font-size: 12px; font-style: italic;">RFC: {{authService.selectedRFC}}</span>
+
+
             </div>
-            <!--
-            <div class="header-buttons">
-                <div class="header-button">
-                    <ion-icon name="home"></ion-icon>
-                    <span>Inicio</span>
-                </div>
-                <div class="header-button">
-                    <ion-icon name="settings"></ion-icon>
-                    <span>Gestión</span>
-                </div>
-                <div class="header-button">
-                    <ion-icon name="people"></ion-icon>
-                    <span>Proveedores</span>
-                </div>
-                <div class="header-button">
-                    <ion-icon name="people"></ion-icon>
-                    <span>Clientes</span>
-                </div>
-            </div>
-            -->
+
             <div class="notification-button">
-                <ion-icon name="notifications"></ion-icon>
-                <span>Notificaciones</span>
+                <ion-icon name="log-out-outline" (click)="logout()"></ion-icon>
             </div>
-            
+
         </div>
 
         <!-- Contenido principal de la página -->
-        <div class="main-content">
-            <h5><strong>Inicio</strong></h5>
+        <div class="main-content ">
+            <h5 style="color: #8A9170;"><strong>Inicio</strong></h5>
             <p class="current-date-time">{{ currentDateTime }}</p>
+            <div *ngIf="selectedPeriod" style="font-size: 12px; font-style: italic; color: gray;">
+                <p>Periodo seleccionado: {{ selectedPeriod.period_type_name }} - {{ selectedPeriod.fiscal_year}}</p>
+            </div>
+            <div *ngIf="!selectedPeriod" style="font-size: 12px; font-style: italic; color: gray;">
+                <p>No hay periodo seleccionado.</p>
+            </div>
+            <h5 class="pt-2" style="color: #8A9170; text-align: left; font-weight: bold; margin-bottom: 10px;">¿Qué hay
+                de nuevo?
+            </h5>
+
+
+            <!-- Contenedor de la cuadrícula -->
+            <div class=" novedades-grid mt-4">
+
+                <a routerLink="/novedades-1" class="novedades-card">
+                    <div class="novedades-text">
+                        <h4>Trabajando en los apartados</h4>
+                        <p>Se están trabajando en los apartados para garantizar el funcionamiento correcto.</p>
+                    </div>
+                    <div class="novedades-image">
+                        <img src="/assets/images/test1.webp" alt="Trabajando en los apartados">
+                    </div>
+
+                </a>
+
+                <!-- Novedades 2 -->
+                <a routerLink="/novedades-1" class="novedades-card">
+                    <div class="novedades-text">
+                        <h4>Página en fase BETA</h4>
+                        <p>Esta página está en fase de pruebas BETA (o Alpha), por lo que pueden existir errores o
+                            problemas.</p>
+                    </div>
+                    <div class="novedades-image">
+                        <img src="/assets/images/test2.webp" alt="Página en fase BETA">
+                    </div>
+
+                </a>
+            </div>
+            <h5 class="pt-1" style="color: #8A9170; text-align: left; font-weight: bold; margin-bottom: 10px;">Mis
+                apartados
+            </h5> <!-- Contenedor para los otros apartados -->
             <div class="app-grid mt-4">
-                <a routerLink="/repse" *ngIf="hasPermission('repse')">
-                    <img src="/assets/image/hoja-de-calculo.png" alt="Sistema REPSE" style="height: 60px;">
+                <a routerLink="/repse" *ngIf="hasPermission('Sistema REPSE')">
+                    <img src="/assets/icons/bandeja-de-entrada.png" alt="Sistema REPSE" style="height: 60px;">
                     <span>Sistema REPSE</span>
                 </a>
-                <a href="/works-control" *ngIf="hasPermission('obras')">
-                    <img src="/assets//image/bosquejo.png" alt="Control de Obras" style="height: 60px;">
-                    <span>Control de Obras</span>
+                <a routerLink="/project-control" *ngIf="hasPermission('Control de proyectos')">
+                    <img src="/assets/icons/presentacion.png" alt="Control de Obras" style="height: 60px;">
+                    <span>Control de proyectos</span>
                 </a>
-                <a href="#" *ngIf="hasPermission('asistencias')">
-                    <img src="/assets/image/pautas.png" alt="Sistema de Asistencias" style="height: 60px;">
-                    <span>Sistema de Asistencias</span>
+                <a routerLink="/employee-management" *ngIf="hasPermission('Empleados') || hasPermission('Incidencias')">
+                    <img src="/assets/icons/014-avatar-de-usuarios-1.png" alt="Gestión de Empleados"
+                        style="height: 60px;">
+                    <span>Gestión de Empleados</span>
                 </a>
-                <a href="#" *ngIf="hasPermission('costos')">
-                    <img src="/assets/image/presupuesto.png " alt="Costos" style="height: 60px;">
+                <a href="#" *ngIf="hasPermission('Costos')">
+                    <img src="/assets/icons/insignia-dolar.png" alt="Costos" style="height: 60px;">
                     <span>Costos</span>
                 </a>
-                <a href="#" *ngIf="hasPermission('ventas')">
-                    <img src="/assets/image/bolsa-de-valores.png" alt="Ventas" style="height: 60px;">
+                <a href="#" *ngIf="hasPermission('Ventas')">
+                    <img src="/assets/icons/carrito-de-compras.png" alt="Ventas" style="height: 60px;">
                     <span>Ventas</span>
                 </a>
-                <a routerLink="/company-settings">
-                    <img src="/assets/image/actualizacion-del-sistema.png" alt="Configuración de la Empresa"
-                        style="height: 60px;">
-                    <span>Gestionar mi empresa</span>
+                <a routerLink="/settings">
+                    <img src="/assets/icons/002-ajustes.png" alt="Configuración" style="height: 60px;">
+                    <span>Configuración</span>
                 </a>
-                <a routerLink="/user-settings">
-                    <img src="/assets/image/ajustes-de-perfil.png" alt="Configuración del Empleado"
-                        style="height: 60px;">
-                    <span>Configuración de mi perfil</span>
-                </a>
-                <!--
-                <a href="/page-settings">
-                    <img src="/assets/image/config.png" alt="Configuración del Empleado" style="height: 60px;">
-                    <span>Configuración de la página</span>
-                </a>
-                 -->
-
-
             </div>
-
         </div>
+        <h5 class="pt-1" style="color: #8A9170; text-align: left; font-weight: bold; margin-bottom: 10px;">Mis
+            Acerca de mis socios comerciales
+        </h5> <!-- Contenedor para los otros apartados -->
+
+        
+        <div class="novedades-grid mt-4">
+            <!-- Sección Aceptadas -->
+            <a routerLink="/novedades-1" class="novedades-card">
+                <div class="novedades-text">
+                    <h4>Aceptadas:</h4>
+                </div>
+                <div class="novedades-image">
+                    <ng-container *ngIf="authService.nonPrincipalCompanies.length > 0; else noAceptadas">
+                        <ul class="list-group">
+                            <ng-container *ngFor="let company of authService.nonPrincipalCompanies">
+                                <ng-container *ngIf="company.status === '1'">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5 style="color: #8A9170;"><strong>Empresa: {{ company.name }}</strong></h5>
+                                            <h6>Rol: 
+                                                <ng-container *ngIf="company.role === 'proveedor'">Proveedor</ng-container>
+                                                <ng-container *ngIf="company.role === 'cliente'">Cliente</ng-container>
+                                                <ng-container *ngIf="company.role === 'clienteProveedor'">Cliente - Proveedor</ng-container>
+                                            </h6>
+                                            <p style="font-size: 12px; font-style: italic;">RFC: {{ company.rfc }}</p>
+                                            <p style="color: green;">Aceptada</p>
+                                        </div>
+
+                                        
+                                    </li>
+                                </ng-container>
+                            </ng-container>
+                        </ul>
+                    </ng-container>
+                    <ng-template #noAceptadas>
+                        <p>No hay empresas aceptadas</p>
+                    </ng-template>
+                </div>
+            </a>
+        
+            <!-- Sección Pendientes -->
+            <a routerLink="/novedades-1" class="novedades-card">
+                <div class="novedades-text">
+                    <h4>Pendientes:</h4>
+                </div>
+                <div class="novedades-image">
+                    <ng-container *ngIf="authService.nonPrincipalCompanies.length > 0; else noPendientes">
+                        <ul class="list-group">
+                            <ng-container *ngFor="let company of authService.nonPrincipalCompanies">
+                                <ng-container *ngIf="company.status === '0'">
+                                    <li class="list-group-item">
+                                        <div>
+                                            <h5 style="color: #8A9170;"><strong>Empresa: {{ company.name }}</strong></h5>
+                                            <h6>Rol: 
+                                                <ng-container *ngIf="company.role === 'proveedor'">Proveedor</ng-container>
+                                                <ng-container *ngIf="company.role === 'cliente'">Cliente</ng-container>
+                                                <ng-container *ngIf="company.role === 'clienteProveedor'">Cliente - Proveedor</ng-container>
+                                            </h6>
+                                            <p style="font-size: 12px; font-style: italic;">RFC: {{ company.rfc }}</p>
+                                            <p style="color: orange;">Pendiente</p>
+                                        </div>
+                                    </li>
+                                </ng-container>
+                            </ng-container>
+                        </ul>
+                    </ng-container>
+                    <ng-template #noPendientes>
+                        <p>No hay empresas pendientes</p>
+                    </ng-template>
+                </div>
+            </a>
+        </div>
+    
     </ion-content>
 </ion-split-pane>

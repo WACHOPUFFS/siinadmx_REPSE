@@ -1,0 +1,105 @@
+<ion-split-pane contentId="main-content">
+  <!-- Contenido principal -->
+  <ion-content id="main-content" [fullscreen]="true" class="ion-padding">
+    <ion-breadcrumbs>
+      <ion-breadcrumb routerLink="/home">Inicio</ion-breadcrumb>
+      <ion-breadcrumb routerLink="/settings">Configuraciones</ion-breadcrumb>
+      <ion-breadcrumb routerLink="/company-settings">Configuración de mi empresa</ion-breadcrumb>
+      <ion-breadcrumb routerLink="/period-management">Tipos de periodo</ion-breadcrumb>
+    </ion-breadcrumbs>
+    
+    <div class="back-button" (click)="goBack()">
+      <ion-icon name="arrow-back"></ion-icon>
+    </div>
+    
+    <div class="container-fluid mt-4">
+      <div class="text-center pt-4">
+        <h5><strong>Configuración de Tipos de Periodo</strong></h5>
+      </div>
+
+      <div class="row">
+        <!-- Semanal -->
+        <div class="col-md-4 mb-3">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Semanal</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-item lines="full">
+                <ion-label>Habilitar Semanal</ion-label>
+                <ion-checkbox slot="end" [(ngModel)]="periodoSemanal" color="success"></ion-checkbox>
+              </ion-item>
+              <ion-item *ngIf="periodoSemanal">
+                <ion-label>Fecha de inicio</ion-label>
+                <ion-datetime
+                  placeholder="Seleccione la fecha de inicio"
+                  display-format="DD/MM/YYYY"
+                  [(ngModel)]="fechaSemanal"
+                  [min]="minDate"
+                  [max]="maxDate">
+                </ion-datetime>
+              </ion-item>
+            </ion-card-content>
+          </ion-card>
+        </div>
+
+        <!-- Quincenal -->
+        <div class="col-md-4 mb-3">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Quincenal</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-item lines="full">
+                <ion-label>Habilitar Quincenal</ion-label>
+                <ion-checkbox slot="end" [(ngModel)]="periodoQuincenal" color="success"></ion-checkbox>
+              </ion-item>
+              <ion-item *ngIf="periodoQuincenal">
+                <ion-label>Fecha de inicio</ion-label>
+                <ion-datetime
+                  placeholder="Seleccione la fecha de inicio"
+                  display-format="DD/MM/YYYY"
+                  [(ngModel)]="fechaQuincenal"
+                  [min]="minDate"
+                  [max]="maxDate">
+                </ion-datetime>
+              </ion-item>
+            </ion-card-content>
+          </ion-card>
+        </div>
+
+        <!-- Mensual -->
+        <div class="col-md-4 mb-3">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Mensual</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-item lines="full">
+                <ion-label>Habilitar Mensual</ion-label>
+                <ion-checkbox slot="end" [(ngModel)]="periodoMensual" color="success"></ion-checkbox>
+              </ion-item>
+              <ion-item *ngIf="periodoMensual">
+                <ion-label>Fecha de inicio</ion-label>
+                <ion-datetime
+                  placeholder="Seleccione la fecha de inicio"
+                  display-format="DD/MM/YYYY"
+                  [(ngModel)]="fechaMensual"
+                  [min]="minDate"
+                  [max]="maxDate">
+                </ion-datetime>
+              </ion-item>
+            </ion-card-content>
+          </ion-card>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 offset-md-3">
+          <ion-button expand="block" color="success" (click)="guardarConfiguracion()">Guardar configuración</ion-button>
+          <ion-button expand="block" color="medium" (click)="cancelar()">Cancelar</ion-button>
+        </div>
+      </div>
+    </div>
+  </ion-content>
+</ion-split-pane>

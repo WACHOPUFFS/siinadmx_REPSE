@@ -1,0 +1,49 @@
+.container {
+    max-width: 800px;
+  }
+
+
+  .icon {
+    font-size: 24px;
+  }
+
+  .card {
+    border-radius: 10px;
+    background-color: #ffffff;
+  }
+
+  .card-header {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+
+  .card-body {
+    padding: 20px;
+  }
+
+  .alert {
+    border-radius: 10px;
+    font-size: 14px;
+    color: #6c757d;
+  }
+
+  /* Estilo para el botón de regreso */
+  .back-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }

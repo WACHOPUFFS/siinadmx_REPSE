@@ -1,355 +1,54 @@
 <ion-split-pane contentId="main-content">
   <!-- Contenido principal -->
   <ion-content id="main-content" [fullscreen]="true" class="ion-padding">
-
+    <ion-breadcrumbs>
+      <ion-breadcrumb routerLink="/home">Inicio</ion-breadcrumb>
+      <ion-breadcrumb routerLink="/settings">Configuraciones</ion-breadcrumb>
+      <ion-breadcrumb routerLink="/settings">Configuración de mi empresa</ion-breadcrumb>
+    </ion-breadcrumbs>
     <div class="back-button" (click)="goBack()">
       <ion-icon name="arrow-back"></ion-icon>
     </div>
     <!-- Contenido principal de la página -->
     <div class="main-content">
       <div class="pt-4">
-        <h5><strong>Gestionar mi empresa</strong></h5>
+        <h5><strong>Configuración de mi empresa</strong></h5>
       </div>
+      <div class="app-grid mt-4">
 
-    <div class="app-grid mt-4">
-  <a routerLink="/register"
-    *ngIf="authService.selectedLevelUser === 'superV' && hasPermission('configEmpresa', 'Agregar socio comercial') || hasPermission('configEmpresa', 'Agregar socio comercial') ">
-    <img src="/assets/image/imagen.png" alt="Assign Logo" style="height: 60px;">
-    <span>Agregar socio comercial</span>
-  </a>
-  <a routerLink="/example" *ngIf="authService.selectedLevelUser === 'adminS' || authService.selectedLevelUser === 'adminE' || authService.selectedLevelUser === 'adminEE' || authService.selectedLevelUser === 'adminPE' || authService.selectedLevelUser === 'admin' && hasPermission('configEmpresa', 'Adicional Empresa') || hasPermission('configEmpresa', 'Adicional Empresa')">
-    <img src="/assets/image/seguidores.png" alt="Register Additional User" style="height: 60px;">
-    <span>Agregar usuario adicional</span>
-  </a>
-  <a routerLink="/upload-logo"
-    *ngIf="authService.selectedLevelUser === 'adminS' || authService.selectedLevelUser === 'adminE' || authService.selectedLevelUser === 'adminEE' || authService.selectedLevelUser === 'adminPE'  || authService.selectedLevelUser === 'admin' && hasPermission('configEmpresa', 'logo Empresa') || hasPermission('configEmpresa', 'logo Empresa') ">
-    <img src="/assets/image/imagen.png" alt="Assign Logo" style="height: 60px;">
-    <span>Asignar logo</span>
-  </a>
-  <a routerLink="/cp-auth"  *ngIf="authService.selectedLevelUser === 'adminE' || authService.selectedLevelUser === 'adminEE' || authService.selectedLevelUser === 'adminPE' || authService.selectedLevelUser === 'admin' && hasPermission('configEmpresa', 'Autorizar socio comercial') || hasPermission('configEmpresa', 'Autorizar socio comercial')">
-    <img src="/assets/image/interfaz-de-usuario.png" alt="Visible Sections" style="height: 60px;">
-    <span>Autorizar socio comercial</span>
-  </a>
-  <a routerLink="/companies-info" style="background-color: #caaeff;" *ngIf="authService.selectedLevelUser === 'adminS'">
-    <img src="/assets/image/pagina-de-inicio.png" alt="Assign Logo" style="height: 60px;">
-    <span>Empresas registradas en la pagina</span>
-  </a>
-  <a routerLink="/edit-roles" *ngIf="authService.selectedLevelUser === 'adminS' || authService.selectedLevelUser === 'adminE' || authService.selectedLevelUser === 'adminEE' || authService.selectedLevelUser === 'adminPE'  || authService.selectedLevelUser === 'admin' && hasPermission('configEmpresa', 'Editar Roles de socios comerciales') || hasPermission('configEmpresa', 'Editar Roles de socios comerciales')">
-    <img src="/assets/image/empresario.png" alt="Edit Roles" style="height: 60px;">
-    <span>Editar roles de socios comerciales</span>
-  </a>
-  <a routerLink="/premium-auth" style="background-color: #caaeff;"  *ngIf="authService.selectedLevelUser === 'adminS'">
-    <img src="/assets/image/calidad-premium.png" alt="Assign Logo" style="height: 60px;">
-    <span>Confirmar solicitudes de sistema Premium</span>
-  </a>
-  <a routerLink="/company-code" *ngIf=" authService.selectedLevelUser === 'adminE' || authService.selectedLevelUser === 'adminEE' || authService.selectedLevelUser === 'adminPE'  || authService.selectedLevelUser === 'admin' && hasPermission('configEmpresa', 'Codigo Empresa') ||  hasPermission('configEmpresa', 'Codigo Empresa')"
-    (click)="toggleSubsections()"> <!--pendiente-->
-    <img src="/assets/image/promocion.png" alt="Company Code" style="height: 60px;">
-    <span>código de mi empresa</span>
-  </a>
-  <div *ngIf="showSubsections" class="backdrop" (click)="closeOptions()"></div>
-  <div *ngIf="showSubsections" class="floating-options text-center">
-    <button routerLink="/code-person">
-      <img src="/assets/image/industria.png" alt="Assign Logo" style="height: 60px;">
-      <span>Mi código de empresa</span></button>
-    <button routerLink="/add-person">
-      <img src="/assets/image/administracion.png" alt="Assign Logo" style="height: 60px;">
-      Agregar codigo de socio comercial</button>
-  </div>
-  <a routerLink="/register-admin-company" *ngIf="authService.selectedLevelUser === 'adminS' || authService.selectedLevelUser === 'adminE' || authService.selectedLevelUser === 'adminEE' || authService.selectedLevelUser === 'adminPE'  ||  authService.selectedLevelUser === 'admin' && hasPermission('configEmpresa', 'Registrar usuarios Empresa') ||  hasPermission('configEmpresa', 'Registrar usuarios Empresa')">
-    <img src="/assets/image/perfil-del-usuario.png" alt="Register Users" style="height: 60px;">
-    <span>Registrar usuarios</span>
-  </a>
-  <a routerLink="/register-admin-s" style="background-color: #caaeff;"
-    *ngIf="authService.selectedLevelUser === 'adminS'">
-    <img src="/assets/image/sitio-web.png" alt="Assign Logo" style="height: 60px;">
-    <span>Registrar cuenta de empresas</span>
-  </a>
-  <!--
-  <a routerLink="/user-permissions-sections" *ngIf="authService.selectedLevelUser === 'adminS' || authService.selectedLevelUser === 'adminE' || authService.selectedLevelUser === 'adminPE'">
-    <img src="/assets/image/interfaz-de-usuario.png" alt="Visible Sections" style="height: 60px;">
-    <span>Secciones visibles de mis usuarios</span>
-  </a>
-  -->
-  <a routerLink="/user-business-partner-sections" *ngIf="authService.selectedLevelUser === 'adminS' || authService.selectedLevelUser === 'adminE' || authService.selectedLevelUser === 'adminEE' || authService.selectedLevelUser === 'adminPE' ">
-    <img src="/assets/image/interfaz-de-usuario.png" alt="Visible Sections" style="height: 60px;">
-    <span>Secciones visibles de mis usuarios </span>
-  </a>
+        <a routerLink="/upload-logo" *ngIf="sharedService.hasPermission('Configuracion de mi empresa', 'Asignar logo de la empresa') ">
+          <img src="/assets/icons/008-imagen.png" alt="Assign Logo" style="height: 60px;">
+          <span>Asignar logo</span>
+        </a>
+        <a routerLink="/code-company" *ngIf=" sharedService.hasPermission('Configuracion de mi empresa', 'Código de la empresa') ">
+          <img src="/assets/icons/009-nota.png" alt="Assign Logo" style="height: 60px;">
+          <span>código de mi empresa</span>
+        </a>
 
-  <a routerLink="/company-permissions-sections" *ngIf="authService.selectedLevelUser === 'adminS'" style="background-color: #caaeff;">
-    <img src="/assets/image/interfaz-de-usuario.png" alt="Visible Sections" style="height: 60px;">
-    <span>Secciones visibles de las empresas</span>
-  </a>
+        <a routerLink="/department-management" *ngIf=" sharedService.hasPermission('Configuracion de mi empresa', 'Departamentos') ">
+          <img src="/assets/icons/carpeta.png" alt="Visible Sections" style="height: 60px;">
+          <span>Mis departamentos</span>
+        </a>
 
-  <a routerLink="/permissions-businees-partner" *ngIf="authService.selectedLevelUser === 'adminE'" >
-    <img src="/assets/image/interfaz-de-usuario.png" alt="Visible Sections" style="height: 60px;">
-    <span>Secciones visibles de mis socios comerciales</span>
-  </a>
+        <a routerLink="/initial-setup"
+          *ngIf="sharedService.hasPermission('Configuracion de mi empresa', 'Configuración inicial de períodos')">
+          <img src="/assets/icons/012-calendario-reloj.png" alt="Visible Sections" style="height: 60px;">
+          <span>Configuracion inicial de periodos</span>
+        </a>
+        <a routerLink="/period-configuration"
+        *ngIf="sharedService.hasPermission('Configuracion de mi empresa', 'Tipos de período')">
+         <img src="/assets/icons/010-calendario-mas.png" alt="Visible Sections" style="height: 60px;">
+          <span>Tipos de periodos</span>
+        </a>
 
-  
-  <a routerLink="/document-upload" *ngIf="authService.selectedLevelUser === 'adminE'">
-    <img src="/assets/image/interfaz-de-usuario.png" alt="Visible Sections" style="height: 60px;">
-    <span>Tareas anuales</span>
-  </a>
+        <a routerLink="/period-management"
+        *ngIf="sharedService.hasPermission('Configuracion de mi empresa', 'Catálogo de períodos')">
+        <img src="/assets/icons/011-fecha-del-calendario.png" alt="Visible Sections" style="height: 60px;">
+          <span>Catalogo de periodos</span>
+        </a>
 
-  <a routerLink="/document-review" *ngIf="authService.selectedLevelUser === 'admin'" >
-    <img src="/assets/image/interfaz-de-usuario.png" alt="Visible Sections" style="height: 60px;">
-    <span>Revisar tareas anuales de empresas</span>
-  </a>
-</div>
-
-
+      </div>
     </div>
 
   </ion-content>
 </ion-split-pane>
-
-<!--"authService.selectedLevelUser === 'adminS' && hasPermission('configEmpresa', 'logo Empresa')"-->
-
-<style>
-  /* Reutilizamos los estilos existentes */
-  .responsive-header {
-    display: none;
-  }
-
-  @media (max-width: 991px) {
-    .responsive-header {
-      display: block;
-    }
-  }
-
-  body {
-    font-family: Arial, sans-serif;
-  }
-
-  .menu-content {
-    padding: 20px;
-  }
-
-  .ion-note {
-    font-size: 0.9rem;
-    color: #6c757d;
-  }
-
-  .btn-container {
-    margin-top: 20px;
-  }
-
-  .btn-custom {
-    display: block;
-    width: 100%;
-    margin-bottom: 10px;
-  }
-
-  .icon-img {
-    width: 24px;
-    height: 24px;
-  }
-
-  .sidebar {
-    width: 300px;
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    left: 0;
-    background-color: #f8f9fa;
-    padding: 20px;
-    box-sizing: border-box;
-  }
-
-  .profile-info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-
-  .profile-info img {
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    margin-bottom: 15px;
-  }
-
-  .sidebar .sections a {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    text-align: center;
-  }
-
-  .main-content {
-    text-align: center;
-    padding: 20px;
-  }
-
-  .app-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 20px;
-  }
-
-  .app-grid a {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    color: white;
-    background-color: #007bff;
-    padding: 20px;
-    border-radius: 10px;
-    height: 150px;
-    transition: background-color 0.3s ease;
-  }
-
-  .app-grid a:hover {
-    background-color: #0056b3;
-  }
-
-  @media (max-width: 768px) {
-    .sidebar {
-      width: 100%;
-      height: auto;
-      position: relative;
-      display: none;
-    }
-
-    .main-content {
-      margin-left: 0;
-    }
-
-    .hamburger-menu {
-      display: block;
-      cursor: pointer;
-      padding: 10px;
-      background-color: #007bff;
-      color: white;
-      text-align: center;
-    }
-  }
-
-  @media (min-width: 769px) {
-    .hamburger-menu {
-      display: none;
-    }
-  }
-</style>
-
-<style>
-  .main-content {
-    text-align: center;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .app-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-    width: 100%;
-    max-width: 1200px;
-    /* Puedes ajustar el ancho máximo según sea necesario */
-  }
-
-  .app-grid a {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    color: white;
-    background-color: #007bff;
-    padding: 20px;
-    border-radius: 10px;
-    height: 150px;
-    transition: background-color 0.3s ease;
-    width: 150px;
-    /* Ajusta el ancho de los elementos según sea necesario */
-  }
-
-  .app-grid a:hover {
-    background-color: #0056b3;
-  }
-
-
-  /* Estilo para el botón de regreso */
-  .back-button {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 40px;
-    height: 40px;
-    background-color: #007bff;
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-
-  .backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    /* Fondo semi-transparente */
-    z-index: 999;
-  }
-
-  .floating-options {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-  }
-
-  .floating-options button {
-    display: block;
-    margin: 10px 0;
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    color: white;
-    background-color: #007bff;
-
-    border-radius: 10px;
-    height: 150px;
-    transition: background-color 0.3s ease;
-    width: 150px;
-  }
-
-  .floating-options button:hover {
-    background-color: #0056b3;
-  }
-
-  .floating-options .close-btn {
-    background-color: #dc3545;
-  }
-
-  .floating-options .close-btn:hover {
-    background-color: #c82333;
-  }
-</style>

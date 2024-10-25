@@ -7,15 +7,21 @@ $data = json_decode(file_get_contents("php://input"), true);
 if (isset($data['companyId'])) {
     $selectedCompanyId = $mysqli->real_escape_string($data['companyId']);
     // Consulta principal usando el ID de la empresa
-    $query = "SELECT u.id, u.username, u.name AS name, u.email, c.nameCompany, IFNULL(r.roleName, lu.levelUserName) AS role, p.fecha_inicio, p.fecha_fin, c.rfc AS companyRFC
+    $query = "SELECT u.id, u.username, u.name AS name, u.email, c.nameCompany, 
+          IFNULL(r.roleName, lu.levelUserName) AS role, 
+          MIN(p.fecha_inicio) AS fecha_inicio, 
+          MAX(p.fecha_fin) AS fecha_fin, 
+          c.rfc AS companyRFC
     FROM users u
     INNER JOIN user_company_roles uc ON u.id = uc.user_id
     INNER JOIN companies c ON uc.company_id = c.id
-    INNER JOIN periodos p ON u.id = p.usuario_id
+    LEFT JOIN periodos p ON u.id = p.usuario_id
     LEFT JOIN roles r ON uc.role_id = r.id
     LEFT JOIN levelUser lu ON lu.id = uc.levelUser_id
     WHERE uc.company_id = '$selectedCompanyId'
-    ORDER BY u.creation_date ASC";    
+    GROUP BY u.id, u.username, u.name, u.email, c.nameCompany, c.rfc, role
+    ORDER BY u.creation_date ASC";
+
     $result = $mysqli->query($query);
 
     if (!$result) {

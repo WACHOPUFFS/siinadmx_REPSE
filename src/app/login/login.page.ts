@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { AuthService } from '../auth.service';
 import { DataStorageService } from '../data-storage-service';
-import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-login',
@@ -26,8 +25,7 @@ export class LoginPage implements OnInit {
     private http: HttpClient,
     private toastController: ToastController,
     private authService: AuthService,
-    private dataStorageService: DataStorageService,
-    private cookieService: CookieService // Agregar CookieService
+    private dataStorageService: DataStorageService
   ) { 
     this.labelnombreUsuario = dataStorageService.labelnombreUsuario;
     this.labelcontrasena = dataStorageService.labelContrasena;
@@ -72,9 +70,9 @@ export class LoginPage implements OnInit {
             levelUser: company.levelUser
           }));
 
-          // Guardar el token de sesión y las empresas mapeadas en cookies
-          this.cookieService.set('token', response.token);
-          this.cookieService.set('mappedPrincipalCompanies', JSON.stringify(mappedPrincipalCompanies));
+          // Guardar el token de sesión y las empresas mapeadas en localStorage
+          localStorage.setItem('token', response.token);
+          localStorage.setItem('mappedPrincipalCompanies', JSON.stringify(mappedPrincipalCompanies));
 
           // Llamar al método login de AuthService para guardar los detalles del usuario, incluyendo información detallada de empresas
           this.authService.login(this.username, userId, avatar, mappedPrincipalCompanies);

@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { ToastController, ModalController } from '@ionic/angular'; // Importa ModalController y ToastController
+import { ToastController, ModalController, LoadingController } from '@ionic/angular'; // Importa LoadingController
 import { RegistroModalPage } from '../registro-modal/registro-modal.page';
 import { DataStorageService } from '../data-storage-service';
 import { NavController } from '@ionic/angular';
-
 
 @Component({
   selector: 'app-register-admin-s',
@@ -26,6 +25,9 @@ export class RegisterAdminSPage implements OnInit {
     fechaInicio: '',
     fechaFin: ''
   };
+
+  showPassword: boolean = false; // Controla la visibilidad de la contraseña
+  showConfirmPassword: boolean = false; // Controla la visibilidad de confirmar contraseña
 
   showMessageFlag: boolean = false;
   tipoRFC: string = 'fisica'; // Valor por defecto: persona física
@@ -48,18 +50,16 @@ export class RegisterAdminSPage implements OnInit {
   labelFechaFinPeriodo: string;
   ButtonRegistrar: string;
 
-
-
-
-
   constructor(
     private router: Router,
     private http: HttpClient,
-    private toastController: ToastController, // Inyecta ToastController
-    private modalController: ModalController, // Inyecta ModalController
+    private toastController: ToastController, 
+    private modalController: ModalController,
     private dataStorageService: DataStorageService,
-        private navCtrl: NavController
+    private navCtrl: NavController,
+    private loadingController: LoadingController // Inyecta LoadingController
   ) {
+    // Asignación de etiquetas
     this.labelAdminEmpresas = dataStorageService.labelAdminEmpresas;
     this.labelIngreseDatosParaContinuar = dataStorageService.labelAdminEmpresas;
     this.labelTipoRFC = dataStorageService.labelTipoRFC;
@@ -76,10 +76,16 @@ export class RegisterAdminSPage implements OnInit {
     this.labelFechaInicioPeriodo = dataStorageService.labelFechaInicioPeriodo;
     this.labelFechaFinPeriodo = dataStorageService.labelFechaFinPeriodo;
     this.ButtonRegistrar = dataStorageService.ButtonRegistrar;
-
   }
 
-  ngOnInit() {
+  ngOnInit() {}
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmPasswordVisibility() {
+    this.showConfirmPassword = !this.showConfirmPassword;
   }
 
   async camposCompletos(): Promise<boolean> {
@@ -107,6 +113,12 @@ export class RegisterAdminSPage implements OnInit {
   }
 
   async registrarUsuario() {
+    const loading = await this.loadingController.create({
+      message: 'Registrando usuario...', // Mensaje que se muestra durante la carga
+    });
+    
+    await loading.present(); // Muestra el indicador de carga
+
     if (await this.camposCompletos()) {
       const data = {
         nombreUsuario: this.usuario.nombreUsuario,
@@ -122,6 +134,8 @@ export class RegisterAdminSPage implements OnInit {
 
       this.http.post('https://siinad.mx/php/registerAdminS.php', data).subscribe(
         async (response: any) => {
+          await loading.dismiss(); // Oculta el indicador de carga
+
           if (response.success) {
             await this.mostrarToast(response.message, 'success');
             const modal = await this.modalController.create({
@@ -144,10 +158,12 @@ export class RegisterAdminSPage implements OnInit {
         },
         async (error) => {
           console.error('Error en la solicitud POST:', error);
+          await loading.dismiss(); // Oculta el indicador de carga
           await this.mostrarToast('Error en la solicitud de registro.', 'danger');
         }
       );
     } else {
+      await loading.dismiss(); // Oculta el indicador de carga
       await this.mostrarToast('Por favor complete todos los campos obligatorios y verifique el correo electrónico y la contraseña.', 'warning');
     }
   }

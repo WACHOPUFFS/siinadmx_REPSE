@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../auth.service';
-import { NavController } from '@ionic/angular';
+import { NavController, LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-example',
@@ -9,119 +9,88 @@ import { NavController } from '@ionic/angular';
   styleUrls: ['./example.page.scss'],
 })
 export class ExamplePage implements OnInit {
-  userCode: string;
-  selectedLevelUser: string;
-  companies: any[] = [];
-  secondaryCompanies: any[] = [];
-  isModalOpen = false;
-  selectedUser: any = null;
-  levelUsers: any[] = [];
 
-  constructor(private http: HttpClient, private authService: AuthService, private navCtrl: NavController) {}
+  // Variables para almacenar los días obtenidos del backend
+  periodDays: string[] = [];  
+  confirmedDays: any[] = [];
+  pendingDays: any[] = [];
+  
+  // Empleados pendientes del día seleccionado
+  selectedPendingEmployees: any[] = [];
+  selectedDay: string = '';
+
+  constructor(
+    private http: HttpClient, 
+    private loadingController: LoadingController,
+    private authService: AuthService,
+    private navCtrl: NavController,
+  ) { }
 
   ngOnInit() {
-    this.loadLevelUsers();
-    this.loadSecondaryCompanies();
+    // Cargar los días pendientes al iniciar la página
+    this.loadDiasPendientes();
   }
 
-  async loadLevelUsers() {
-    this.http.get('https://siinad.mx/php/get-level-users.php').subscribe(
-      async (response: any) => {
-        if (response) {
-          this.levelUsers = response;
-        } else {
-          console.error('Error al cargar niveles de usuario');
-          await this.mostrarToast('Error al cargar niveles de usuario.', 'danger');
-        }
-      },
-      async (error) => {
-        console.error('Error en la solicitud GET:', error);
-        await this.mostrarToast('Error al cargar niveles de usuario.', 'danger');
-      }
-    );
-  }
-
-  async onUserCodeChange() {
-    if (this.userCode) {
-      const data = { userCode: this.userCode };
-
-      this.http.post('https://siinad.mx/php/get-user-by-code.php', data).subscribe(
-        async (response: any) => {
-          if (response.success) {
-            this.selectedUser = response.user;
-          } else {
-            console.error(response.error);
-            await this.mostrarToast(response.error, 'danger');
-            this.selectedUser = null;
-          }
-        },
-        async (error) => {
-          console.error('Error en la solicitud POST:', error);
-          await this.mostrarToast('Error al cargar usuario.', 'danger');
-          this.selectedUser = null;
-        }
-      );
-    } else {
-      this.selectedUser = null;
+  // Método para cargar los días pendientes
+  async loadDiasPendientes() {
+    // Mostrar un spinner mientras se cargan los datos
+    const loading = await this.loadingController.create({
+      message: 'Cargando días pendientes...',
+      spinner: 'circles',
+    });
+    await loading.present();
+  
+    // Obtener el ID de la compañía y el tipo de período seleccionado desde AuthService
+    const companyId = this.authService.selectedId;
+    const periodTypeId = this.authService.selectedPeriod?.period_type_id;
+  
+    // Si no hay período seleccionado, mostrar un error
+    if (!periodTypeId) {
+      console.error('No se ha seleccionado un tipo de período');
+      loading.dismiss();
+      return;
     }
-  }
-
-  async loadSecondaryCompanies() {
-    this.http.get('https://siinad.mx/php/get-companies.php').subscribe(
-      async (response: any) => {
-        if (response) {
-          this.secondaryCompanies = response;
-        } else {
-          console.error('Error al cargar empresas secundarias');
-          await this.mostrarToast('Error al cargar empresas secundarias.', 'danger');
-        }
-      },
-      async (error) => {
-        console.error('Error en la solicitud GET:', error);
-        await this.mostrarToast('Error al cargar empresas secundarias.', 'danger');
-      }
-    );
-  }
-
-
-  async assignCompanyToUser() {
-    const data = {
-      user_id: this.selectedUser.id,
-      company_id: this.authService.selectedId,
-      principal: 0,
-      levelUser_id: this.selectedLevelUser,
-      status: 2
+  
+    // Preparar el cuerpo de la solicitud JSON con company_id y period_type_id
+    const body = {
+      company_id: companyId,
+      period_type_id: periodTypeId
     };
-
-    this.http.post('https://siinad.mx/php/assign-company.php', data).subscribe(
-      async (response: any) => {
-        if (response.success) {
-          console.log('Empresa asignada', response);
-          await this.mostrarToast('Empresa asignada con éxito.', 'success');
-          this.closeModal();
-        } else {
-          console.error(response.error);
-          await this.mostrarToast(response.error, 'danger');
+  
+    // Hacer una solicitud HTTP POST a la API para obtener los días pendientes
+    this.http.post('https://siinad.mx/php/get-pending-days.php', body)
+      .subscribe((data: any) => {
+        // Asegúrate de que los datos obtenidos sean válidos
+        if (data.error) {
+          console.error(data.error);
+          loading.dismiss();
+          return;
         }
-      },
-      async (error) => {
-        console.error('Error en la solicitud POST:', error);
-        await this.mostrarToast('Error al asignar empresa.', 'danger');
-      }
-    );
+  
+        // Procesar los datos recibidos
+        this.periodDays = data.period_days || [];
+        this.confirmedDays = data.confirmed_days || [];
+        this.pendingDays = data.pending_days || [];
+  
+        // Ocultar el spinner
+        loading.dismiss();
+      }, error => {
+        console.error('Error al cargar los días pendientes', error);
+        loading.dismiss();
+      });
   }
 
-  closeModal() {
-    this.isModalOpen = false;
+  // Función que determina si un día está confirmado
+  isConfirmed(day: string): boolean {
+    return this.confirmedDays.some(confirmedDay => confirmedDay.assignment_date === day);
   }
 
-  async mostrarToast(message: string, color: string) {
-    const toast = document.createElement('ion-toast');
-    toast.message = message;
-    toast.color = color;
-    toast.duration = 2000;
-    document.body.appendChild(toast);
-    return toast.present();
+  // Función para seleccionar un día y mostrar los empleados pendientes de ese día
+  selectDay(day: string) {
+    this.selectedDay = day;
+
+    // Filtrar empleados que tienen asignaciones pendientes para el día seleccionado
+    this.selectedPendingEmployees = this.pendingDays.filter(dia => dia.assignment_date === day);
   }
 
   goBack() {

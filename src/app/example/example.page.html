@@ -1,100 +1,60 @@
+<ion-content [fullscreen]="true" class="ion-padding">
+  <!-- Breadcrumbs -->
+  <ion-breadcrumbs>
+    <ion-breadcrumb routerLink="/home">Inicio</ion-breadcrumb>
+    <ion-breadcrumb routerLink="/pending-days">Confirmación de Días</ion-breadcrumb>
+  </ion-breadcrumbs>
 
-
-<ion-content [fullscreen]="true">
+  <!-- Botón de retroceso -->
+  <div class="back-button mt-3" (click)="goBack()">
+    <ion-icon name="arrow-back"></ion-icon>
+  </div>
 
   <div class="container mt-4">
-    <div class="row justify-content-center">
-      <div class="back-button" (click)="goBack()">
-        <ion-icon name="arrow-back"></ion-icon>
+    <div class="d-flex justify-content-center mb-4">
+      <h5><strong>Confirmación de Días del Período</strong></h5>
+    </div>
+
+    <!-- Diseño de dos columnas -->
+    <div class="row">
+      <!-- Columna izquierda con la información de los días -->
+      <div class="col-lg-4 col-md-5">
+        <div class="sticky-top p-3 mb-4 bg-light rounded shadow-sm">
+          <h6 class="fw-bold">Días del Período</h6>
+          <div class="days-grid">
+            <div *ngFor="let day of periodDays" class="day-box" 
+                 [ngClass]="{'confirmed': isConfirmed(day), 'pending': !isConfirmed(day)}"
+                 (click)="selectDay(day)">
+              {{ day }}
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="col-md-8 col-lg-6">
-        <div class="text-center pt-4">
-          <h5><strong>Agregar usuario adicional a mi empresa</strong></h5>
-
-        </div>
-        <div class="card shadow-lg p-4">
+      <!-- Columna derecha con los empleados pendientes para el día seleccionado -->
+      <div class="col-lg-8 col-md-7">
+        <div class="card shadow-lg p-4 mb-4">
           <div class="card-body">
-            <ion-item>
-              <ion-label>Ingrese Código de Usuario</ion-label>
-              <ion-input [(ngModel)]="userCode" (ionBlur)="onUserCodeChange()"></ion-input>
-            </ion-item>
-
-            <ion-item *ngIf="selectedUser">
-              <ion-label>Nombre del Usuario:</ion-label>
-              <ion-text>{{ selectedUser.name }}</ion-text>
-            </ion-item>
-
-            <ion-item *ngIf="selectedUser">
-              <ion-label>Correo Electrónico:</ion-label>
-              <ion-text>{{ selectedUser.email }}</ion-text>
-            </ion-item>
-
-            <ion-item *ngIf="selectedUser">
-              <ion-label>Seleccione Nivel de Usuario</ion-label>
-              <ion-select [(ngModel)]="selectedLevelUser">
-                <ion-select-option *ngFor="let level of levelUsers" [value]="level.id">
-                  {{ level.levelUserName }}
-                </ion-select-option>
-              </ion-select>
-            </ion-item>
-
-            <ion-button expand="block" class="btn btn-primary mt-4" *ngIf="selectedUser && selectedLevelUser" (click)="assignCompanyToUser()">
-              Asignar Empresa Secundaria
-            </ion-button>
+            <h6 class="fw-bold">Empleados con Asignaciones Pendientes</h6>
+            <div *ngIf="selectedPendingEmployees.length > 0" style="max-height: 200px; overflow-y: auto;">
+              <ion-list>
+                <ion-item *ngFor="let dia of selectedPendingEmployees">
+                  <ion-label>
+                    <h6 class="fw-bold">{{ dia.first_name }} {{ dia.last_name }}</h6>
+                    <p>Proyecto: {{ dia.project_name }}</p>
+                    <p>Día: {{ dia.assignment_date }}</p>
+                    <p>Estado: Pendiente</p>
+                  </ion-label>
+                  <ion-checkbox [(ngModel)]="dia.confirmed"></ion-checkbox>
+                </ion-item>
+              </ion-list>
+            </div>
+            <div *ngIf="selectedPendingEmployees.length === 0" class="text-center">
+              <p>No hay empleados con pendientes para este día.</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 </ion-content>
-
-<style>
-  .container {
-    max-width: 800px;
-    margin-top: 20px;
-  }
-
-  .card {
-    border-radius: 10px;
-    background-color: #ffffff;
-  }
-
-  .card-title {
-    font-size: 1.5rem;
-    color: #007bff;
-  }
-
-  .form-control {
-    border: 1px solid #ced4da;
-    border-radius: 5px;
-    padding: 10px;
-  }
-
-  .btn-primary {
-    background-color: #007bff;
-    border: none;
-    transition: background-color 0.3s ease;
-  }
-
-  .btn-primary:hover {
-    background-color: #0056b3;
-  }
-
-  .back-button {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 40px;
-    height: 40px;
-    background-color: #007bff;
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-</style>
