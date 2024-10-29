@@ -103,6 +103,8 @@ export class EditEmployeePage implements OnInit {
     this.fetchGenders();
     this.fetchMaritalStatuses();
     this.fetchDepartamentos();
+    this.fetchPuestos(); 
+    this.fetchTurnos();
   }
 
   async fetchPendingEmployees() {
@@ -139,62 +141,46 @@ export class EditEmployeePage implements OnInit {
     });
   }
 
-  async fetchDepartamentos() {
-    const loading = await this.loadingController.create({
-      message: 'Cargando departamentos...',
-      spinner: 'crescent'
-    });
-    await loading.present();
-
+  fetchDepartamentos() {
     const companyId = this.authService.selectedId;
     this.http.get<any[]>(`https://siinad.mx/php/get_departments.php?company_id=${companyId}`).subscribe(
       data => {
-        this.departamentos = data;
-        this.cdr.detectChanges();
+        console.log('Departamentos:', data); // Verificar la respuesta
+        this.departamentos = Array.isArray(data) ? data : []; // Asegurarse de que sea un array
       },
-      error => console.error('Error al cargar departamentos', error)
-    ).add(() => {
-      loading.dismiss();
-    });
+      error => {
+        console.error('Error al cargar departamentos', error);
+        this.departamentos = []; // En caso de error, asigna un array vacío
+      }
+    );
   }
-
-  async fetchPuestos(departmentId: number) {
-    const loading = await this.loadingController.create({
-      message: 'Cargando puestos...',
-      spinner: 'crescent'
-    });
-    await loading.present();
-
-    this.http.get<any[]>(`https://siinad.mx/php/get_positions.php?department_id=${departmentId}`).subscribe(
+  
+  fetchPuestos() {
+    const companyId = this.authService.selectedId;
+    this.http.get<any[]>(`https://siinad.mx/php/get_positions.php?company_id=${companyId}`).subscribe(
       data => {
-        this.puestos = data;
-        if (this.puestos.length > 0) {
-          this.fetchTurnos(this.puestos[0].position_id);
-        }
-        this.cdr.detectChanges();
+        console.log('Puestos:', data); // Verificar la respuesta
+        this.puestos = Array.isArray(data) ? data : []; // Asegurarse de que sea un array
       },
-      error => console.error('Error al cargar puestos', error)
-    ).add(() => {
-      loading.dismiss();
-    });
+      error => {
+        console.error('Error al cargar puestos', error);
+        this.puestos = []; // En caso de error, asigna un array vacío
+      }
+    );
   }
-
-  async fetchTurnos(positionId: number) {
-    const loading = await this.loadingController.create({
-      message: 'Cargando turnos...',
-      spinner: 'crescent'
-    });
-    await loading.present();
-
-    this.http.get<any[]>(`https://siinad.mx/php/get_shifts.php?position_id=${positionId}`).subscribe(
+  
+  fetchTurnos() {
+    const companyId = this.authService.selectedId;
+    this.http.get<any[]>(`https://siinad.mx/php/get_shifts.php?company_id=${companyId}`).subscribe(
       data => {
-        this.turnos = data;
-        this.cdr.detectChanges();
+        console.log('Turnos:', data); // Verificar la respuesta
+        this.turnos = Array.isArray(data) ? data : []; // Asegurarse de que sea un array
       },
-      error => console.error('Error al cargar turnos', error)
-    ).add(() => {
-      loading.dismiss();
-    });
+      error => {
+        console.error('Error al cargar turnos', error);
+        this.turnos = []; // En caso de error, asigna un array vacío
+      }
+    );
   }
 
   async fetchGenders() {
@@ -253,12 +239,10 @@ export class EditEmployeePage implements OnInit {
   }
 
   onSelectEmployee(event: any) {
-    
+
     const employeeId = event.target.value;
     this.selectedEmployee = this.empleadosPendientes.find(emp => emp.employee_id === +employeeId) || null;
     if (this.selectedEmployee) {
-      this.fetchPuestos(this.selectedEmployee.department_id);
-      this.fetchTurnos(this.selectedEmployee.position_id);
       this.fetchEmployeeFiles(this.selectedEmployee.employee_id);
       this.checkAllFieldsCompleted();
     }
@@ -298,24 +282,45 @@ export class EditEmployeePage implements OnInit {
   }
 
 
-  onDepartmentChange(event: any) {
-    const departmentId = event.target.value;
+
+  async rechazarSolicitud() {
     if (this.selectedEmployee) {
-      this.selectedEmployee.department_id = departmentId;
-      this.fetchPuestos(departmentId);
-      this.checkAllFieldsCompleted();
+      const loading = await this.loadingController.create({
+        message: 'Rechazando solicitud...',
+        spinner: 'crescent'
+      });
+      await loading.present();
+
+      const data = {
+        employee_id: this.selectedEmployee.employee_id,
+        status: 'Rejected'
+      };
+
+      this.http.post('https://siinad.mx/php/update_employee_status.php', data).subscribe(
+        async (response: any) => {
+          const toast = await this.toastController.create({
+            message: 'Solicitud de empleado rechazada exitosamente.',
+            duration: 2000,
+            color: 'warning'
+          });
+          toast.present();
+          this.fetchPendingEmployees();
+          this.selectedEmployee = null;
+        },
+        async error => {
+          const toast = await this.toastController.create({
+            message: 'Error al rechazar la solicitud de empleado.',
+            duration: 2000,
+            color: 'danger'
+          });
+          toast.present();
+        }
+      ).add(() => {
+        loading.dismiss();
+      });
     }
   }
 
-
-  onPositionChange(event: any) {
-    const positionId = event.target.value;
-    if (this.selectedEmployee) {
-      this.selectedEmployee.position_id = positionId;
-      this.fetchTurnos(positionId);
-      this.checkAllFieldsCompleted();
-    }
-  }
 
   onFileChange(event: any, fileType: string) {
     const file = event.target.files[0];
@@ -395,22 +400,10 @@ export class EditEmployeePage implements OnInit {
   }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
   onSubmit(form: NgForm) {
     console.log('Formulario enviado:', form.value);  // Ver los valores del formulario
-  console.log('Formulario válido:', form.valid);  // Ver si el formulario es válido
-  console.log('Empleado seleccionado:', this.selectedEmployee);  // Ver el empleado seleccionado
+    console.log('Formulario válido:', form.valid);  // Ver si el formulario es válido
+    console.log('Empleado seleccionado:', this.selectedEmployee);  // Ver el empleado seleccionado
     if (
       form.valid &&
       this.selectedEmployee &&
@@ -470,53 +463,54 @@ export class EditEmployeePage implements OnInit {
       this.validateAllFormFields(form);
     }
   }
+
+
   async uploadFiles() {
-    if (this.selectedEmployee) {
-      const loading = await this.loadingController.create({
-        message: 'Subiendo archivos...',
-        spinner: 'crescent'
-      });
-      await loading.present();
+    if (!this.selectedEmployee || Object.keys(this.files).length === 0) {
+      console.warn('No hay empleado seleccionado o archivos para subir.');
+      return;
+    }
 
-      const formData = new FormData();
-      formData.append('employee_id', this.selectedEmployee.employee_id.toString());
+    const loading = await this.loadingController.create({
+      message: 'Subiendo archivos...',
+      spinner: 'crescent'
+    });
+    await loading.present();
 
-      for (const fileType in this.files) {
-        if (this.files.hasOwnProperty(fileType)) {
-          formData.append(fileType, this.files[fileType]);
-        }
-      }
+    const formData = new FormData();
+    formData.append('employee_id', this.selectedEmployee.employee_id.toString());
 
-      try {
-        // Usamos await para esperar la respuesta de la solicitud HTTP
-        const response = await this.http.post('https://siinad.mx/php/update_upload_files.php', formData).toPromise();
-
-        // Mostrar mensaje de éxito
-        const toast = await this.toastController.create({
-          message: 'Archivos actualizados exitosamente.',
-          duration: 2000,
-          color: 'success'
-        });
-        toast.present();
-
-        // Actualizar la lista de empleados pendientes y resetear el formulario
-        this.fetchPendingEmployees();
-        this.selectedEmployee = null;
-      } catch (error) {
-        // Manejo de errores
-        const toast = await this.toastController.create({
-          message: 'Error al actualizar archivos.',
-          duration: 2000,
-          color: 'danger'
-        });
-        toast.present();
-        console.error('Error al subir archivos:', error);
-      } finally {
-        // Asegurarnos de que el loader siempre se cierre, tanto si hay éxito como si ocurre un error
-        loading.dismiss();
+    for (const fileType in this.files) {
+      if (this.files.hasOwnProperty(fileType)) {
+        formData.append(fileType, this.files[fileType]);
       }
     }
+
+    try {
+      const response = await this.http.post('https://siinad.mx/php/update_upload_files.php', formData).toPromise();
+      const toast = await this.toastController.create({
+        message: 'Archivos actualizados exitosamente.',
+        duration: 2000,
+        color: 'success'
+      });
+      toast.present();
+
+      this.fetchPendingEmployees();
+      this.selectedEmployee = null;
+    } catch (error) {
+      const toast = await this.toastController.create({
+        message: 'Error al actualizar archivos.',
+        duration: 2000,
+        color: 'danger'
+      });
+      toast.present();
+      console.error('Error al subir archivos:', error);
+    } finally {
+      loading.dismiss();
+    }
   }
+
+
 
 
   async enviarSolicitudPendiente() {

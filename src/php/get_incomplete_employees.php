@@ -9,8 +9,8 @@ require_once 'conexion.php';
 $companyId = isset($_GET['company_id']) ? intval($_GET['company_id']) : 0;
 
 if ($companyId > 0) {
-    // Preparar la declaración SQL
-    $stmt = $mysqli->prepare("SELECT * FROM employees e JOIN employee_requests er ON e.employee_id = er.employee_id WHERE er.status = 'Incomplete' AND e.company_id = ?");
+    // Preparar la declaración SQL para obtener empleados con estado 'Incomplete' o 'Rejected'
+    $stmt = $mysqli->prepare("SELECT * FROM employees e JOIN employee_requests er ON e.employee_id = er.employee_id WHERE er.status IN ('Incomplete', 'Rejected') AND e.company_id = ?");
     
     if ($stmt === false) {
         error_log("Error en la preparación de la consulta: " . $mysqli->error);

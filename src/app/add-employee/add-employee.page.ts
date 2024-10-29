@@ -70,6 +70,8 @@ export class AddEmployeePage implements OnInit {
 
   ngOnInit() {
     this.fetchDepartamentos();
+    this.fetchPuestos();
+    this.fetchTurnos();
     this.fetchGenders();
     this.fetchMaritalStatuses();
   }
@@ -78,33 +80,44 @@ export class AddEmployeePage implements OnInit {
     const companyId = this.authService.selectedId;
     this.http.get<any[]>(`https://siinad.mx/php/get_departments.php?company_id=${companyId}`).subscribe(
       data => {
-        this.departamentos = data;
-        if (this.departamentos.length > 0) {
-          this.fetchPuestos(this.departamentos[0].department_id);
-        }
+        console.log('Departamentos:', data); // Verificar la respuesta
+        this.departamentos = Array.isArray(data) ? data : []; // Asegurarse de que sea un array
       },
-      error => console.error('Error al cargar departamentos', error)
+      error => {
+        console.error('Error al cargar departamentos', error);
+        this.departamentos = []; // En caso de error, asigna un array vacío
+      }
     );
   }
-
-  fetchPuestos(departmentId: number) {
-    this.http.get<any[]>(`https://siinad.mx/php/get_positions.php?department_id=${departmentId}`).subscribe(
+  
+  fetchPuestos() {
+    const companyId = this.authService.selectedId;
+    this.http.get<any[]>(`https://siinad.mx/php/get_positions.php?company_id=${companyId}`).subscribe(
       data => {
-        this.puestos = data;
-        if (this.puestos.length > 0) {
-          this.fetchTurnos(this.puestos[0].position_id);
-        }
+        console.log('Puestos:', data); // Verificar la respuesta
+        this.puestos = Array.isArray(data) ? data : []; // Asegurarse de que sea un array
       },
-      error => console.error('Error al cargar puestos', error)
+      error => {
+        console.error('Error al cargar puestos', error);
+        this.puestos = []; // En caso de error, asigna un array vacío
+      }
     );
   }
-
-  fetchTurnos(positionId: number) {
-    this.http.get<any[]>(`https://siinad.mx/php/get_shifts.php?position_id=${positionId}`).subscribe(
-      data => this.turnos = data,
-      error => console.error('Error al cargar turnos', error)
+  
+  fetchTurnos() {
+    const companyId = this.authService.selectedId;
+    this.http.get<any[]>(`https://siinad.mx/php/get_shifts.php?company_id=${companyId}`).subscribe(
+      data => {
+        console.log('Turnos:', data); // Verificar la respuesta
+        this.turnos = Array.isArray(data) ? data : []; // Asegurarse de que sea un array
+      },
+      error => {
+        console.error('Error al cargar turnos', error);
+        this.turnos = []; // En caso de error, asigna un array vacío
+      }
     );
   }
+  
 
   fetchGenders() {
     this.http.get<any[]>('https://siinad.mx/php/get_genders.php').subscribe(
@@ -120,15 +133,7 @@ export class AddEmployeePage implements OnInit {
     );
   }
 
-  onDepartmentChange(event: any) {
-    const departmentId = event.target.value;
-    this.fetchPuestos(departmentId);
-  }
-
-  onPositionChange(event: any) {
-    const positionId = event.target.value;
-    this.fetchTurnos(positionId);
-  }
+  
 
   onFileChange(event: any, fileType: string) {
     const file = event.target.files[0];

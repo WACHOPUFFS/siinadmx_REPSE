@@ -20,10 +20,14 @@
             <ion-label>Filtrar por tipo de usuario</ion-label>
             <ion-select id="userTypeSelect" [(ngModel)]="selectedUserType" (ionChange)="onUserTypeChange($event)">
               <ion-select-option value="all">Todos</ion-select-option>
-              <ion-select-option *ngFor="let userType of userTypes" [value]="userType.levelUserName">{{
-                userType.levelUserName }}</ion-select-option>
+              <ion-select-option *ngFor="let userType of userTypes" [value]="userType.levelUserName">
+                {{ userTypeNames[userType.levelUserName] || userType.levelUserName }}
+              </ion-select-option>
             </ion-select>
           </ion-item>
+          
+          
+          
 
           <ion-item>
             <ion-label>Seleccionar usuario</ion-label>

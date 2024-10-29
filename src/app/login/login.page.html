@@ -1,4 +1,4 @@
-<div  class="login-section container py-5" (keyup.enter)="onEnterPressed()">
+<div class="login-section container py-5" (keyup.enter)="onEnterPressed()">
   <div class="heading text-center mb-4">
     <h1 class="display-4">Bienvenido</h1>
     <p class="lead">Ingrese sus datos para continuar</p>
@@ -6,19 +6,29 @@
   <div class="login-form mb-4">
     <div class="form-input mb-3 position-relative">
       <span class="input-icon">
-        <svg width="20" height="20" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
-          <path
-            d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM5.216 14A5.486 5.486 0 0 1 8 13c1.284 0 2.47.444 3.216 1h-6.432zM2 13s1-1 6-1 6 1 6 1v1H2v-1z" />
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Cabeza del usuario -->
+          <circle cx="12" cy="8" r="4" fill="currentColor"/>
+          
+          <!-- Cuerpo del usuario -->
+          <path d="M4 20C4 16.6863 7.68629 14 12 14C16.3137 14 20 16.6863 20 20V21H4V20Z" fill="currentColor"/>
         </svg>
       </span>
       <input type="text" class="form-control" placeholder="Nombre de usuario" [(ngModel)]="username">
     </div>
     <div class="form-input mb-3 position-relative">
       <span class="input-icon">
-        <svg width="20" height="20" fill="currentColor" class="bi bi-lock" viewBox="0 0 16 16">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Parte superior del candado -->
           <path
-            d="M3.5 9a1.5 1.5 0 1 1 3 0v1h4V9a1.5 1.5 0 1 1 3 0v1a3.5 3.5 0 0 1-7 0v-1zm6 0v-1a1.5 1.5 0 0 1-3 0v1h3z" />
-          <path d="M4 8v2H3V8a2 2 0 0 1 4 0v2H5V8a1 1 0 1 0-2 0z" />
+            d="M12 1C8.68629 1 6 3.68629 6 7V10H8V7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7V10H18V7C18 3.68629 15.3137 1 12 1Z"
+            fill="currentColor" />
+
+          <!-- Cuerpo del candado -->
+          <rect x="5" y="10" width="14" height="12" rx="2" ry="2" fill="currentColor" />
+
+          <!-- Agujero del candado -->
+          <circle cx="12" cy="16" r="1" fill="white" />
         </svg>
       </span>
       <input type="password" class="form-control" placeholder="Contraseña" [(ngModel)]="password">

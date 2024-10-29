@@ -8,17 +8,19 @@ require_once 'conexion.php';
 // Verificar si se han pasado los datos necesarios
 $data = json_decode(file_get_contents("php://input"), true);
 
-if (!isset($data['position_id']) || !isset($data['position_name'])) {
-    echo json_encode(['error' => 'position_id and position_name are required']);
+if (!isset($data['company_id']) || !isset($data['position_id']) || !isset($data['position_name'])) {
+    echo json_encode(['error' => 'company_id, position_id, and position_name are required']);
     exit;
 }
 
+$company_id = intval($data['company_id']);
 $position_id = intval($data['position_id']);
 $position_name = $mysqli->real_escape_string($data['position_name']);
 $description = isset($data['description']) ? $mysqli->real_escape_string($data['description']) : '';
 
-// Consulta SQL para actualizar el puesto
-$sql = "UPDATE positions SET position_name = '$position_name', description = '$description' WHERE position_id = $position_id";
+// Consulta SQL para actualizar el puesto con base en el company_id y position_id
+$sql = "UPDATE positions SET position_name = '$position_name', description = '$description' 
+        WHERE position_id = $position_id AND company_id = $company_id";
 
 if ($mysqli->query($sql)) {
     if ($mysqli->affected_rows > 0) {

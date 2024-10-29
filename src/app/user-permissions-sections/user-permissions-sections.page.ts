@@ -25,6 +25,14 @@ export class UserPermissionsSectionsPage implements OnInit {
   subSectionsClient: string[] = []; // Nueva propiedad para cliente
   permissions: any[] = [];
 
+  userTypeNames: Record<string, string> = {
+    admin: 'Administrador',
+    superV: 'Supervisor',
+    adminU: 'Administrativo'
+  };
+  
+  
+
   groupedPermissions: { section: string, subSections: string[] }[] = []; // Nueva propiedad
 
   constructor(private toastController: ToastController, private http: HttpClient, public authService: AuthService, private navCtrl: NavController) { }
