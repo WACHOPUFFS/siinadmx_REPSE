@@ -29,6 +29,7 @@ $email = $mysqli->real_escape_string($data['email']);
 $gender_id = intval($data['gender_id']);
 $marital_status_id = intval($data['marital_status_id']);
 $company_id = intval($data['company_id']);
+
 // Concatenar nombre completo
 $full_name = $first_name . ' ' . $middle_name . ' ' . $last_name;
 
@@ -38,15 +39,29 @@ $check_code_query = "
     WHERE employee_code = '$employee_code' AND employee_id != $employee_id AND company_id = $company_id
 ";
 
-$result = $mysqli->query($check_code_query);
+$result_code = $mysqli->query($check_code_query);
 
 // Si ya existe un empleado con el mismo código en la misma empresa, devolver un error
-if ($result && $result->num_rows > 0) {
+if ($result_code && $result_code->num_rows > 0) {
     echo json_encode(['success' => false, 'message' => 'El código de empleado ya está en uso por otro empleado en la misma empresa.']);
     exit;
 }
 
-// Si no existe, proceder a actualizar los datos del empleado
+// Verificar si la CURP ya existe para otro empleado dentro de la misma empresa
+$check_curp_query = "
+    SELECT employee_id FROM employees 
+    WHERE curp = '$curp' AND employee_id != $employee_id AND company_id = $company_id
+";
+
+$result_curp = $mysqli->query($check_curp_query);
+
+// Si ya existe un empleado con la misma CURP en la misma empresa, devolver un error
+if ($result_curp && $result_curp->num_rows > 0) {
+    echo json_encode(['success' => false, 'message' => 'La CURP ya está en uso por otro empleado en la misma empresa.']);
+    exit;
+}
+
+// Si no existen duplicados, proceder a actualizar los datos del empleado
 $sql = "
     UPDATE employees SET 
         employee_code = '$employee_code', 

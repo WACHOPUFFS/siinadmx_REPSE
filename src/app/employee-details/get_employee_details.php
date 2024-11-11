@@ -113,23 +113,32 @@ $sql = "
         e.updated_at, 
         e.company_id, 
         e.net_balance,
+        e.lot_number_imss,
+        e.folio_number_imss,
         d.department_name, 
         p.position_name, 
         s.shift_name,
         m.status_name,
-        g.gender_name
+        g.gender_name,
+         er.request_id,
+        er.status AS request_status,
+        er.created_at AS request_created_at,
+        er.updated_at AS request_updated_at
+
     FROM 
         employees e
-    JOIN 
+    LEFT JOIN 
         departments d ON e.department_id = d.department_id
-    JOIN 
+    LEFT JOIN 
         positions p ON e.position_id = p.position_id
-    JOIN 
+    LEFT JOIN 
         shifts s ON e.shift_id = s.shift_id
-    JOIN 
+    LEFT JOIN 
         marital_statuses m ON e.marital_status_id = m.status_id
-    JOIN 
+    LEFT JOIN 
         genders g ON e.gender_id = g.gender_id
+    LEFT JOIN
+         employee_requests er ON e.employee_id = er.employee_id
     WHERE 
         e.employee_id = $employee_id
 ";
@@ -141,7 +150,7 @@ if ($result && $result->num_rows > 0) {
     $employee = $result->fetch_assoc();
 
     // Reemplazar todos los campos vacíos o nulos con una cadena vacía
-    $employee = array_map(function($value) {
+    $employee = array_map(function ($value) {
         return $value === null ? '' : $value;
     }, $employee);
 
@@ -160,10 +169,10 @@ if ($result && $result->num_rows > 0) {
     ";
 
     $result_files = $mysqli->query($sql_files);
-    
+
     $files = [];
     while ($row_file = $result_files->fetch_assoc()) {
-        $files[] = array_map(function($value) {
+        $files[] = array_map(function ($value) {
             return $value === null ? '' : $value;
         }, $row_file);
     }

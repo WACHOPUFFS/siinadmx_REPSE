@@ -38,12 +38,23 @@ $uploadFile = $uploadDir . $uniqueName; // Ruta completa con el nombre único de
 // Mover el archivo subido a la carpeta de destino con el nuevo nombre
 if (move_uploaded_file($_FILES['pdf']['tmp_name'], $uploadFile)) {
     // Preparar la consulta para insertar los datos en la base de datos
-    $sql = "INSERT INTO week_files (company_id, week_number, period_type_id, status, pdf_path) 
-            VALUES ($companyId, $weekNumber, $periodTypeId, '$status', '$uploadFile')";
+    $sqlInsertFile = "INSERT INTO week_files (company_id, week_number, period_type_id, status, pdf_path) 
+                      VALUES ($companyId, $weekNumber, $periodTypeId, '$status', '$uploadFile')";
 
-    // Ejecutar la consulta
-    if ($mysqli->query($sql)) {
-        echo json_encode(['success' => 'Archivo subido correctamente y guardado en la base de datos.', 'fileName' => $uniqueName]);
+    // Ejecutar la consulta de inserción
+    if ($mysqli->query($sqlInsertFile)) {
+        // Actualizar el campo is_processed en la tabla weeks_processed
+        $sqlUpdateProcessed = "UPDATE weeks_processed 
+                               SET is_processed = 1 
+                               WHERE period_type_id = $periodTypeId 
+                                 AND company_id = $companyId 
+                                 AND week_number = $weekNumber";
+
+        if ($mysqli->query($sqlUpdateProcessed)) {
+            echo json_encode(['success' => 'Archivo subido correctamente, guardado en la base de datos y marcado como procesado.', 'fileName' => $uniqueName]);
+        } else {
+            echo json_encode(['error' => 'Archivo subido, pero no se pudo actualizar el estado de la semana: ' . $mysqli->error]);
+        }
     } else {
         echo json_encode(['error' => 'Error al guardar la información en la base de datos: ' . $mysqli->error]);
     }

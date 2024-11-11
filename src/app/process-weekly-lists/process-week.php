@@ -42,7 +42,7 @@ if ($checkResult && $checkResult->num_rows > 0) {
 $updateQuery = "UPDATE week_confirmations SET is_processed = 1 WHERE week_number = $weekNumber AND company_id = $companyId AND period_type_id = $periodTypeId";
 if ($mysqli->query($updateQuery)) {
     // Insertar la semana en la tabla weeks_processed
-    $insertQuery = "INSERT INTO weeks_processed (week_number, company_id, period_type_id, start_date, end_date, is_processed) VALUES ($weekNumber, $companyId, $periodTypeId, '$startDate', '$endDate', 1)";
+    $insertQuery = "INSERT INTO weeks_processed (week_number, company_id, period_type_id, start_date, end_date) VALUES ($weekNumber, $companyId, $periodTypeId, '$startDate', '$endDate')";
 
     if ($mysqli->query($insertQuery)) {
         echo json_encode(['success' => 'Semana procesada exitosamente.']);

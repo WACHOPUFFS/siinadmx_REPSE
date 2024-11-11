@@ -7,14 +7,18 @@ require_once 'conexion.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $employeeId = isset($_POST['employee_id']) ? intval($_POST['employee_id']) : 0;
+    $folio = isset($_POST['folio']) ? $_POST['folio'] : '';
+    $lote = isset($_POST['lote']) ? $_POST['lote'] : '';
 
     // Manejar los archivos subidos
-    $uploadDir = 'uploads/';
-    $fileFields = ['ineFrente', 'ineReverso', 'constanciaFiscal', 'numSeguroSocialArchivo', 'actaNacimiento', 'comprobanteDomicilio', 'cuentaInterbancaria', 'retencionInfonavit', 'antecedentesPenales', 'comprobanteEstudios'];
+    $uploadDir = 'uploads/employee_files/';
+    $fileFields = ['ineFrente', 'ineReverso', 'constanciaFiscal', 'numSeguroSocialArchivo', 'actaNacimiento', 'comprobanteDomicilio', 'cuentaInterbancaria', 'retencionInfonavit', 'antecedentesPenales', 'comprobanteEstudios', 'archivoIMSS'];
 
     foreach ($fileFields as $field) {
         if (isset($_FILES[$field]) && $_FILES[$field]['error'] == UPLOAD_ERR_OK) {
-            $fileName = basename($_FILES[$field]['name']);
+            // Generar un identificador único
+            $uniqueId = uniqid($employeeId . '_', true);
+            $fileName = $uniqueId . '_' . basename($_FILES[$field]['name']);
             $filePath = $uploadDir . $fileName;
 
             if (move_uploaded_file($_FILES[$field]['tmp_name'], $filePath)) {
@@ -35,6 +39,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 $stmt->execute();
                 $stmt->close();
+
+                // Si el archivo es 'archivoIMSS', actualizar los datos de folio_number_imss y lot_number_imss en la tabla de employees
+                if ($field === 'archivoIMSS' && $folio && $lote) {
+                    $stmt = $mysqli->prepare("UPDATE employees SET folio_number_imss = ?, lot_number_imss = ? WHERE employee_id = ?");
+                    $stmt->bind_param("ssi", $folio, $lote, $employeeId);
+                    $stmt->execute();
+                    $stmt->close();
+                }
             }
         }
     }

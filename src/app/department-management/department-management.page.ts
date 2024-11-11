@@ -14,12 +14,24 @@ export class DepartmentManagementPage implements OnInit {
   shifts: any[] = [];
   newDepartment: any = { department_name: '', description: '', company_id: '' };
   newPosition: any = { position_name: '', description: '', company_id: '' };
-  newShift: any = { shift_name: '', description: '', start_time: '', end_time: '', company_id: '' };
+  newShift: any = {
+    shift_name: '',
+    description: '',
+    start_time: '',
+    end_time: '',
+    lunch_start_time: '',
+    lunch_end_time: '',
+    second_lunch_start_time: '',
+    second_lunch_end_time: '',
+    company_id: ''
+  };
+
   selectedDepartment: any = null;
   selectedPosition: any = null;
   selectedShift: any = null;
   isAddingPosition: boolean = false;
   isAddingShift: boolean = false;
+  showSecondLunch: boolean = false;  // Variable para mostrar/ocultar segunda hora de comida
 
   constructor(
     private navCtrl: NavController,
@@ -27,7 +39,7 @@ export class DepartmentManagementPage implements OnInit {
     private authService: AuthService,
     private loadingController: LoadingController,
     private toastController: ToastController
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.fetchDepartments();
@@ -213,11 +225,18 @@ export class DepartmentManagementPage implements OnInit {
     }
   }
 
+  // Toggle visibility of the second lunch
+  toggleSecondLunch() {
+    this.showSecondLunch = !this.showSecondLunch;
+  }
+
+
   // Helper functions to determine whether to return new or existing position and shift
   getCurrentPosition() {
     return this.selectedPosition || this.newPosition;
   }
 
+  // Helper function to get the current shift (either new or selected)
   getCurrentShift() {
     return this.selectedShift || this.newShift;
   }

@@ -28,6 +28,11 @@
           <img src="/assets/image/seguidores.png" alt="Register Additional User" style="height: 60px;">
           <span>Confirmar dia</span>
         </a>
+        <a routerLink="/confirm-test"
+        *ngIf="sharedService.hasPermission('Incidencias', 'Confirmar dia')">
+          <img src="/assets/image/seguidores.png" alt="Register Additional User" style="height: 60px;">
+          <span>Confirmar dia</span>
+        </a>
         <a routerLink="/confirm-week"
         *ngIf="sharedService.hasPermission('Incidencias', 'Confirmar semana')">
           <img src="/assets/image/imagen.png" alt="Assign Logo" style="height: 60px;">

@@ -17,6 +17,7 @@ export class ProcessedAttendancePage implements OnInit {
   diasSemana: any[] = []; // Días de la semana seleccionada
   empleadosSemana: any[] = []; // Lista de empleados con sus horarios e incidencias
   file: File | null = null; // Archivo seleccionado
+  isProcessed: boolean = false; // Estado para el botón de procesar
 
   constructor(
     private authService: AuthService,
@@ -69,6 +70,7 @@ export class ProcessedAttendancePage implements OnInit {
   async onWeekChange(week: any) {
     if (week && week.start_date && week.end_date) {
       this.selectedWeek = week;
+      this.isProcessed = false; // Resetea isProcessed al cambiar de semana
       this.generateWeekDays(week.start_date, week.end_date); // Usar start_date y end_date directamente del objeto week
       await this.loadEmployeesForWeek();
     } else {
@@ -151,18 +153,18 @@ export class ProcessedAttendancePage implements OnInit {
       message: 'Generando PDF...',
     });
     await loading.present();
-  
+
     const pdf = new jsPDF('l', 'mm', 'a4'); // 'l' para orientación landscape
     const pageWidth = pdf.internal.pageSize.getWidth();
     const marginX = 10;
     const marginY = 10;
     const rowHeight = 8; // Reducir la altura de la fila
-  
+
     // Ajustar el ancho de las columnas
     const codeWidth = 15;
     const nameWidth = 40;
     const entryWidth = 20;
-  
+
     // Definir días de la semana para mostrar cada uno en una nueva página
     this.diasSemana.forEach((dia) => {
       // Nueva página para cada día
@@ -170,12 +172,12 @@ export class ProcessedAttendancePage implements OnInit {
         pdf.addPage();
       }
       let currentY = marginY + rowHeight; // Posición inicial en Y
-  
+
       // Título de la tabla
       pdf.setFontSize(12); // Reducir el tamaño de la fuente del título
       pdf.text(`Lista de Asistencia para ${dia.display} (${dia.date})`, marginX, currentY);
       currentY += rowHeight;
-  
+
       // Cabecera de la tabla
       pdf.setFontSize(8); // Reducir el tamaño de la fuente para la cabecera
       pdf.setFillColor(240, 240, 240);
@@ -183,51 +185,55 @@ export class ProcessedAttendancePage implements OnInit {
       pdf.text('Código', marginX + 2, currentY + 5);
       pdf.text('Empleado', marginX + codeWidth + 2, currentY + 5);
       pdf.text('Entrada', marginX + codeWidth + nameWidth + 2, currentY + 5);
-      pdf.text('Entrada Comida', marginX + codeWidth + nameWidth + entryWidth + 5, currentY + 5);
-      pdf.text('Salida Comida', marginX + codeWidth + nameWidth + entryWidth * 2 + 5, currentY + 5);
-      pdf.text('Salida', marginX + codeWidth + nameWidth + entryWidth * 3 + 5, currentY + 5);
-      pdf.text('Incidencia', marginX + codeWidth + nameWidth + entryWidth * 4 + 5, currentY + 5);
-      pdf.text('Empresa y Obra', marginX + codeWidth + nameWidth + entryWidth * 5 + 5, currentY + 5);
-      pdf.text('Firma', marginX + codeWidth + nameWidth + entryWidth * 8 + 8, currentY + 5); // Nueva columna de Firma
-  
+      pdf.text('Entrada C', marginX + codeWidth + nameWidth + entryWidth + 5, currentY + 5);
+      pdf.text('Salida C', marginX + codeWidth + nameWidth + entryWidth * 2 + 5, currentY + 5);
+      pdf.text('Entrada 2da C', marginX + codeWidth + nameWidth + entryWidth * 3 + 5, currentY + 5);
+      pdf.text('Salida 2da C', marginX + codeWidth + nameWidth + entryWidth * 4 + 5, currentY + 5);
+      pdf.text('Salida', marginX + codeWidth + nameWidth + entryWidth * 5 + 5, currentY + 5);
+      pdf.text('Incidencia', marginX + codeWidth + nameWidth + entryWidth * 6 + 5, currentY + 5);
+      pdf.text('Empresa y Obra', marginX + codeWidth + nameWidth + entryWidth * 7 + 5, currentY + 5);
+      pdf.text('Firma', marginX + codeWidth + nameWidth + entryWidth * 9 + 8, currentY + 5); // Nueva columna de Firma
+
       currentY += rowHeight;
-  
+
       // Filas de empleados
       this.empleadosSemana.forEach((emp) => {
         // Ajustar el nombre del empleado para que no sobresalga
         const nameText = `${emp.first_name} ${emp.middle_name} ${emp.last_name}`;
         const nameLines = pdf.splitTextToSize(nameText, nameWidth - 5);
-  
+
         // Datos del día específico para el empleado
         const workHours = emp.work_hours[dia.date] || {};
-  
+
         // Ajustar la altura dinámica de la fila según el número de líneas del nombre
         const rowHeightDynamic = rowHeight * nameLines.length;
-  
+
         // Ajustar filas dinámicas si hay muchas líneas
         pdf.text(emp.employee_code.toString(), marginX + 2, currentY + 5);
         pdf.text(nameLines, marginX + codeWidth + 2, currentY + 5);
-  
-        pdf.text(workHours.entry_time || '--:--', marginX + codeWidth + nameWidth + 2, currentY + 5);
-        pdf.text(workHours.lunch_start_time || '--:--', marginX + codeWidth + nameWidth + entryWidth + 5, currentY + 5);
-        pdf.text(workHours.lunch_end_time || '--:--', marginX + codeWidth + nameWidth + entryWidth * 2 + 5, currentY + 5);
-        pdf.text(workHours.exit_time || '--:--', marginX + codeWidth + nameWidth + entryWidth * 3 + 5, currentY + 5);
-        pdf.text(workHours.incident || 'N/A', marginX + codeWidth + nameWidth + entryWidth * 4 + 5, currentY + 5);
-        pdf.text(workHours.project_name || 'No Asignado', marginX + codeWidth + nameWidth + entryWidth * 5 + 5, currentY + 5);
-  
+
+        // Usar formatHour para convertir las horas a formato 12 horas con AM/PM
+        pdf.text(this.formatHour(workHours.entry_time) || '--:--', marginX + codeWidth + nameWidth + 2, currentY + 5);
+        pdf.text(this.formatHour(workHours.lunch_start_time) || '--:--', marginX + codeWidth + nameWidth + entryWidth + 5, currentY + 5);
+        pdf.text(this.formatHour(workHours.lunch_end_time) || '--:--', marginX + codeWidth + nameWidth + entryWidth * 2 + 5, currentY + 5);
+        pdf.text(this.formatHour(workHours.second_lunch_start_time) || '--:--', marginX + codeWidth + nameWidth + entryWidth * 3 + 5, currentY + 5);
+        pdf.text(this.formatHour(workHours.second_lunch_end_time) || '--:--', marginX + codeWidth + nameWidth + entryWidth * 4 + 5, currentY + 5);
+        pdf.text(this.formatHour(workHours.exit_time) || '--:--', marginX + codeWidth + nameWidth + entryWidth * 5 + 5, currentY + 5);
+        pdf.text(workHours.incident || 'N/A', marginX + codeWidth + nameWidth + entryWidth * 6 + 5, currentY + 5);
+        pdf.text(workHours.project_name || 'No Asignado', marginX + codeWidth + nameWidth + entryWidth * 7 + 5, currentY + 5);
+
         // Espacio para firma
-        pdf.text('_____________________', marginX + codeWidth + nameWidth + entryWidth * 8 + 8, currentY + 5);
-  
+        pdf.text('_____________________', marginX + codeWidth + nameWidth + entryWidth * 9 + 8, currentY + 5);
+
         // Incrementar la posición Y para la siguiente fila
         currentY += rowHeightDynamic;
       });
     });
-  
+
     // Guardar el PDF
     pdf.save('asistencia-semanal.pdf');
     loading.dismiss();
   }
-
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -236,7 +242,6 @@ export class ProcessedAttendancePage implements OnInit {
     }
   }
   
-
   async uploadPDF() {
     if (!this.file) {
       const alert = await this.alertController.create({
@@ -282,6 +287,7 @@ export class ProcessedAttendancePage implements OnInit {
           buttons: ['OK'],
         });
         await alert.present();
+        this.isProcessed = true; // Establecer isProcessed en true después de subir el archivo
       },
       async (error) => {
         loading.dismiss();
@@ -296,11 +302,10 @@ export class ProcessedAttendancePage implements OnInit {
     );
   }
   
-  
-  
-  
-  
-  
-  
-
+  formatHour(hour: string): string | null {
+    if (!hour || hour === '00:00:00') {
+      return null; // Devuelve null si la hora es '00:00:00' o está vacía
+    }
+    return moment(hour, 'HH:mm:ss').format('hh:mm A'); // Convierte a formato 12 horas con AM/PM
+  }
 }

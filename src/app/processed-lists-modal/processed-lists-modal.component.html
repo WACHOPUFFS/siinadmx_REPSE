@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Listas Semanales Procesadas</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <div class="container mt-4">
+    <table class="table table-bordered table-striped">
+      <thead class="table-primary">
+        <tr>
+          <th>Semana</th>
+          <th>Periodo</th>
+          <th>Fecha de Procesamiento</th>
+          <th>Archivo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let file of processedFiles">
+          <td>{{ file.week_number }}</td>
+          <td>{{ file.period_type }}</td>
+          <td>{{ file.uploaded_at| date: 'dd/MM/yyyy' }}</td>
+          <td>
+            <a [href]="file.pdf_url" target="_blank">Ver PDF</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</ion-content>

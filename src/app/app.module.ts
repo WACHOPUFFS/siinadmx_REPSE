@@ -25,6 +25,8 @@ import { CompanyInfoModalComponent } from './company-info-modal/company-info-mod
 
 import { EmployeeDetailsComponent } from './employee-details/employee-details.component';
 
+import { ProcessedListsModalComponent } from './processed-lists-modal/processed-lists-modal.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -41,7 +43,8 @@ import { EmployeeDetailsComponent } from './employee-details/employee-details.co
     IncidentModalComponent,
     ChangeHoursModalComponent,
     CompanyInfoModalComponent,
-    EmployeeDetailsComponent
+    EmployeeDetailsComponent,
+    ProcessedListsModalComponent
   ],
   imports: [
     BrowserModule,

@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { NavController, ToastController, LoadingController } from '@ionic/angular';
+import { NavController, ToastController, LoadingController,  AlertController } from '@ionic/angular';
 import { AuthService } from '../auth.service';
 import { SharedService } from '../shared.service'; // Importar servicio de permisos
 
@@ -12,6 +12,7 @@ interface Empleado {
   last_name: string;
   middle_name: string;
   birth_date: string;
+  birth_place: string;
   marital_status_id: number;
   gender_id: number;
   curp: string;
@@ -29,6 +30,11 @@ interface Empleado {
   net_balance?: number;  // Campo adicional para saldo neto
   daily_salary?: number; // Campo adicional para salario diario
   employee_code?: string; // Campo adicional para código del empleado
+  bank_account_number: string;
+  bank_name: string;
+  bank_branch: string;
+  clabe: string;
+
 }
 
 @Component({
@@ -51,6 +57,9 @@ export class EditEmployeePage implements OnInit {
   allFieldsCompleted: boolean = false;
   buttonNameSucessEmployee: string = '';
 
+  solicitudes: any[] = [];
+
+
   constructor(
     private http: HttpClient,
     private toastController: ToastController,
@@ -58,12 +67,67 @@ export class EditEmployeePage implements OnInit {
     private authService: AuthService,
     public sharedService: SharedService, // Inyectar SharedService para manejar permisos
     private cdr: ChangeDetectorRef,
-    private loadingController: LoadingController // Inyectar LoadingController
+    private loadingController: LoadingController,
+    private alertController: AlertController
   ) { }
 
   ngOnInit() {
+    this.fetchSolicitudesUltimos15Dias();
     this.loadPermissions();
   }
+
+
+  fetchSolicitudesUltimos15Dias() {
+    const companyId = this.authService.selectedId;  // ID de la empresa
+    const userId = this.authService.userId;  // ID del usuario que inició sesión (asegúrate de que esto esté disponible)
+    const today = new Date();
+    const fifteenDaysAgo = new Date();
+    fifteenDaysAgo.setDate(today.getDate() - 15);
+
+    const params = {
+      company_id: companyId,
+      user_id: userId,  // Se añade el parámetro del usuario
+      fechaInicio: fifteenDaysAgo.toISOString().split('T')[0],
+      fechaFin: today.toISOString().split('T')[0],
+    };
+
+    this.http.get<any>('https://siinad.mx/php/get_employee_requests.php', { params }).subscribe(
+      data => {
+        console.log('Solicitudes registradas:', data); // Verifica los datos recibidos
+
+        // Verificar si 'data.solicitudes' es un array antes de asignarlo
+        if (data && Array.isArray(data.solicitudes)) {
+          this.solicitudes = data.solicitudes;
+        } else {
+          console.error('El dato recibido no es un array de solicitudes');
+          this.solicitudes = []; // Asigna un array vacío si no es un array
+        }
+      },
+      error => {
+        console.error('Error al cargar solicitudes registradas', error);
+        this.solicitudes = [];
+      }
+    );
+
+
+  }
+
+
+getStatusDescription(status: string): string {
+  switch (status.toLowerCase()) {  // Usar toLowerCase() para asegurarnos de que no haya errores por mayúsculas/minúsculas
+    case 'incomplete':
+      return 'Solicitud incompleta - Pendiente de información adicional';
+    case 'pending':
+      return 'Solicitud pendiente - En espera de aprobación por el administrador';
+    case 'complete':
+      return 'Solicitud completa - En espera de procesamiento por el administrativo';
+    case 'finish':
+      return 'Solicitud finalizada - Empleado dado de alta';
+    default:
+      return 'Estado desconocido';
+  }
+}
+
 
   async loadPermissions() {
     const loading = await this.loadingController.create({
@@ -103,7 +167,7 @@ export class EditEmployeePage implements OnInit {
     this.fetchGenders();
     this.fetchMaritalStatuses();
     this.fetchDepartamentos();
-    this.fetchPuestos(); 
+    this.fetchPuestos();
     this.fetchTurnos();
   }
 
@@ -154,7 +218,7 @@ export class EditEmployeePage implements OnInit {
       }
     );
   }
-  
+
   fetchPuestos() {
     const companyId = this.authService.selectedId;
     this.http.get<any[]>(`https://siinad.mx/php/get_positions.php?company_id=${companyId}`).subscribe(
@@ -168,7 +232,7 @@ export class EditEmployeePage implements OnInit {
       }
     );
   }
-  
+
   fetchTurnos() {
     const companyId = this.authService.selectedId;
     this.http.get<any[]>(`https://siinad.mx/php/get_shifts.php?company_id=${companyId}`).subscribe(
@@ -406,8 +470,7 @@ export class EditEmployeePage implements OnInit {
     console.log('Empleado seleccionado:', this.selectedEmployee);  // Ver el empleado seleccionado
     if (
       form.valid &&
-      this.selectedEmployee &&
-      this.sharedService.hasPermission('Empleados', 'Editar solicitudes de empleados')
+      this.selectedEmployee
     ) {
       const data: any = {
         id: this.selectedEmployee.employee_id,
@@ -428,8 +491,14 @@ export class EditEmployeePage implements OnInit {
         contactoEmergencia: this.selectedEmployee.emergency_contact_name,
         numEmergencia: this.selectedEmployee.emergency_contact_number,
         fechaInicio: this.selectedEmployee.start_date,
+        lugarNacimiento: this.selectedEmployee.birth_place,
+        numeroCuentaBancaria: this.selectedEmployee.bank_account_number,
+        nombreBanco: this.selectedEmployee.bank_name,
+        sucursalBanco: this.selectedEmployee.bank_branch,
+        clabeInterbancaria: this.selectedEmployee.clabe,
         companyId: this.authService.selectedId
       };
+
 
       if (this.sharedService.hasPermission('Empleados', 'Aceptar solicitudes de empleados')) {
         data.net_balance = this.selectedEmployee.net_balance;
@@ -448,7 +517,6 @@ export class EditEmployeePage implements OnInit {
             color: 'success'
           });
           toast.present();
-          this.uploadFiles();
         },
         async error => {
           const toast = await this.toastController.create({
@@ -513,17 +581,20 @@ export class EditEmployeePage implements OnInit {
 
 
 
-  async enviarSolicitudPendiente() {
+  async enviarSolicitudPendiente(form: NgForm) {
+
+    this.onSubmit(form);
+  
     if (this.selectedEmployee) {
       const loading = await this.loadingController.create({
         message: 'Enviando solicitud pendiente...',
         spinner: 'crescent'
       });
       await loading.present();
-
+  
       let newStatus = 'Pending';
       let employeeStatus = '';
-
+  
       if (this.sharedService.hasPermission('Empleados', 'Aceptar solicitudes de empleados')) {
         newStatus = 'Complete';
         employeeStatus = 'A';
@@ -532,27 +603,58 @@ export class EditEmployeePage implements OnInit {
       } else if (this.sharedService.hasPermission('Empleados', 'Procesar empleados')) {
         newStatus = 'Finish';
       }
-
+  
       const data: any = {
         employee_id: this.selectedEmployee.employee_id,
         status: newStatus
       };
-
+  
       if (newStatus === 'Complete') {
         data.employee_status = employeeStatus;
       }
-
+  
+      // Enviar la solicitud al backend
       this.http.post('https://siinad.mx/php/update_employee_status.php', data).subscribe(
         async (response: any) => {
-          await this.uploadFiles();
-          const toast = await this.toastController.create({
-            message: 'Estado de la solicitud actualizado exitosamente.',
-            duration: 2000,
-            color: 'success'
-          });
-          toast.present();
-          this.fetchPendingEmployees();
-          this.selectedEmployee = null;
+          if (response && response.folio) {
+            console.log('Folio recibido:', response.folio);  // Aquí recibes el folio y lo puedes utilizar
+            await this.uploadFiles();
+  
+            // Mostrar alertas dependiendo del estado
+            if (newStatus === 'Pending') {
+              const alert = await this.alertController.create({
+                header: 'Solicitud Enviada',
+                message: `La solicitud ha sido enviada al administrador para su aprobación. Folio: ${response.folio}`,
+                buttons: ['OK']
+              });
+              await alert.present();
+            } else if (newStatus === 'Complete') {
+              const alert = await this.alertController.create({
+                header: 'Solicitud en Proceso',
+                message: `La solicitud está en espera de procesamiento por un administrativo. Folio: ${response.folio}`,
+                buttons: ['OK']
+              });
+              await alert.present();
+            } else if (newStatus === 'Finish') {
+              const alert = await this.alertController.create({
+                header: 'Empleado Dado de Alta',
+                message: `El empleado ha sido dado de alta exitosamente. Folio: ${response.folio}`,
+                buttons: ['OK']
+              });
+              await alert.present();
+            }
+
+            this.fetchSolicitudesUltimos15Dias();
+            this.fetchPendingEmployees();
+            this.selectedEmployee = null;
+          } else {
+            const toast = await this.toastController.create({
+              message: 'Error: No se recibió el folio de la solicitud.',
+              duration: 2000,
+              color: 'danger'
+            });
+            toast.present();
+          }
         },
         async error => {
           const toast = await this.toastController.create({
@@ -566,8 +668,11 @@ export class EditEmployeePage implements OnInit {
         loading.dismiss();
       });
     }
-
+  
   }
+  
+
+
   validateAllFormFields(form: NgForm) {
     Object.keys(form.controls).forEach(field => {
       const control = form.controls[field];
@@ -587,6 +692,12 @@ export class EditEmployeePage implements OnInit {
       employeeSelect.value = ''; // Resetea el valor seleccionado
     }
   }
+
+  downloadFile(filePath: string) {
+    const fullUrl = `https://www.siinad.mx/php/${filePath}`; // URL completa del archivo
+    window.open(fullUrl, '_blank'); // Abrir el archivo en una nueva pestaña o iniciar la descarga
+  }
+
 
   goBack() {
     this.navCtrl.back();

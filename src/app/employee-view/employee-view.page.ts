@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../auth.service';
-import { Router } from '@angular/router'; // Importar el enrutador para navegación
+import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { EmployeeDetailsComponent } from '../employee-details/employee-details.component';
 
 interface Empleado {
   employee_id: number;
   first_name: string;
-  middle_name?: string; // Campo opcional para el nombre intermedio
+  middle_name?: string;
   last_name: string;
   employee_code: string;
   curp: string;
@@ -22,19 +22,16 @@ interface Empleado {
 interface Turno {
   shift_id: number;
   shift_name: string;
-  empleados: Empleado[];
 }
 
 interface Puesto {
   position_id: number;
   position_name: string;
-  turnos: Turno[];
 }
 
 interface Departamento {
   department_id: number;
   department_name: string;
-  puestos: Puesto[];
 }
 
 @Component({
@@ -44,27 +41,28 @@ interface Departamento {
 })
 export class EmployeeViewPage implements OnInit {
   departamentos: Departamento[] = [];
-  selectedEmployee: Empleado | null = null;
   puestos: Puesto[] = [];
   turnos: Turno[] = [];
   empleados: Empleado[] = [];
-  empleadosFiltrados: Empleado[] = []; // Lista para empleados filtrados
-  searchQuery: string = ''; // Campo para la búsqueda
+  empleadosFiltrados: Empleado[] = [];
+  searchQuery: string = '';
 
   // Variables para las selecciones
   departamentoSeleccionado: Departamento | null = null;
   puestoSeleccionado: Puesto | null = null;
   turnoSeleccionado: Turno | null = null;
 
-  constructor(private modalController: ModalController, private http: HttpClient, public authService: AuthService, private router: Router) {}
+  constructor(private modalController: ModalController, private http: HttpClient, public authService: AuthService, private router: Router) { }
 
   ngOnInit() {
     this.loadDepartments();
+    this.loadPositions();
+    this.loadShifts();
   }
 
-  // Cargar los departamentos desde la API
+  // Cargar departamentos sin dependencia
   loadDepartments() {
-    const companyId = this.authService.selectedId; // Obtener el ID de la empresa
+    const companyId = this.authService.selectedId;
     this.http.get<Departamento[]>(`https://siinad.mx/php/get_departments.php?company_id=${companyId}`).subscribe(
       data => {
         this.departamentos = data;
@@ -75,17 +73,12 @@ export class EmployeeViewPage implements OnInit {
     );
   }
 
-  // Cargar los puestos cuando se selecciona un departamento
-  loadPuestos(departmentId: number) {
-    this.http.get<Puesto[]>(`https://siinad.mx/php/get_positions.php?department_id=${departmentId}`).subscribe(
+  // Cargar puestos sin dependencia del departamento
+  loadPositions() {
+    const companyId = this.authService.selectedId;
+    this.http.get<Puesto[]>(`https://siinad.mx/php/get_positions.php?company_id=${companyId}`).subscribe(
       data => {
         this.puestos = data;
-        this.turnos = []; // Limpiar los turnos al cambiar el puesto
-        this.empleados = []; // Limpiar los empleados al cambiar de puesto
-        this.departamentoSeleccionado = this.departamentos.find(dep => dep.department_id === departmentId) || null;
-
-        // Mostrar empleados del departamento seleccionado
-        this.mostrarEmpleadosPorDepartamento();
       },
       error => {
         console.error('Error al cargar los puestos:', error);
@@ -93,16 +86,12 @@ export class EmployeeViewPage implements OnInit {
     );
   }
 
-  // Cargar los turnos cuando se selecciona un puesto
-  loadTurnos(positionId: number) {
-    this.http.get<Turno[]>(`https://siinad.mx/php/get_shifts.php?position_id=${positionId}`).subscribe(
+  // Cargar turnos sin dependencia del puesto
+  loadShifts() {
+    const companyId = this.authService.selectedId;
+    this.http.get<Turno[]>(`https://siinad.mx/php/get_shifts.php?company_id=${companyId}`).subscribe(
       data => {
         this.turnos = data;
-        this.empleados = []; // Limpiar empleados al cambiar el turno
-        this.puestoSeleccionado = this.puestos.find(puesto => puesto.position_id === positionId) || null;
-
-        // Mostrar empleados del puesto seleccionado
-        this.mostrarEmpleadosPorPuesto();
       },
       error => {
         console.error('Error al cargar los turnos:', error);
@@ -110,15 +99,68 @@ export class EmployeeViewPage implements OnInit {
     );
   }
 
-  // Cargar empleados cuando se selecciona un turno
-  loadEmpleadosPorTurno(shiftId: number) {
-    const companyId = this.authService.selectedId; // Obtener el ID de la empresa
+  // Seleccionar y mostrar empleados por departamento
+  selectDepartamento(departamento: Departamento) {
+    this.departamentoSeleccionado = departamento;
+    this.puestoSeleccionado = null;  // Limpiar selección de puesto
+    this.turnoSeleccionado = null;   // Limpiar selección de turno
+    const companyId = this.authService.selectedId;
 
-    this.http.get<{ success: boolean, employees: Empleado[] }>(`https://siinad.mx/php/get_employees_by_shifts.php?company_id=${companyId}&shift_id=${shiftId}`).subscribe(
+    this.http.get<{ success: boolean, employees: Empleado[] }>(
+      `https://siinad.mx/php/get_employees_by_department.php?company_id=${companyId}&department_id=${departamento.department_id}`
+    ).subscribe(
       response => {
         if (response.success) {
           this.empleados = response.employees;
-          this.empleadosFiltrados = this.empleados; // Inicializar los empleados filtrados
+          this.empleadosFiltrados = this.empleados;
+        } else {
+          console.error('Error al cargar los empleados del departamento');
+        }
+      },
+      error => {
+        console.error('Error al cargar los empleados del departamento:', error);
+      }
+    );
+  }
+
+  // Seleccionar y mostrar empleados por puesto
+  selectPuesto(puesto: Puesto) {
+    this.puestoSeleccionado = puesto;
+    this.departamentoSeleccionado = null;  // Limpiar selección de departamento
+    this.turnoSeleccionado = null;         // Limpiar selección de turno
+    const companyId = this.authService.selectedId;
+
+    this.http.get<{ success: boolean, employees: Empleado[] }>(
+      `https://siinad.mx/php/get_employees_by_position.php?company_id=${companyId}&position_id=${puesto.position_id}`
+    ).subscribe(
+      response => {
+        if (response.success) {
+          this.empleados = response.employees;
+          this.empleadosFiltrados = this.empleados;
+        } else {
+          console.error('Error al cargar los empleados del puesto');
+        }
+      },
+      error => {
+        console.error('Error al cargar los empleados del puesto:', error);
+      }
+    );
+  }
+
+  // Seleccionar y mostrar empleados por turno
+  selectTurno(turno: Turno) {
+    this.turnoSeleccionado = turno;
+    this.departamentoSeleccionado = null;  // Limpiar selección de departamento
+    this.puestoSeleccionado = null;        // Limpiar selección de puesto
+    const companyId = this.authService.selectedId;
+
+    this.http.get<{ success: boolean, employees: Empleado[] }>(
+      `https://siinad.mx/php/get_employees_by_shifts.php?company_id=${companyId}&shift_id=${turno.shift_id}`
+    ).subscribe(
+      response => {
+        if (response.success) {
+          this.empleados = response.employees;
+          this.empleadosFiltrados = this.empleados;
         } else {
           console.error('Error al cargar los empleados del turno');
         }
@@ -129,79 +171,26 @@ export class EmployeeViewPage implements OnInit {
     );
   }
 
-  // Mostrar empleados por departamento
-  mostrarEmpleadosPorDepartamento() {
-    if (this.departamentoSeleccionado) {
-      const companyId = this.authService.selectedId;
-      const departmentId = this.departamentoSeleccionado.department_id;
 
-      this.http.get<{ success: boolean, employees: Empleado[] }>(`https://siinad.mx/php/get_employees_by_department.php?company_id=${companyId}&department_id=${departmentId}`).subscribe(
-        response => {
-          if (response.success) {
-            this.empleados = response.employees;
-            this.empleadosFiltrados = this.empleados; // Inicializar los empleados filtrados
-          } else {
-            console.error('Error al cargar los empleados');
-          }
-        },
-        error => {
-          console.error('Error al cargar los empleados del departamento:', error);
-        }
-      );
-    }
-  }
-
-  // Mostrar empleados por puesto
-  mostrarEmpleadosPorPuesto() {
-    if (this.puestoSeleccionado) {
-      const companyId = this.authService.selectedId;
-      const positionId = this.puestoSeleccionado.position_id;
-
-      this.http.get<{ success: boolean, employees: Empleado[] }>(`https://siinad.mx/php/get_employees_by_position.php?company_id=${companyId}&position_id=${positionId}`).subscribe(
-        response => {
-          if (response.success) {
-            this.empleados = response.employees;
-            this.empleadosFiltrados = this.empleados; // Inicializar los empleados filtrados
-          } else {
-            console.error('Error al cargar los empleados del puesto');
-          }
-        },
-        error => {
-          console.error('Error al cargar los empleados del puesto:', error);
-        }
-      );
-    }
-  }
-
-  // Función para filtrar los empleados
+  // Función para filtrar empleados en la búsqueda
   buscarEmpleados() {
     const searchLower = this.searchQuery.toLowerCase();
     this.empleadosFiltrados = this.empleados.filter(empleado =>
       empleado.first_name.toLowerCase().includes(searchLower) ||
       (empleado.middle_name && empleado.middle_name.toLowerCase().includes(searchLower)) ||
       empleado.last_name.toLowerCase().includes(searchLower) ||
-      empleado.employee_id.toString().includes(searchLower)
+      empleado.employee_code.toLowerCase().includes(searchLower)
     );
-  }
-
-  // Seleccionar empleado y mostrar su información
-  selectEmployee(empleado: Empleado) {
-    this.selectedEmployee = empleado;
   }
 
   // Método para ver detalles del empleado
   async viewEmployeeDetails(employeeId: number) {
     const modal = await this.modalController.create({
       component: EmployeeDetailsComponent,
-      componentProps: { employeeId: employeeId } // Pasar el ID del empleado
+      componentProps: { employeeId: employeeId }
     });
     return await modal.present();
   }
 
-  // Navegar de vuelta
-  goBack() {
-    this.router.navigate(['/home']);
-  }
 
-  
 }

@@ -17,29 +17,31 @@
           <ion-list class="department-list">
             <ion-item *ngFor="let departamento of departamentos"
               [class.selected]="departamento === departamentoSeleccionado"
-              (click)="loadPuestos(departamento.department_id)" button>
+              (click)="selectDepartamento(departamento)" button>
               <ion-label>
                 <h2>{{ departamento.department_name }}</h2>
               </ion-label>
             </ion-item>
           </ion-list>
 
-          <!-- Lista de Puestos (dependientes del departamento seleccionado) -->
-          <h6 *ngIf="puestos.length > 0">Puestos</h6>
-          <ion-list class="puesto-list" *ngIf="puestos.length > 0">
-            <ion-item *ngFor="let puesto of puestos" [class.selected]="puesto === puestoSeleccionado"
-              (click)="loadTurnos(puesto.position_id)" button>
+          <!-- Lista de Puestos (independiente del departamento seleccionado) -->
+          <h6>Puestos</h6>
+          <ion-list class="puesto-list">
+            <ion-item *ngFor="let puesto of puestos"
+              [class.selected]="puesto === puestoSeleccionado"
+              (click)="selectPuesto(puesto)" button>
               <ion-label>
                 <h2>{{ puesto.position_name }}</h2>
               </ion-label>
             </ion-item>
           </ion-list>
 
-          <!-- Lista de Turnos (dependientes del puesto seleccionado) -->
-          <h6 *ngIf="turnos.length > 0">Turnos</h6>
-          <ion-list class="turno-list" *ngIf="turnos.length > 0">
-            <ion-item *ngFor="let turno of turnos" [class.selected]="turno === turnoSeleccionado"
-              (click)="loadEmpleadosPorTurno(turno.shift_id)" button>
+          <!-- Lista de Turnos (independiente del puesto seleccionado) -->
+          <h6>Turnos</h6>
+          <ion-list class="turno-list">
+            <ion-item *ngFor="let turno of turnos"
+              [class.selected]="turno === turnoSeleccionado"
+              (click)="selectTurno(turno)" button>
               <ion-label>
                 <h2>{{ turno.shift_name }}</h2>
               </ion-label>
@@ -69,8 +71,8 @@
                 <ion-col size="4">Email</ion-col>
                 <ion-col size="2">Acciones</ion-col>
               </ion-row>
-              <ion-row *ngFor="let empleado of empleadosFiltrados" [class.selected]="empleado === selectedEmployee"
-                (click)="selectEmployee(empleado)" class="table-row">
+              <ion-row *ngFor="let empleado of empleadosFiltrados"
+                 class="table-row">
                 <ion-col size="2">{{ empleado.employee_code }}</ion-col>
                 <ion-col size="4">{{ empleado.first_name }} {{ empleado.middle_name}} {{ empleado.last_name }}</ion-col>
                 <ion-col size="4">{{ empleado.email }}</ion-col>
@@ -86,3 +88,16 @@
   </div>
 </ion-content>
 
+<style>
+  /* Estilo para resaltar la opción seleccionada */
+  .selected {
+    background-color: #d0e4f7;
+    font-weight: bold;
+    border-left: 4px solid #007bff;
+  }
+  
+  /* Estilo adicional para una mejor visibilidad */
+  .selected ion-label h2 {
+    color: #007bff;
+  }
+</style>

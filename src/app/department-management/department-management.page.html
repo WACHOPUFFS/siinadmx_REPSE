@@ -15,7 +15,7 @@
         <h5><strong>Gestión de Departamentos, Puestos y Turnos</strong></h5>
       </div>
       <div class="row">
-        
+
         <!-- Departamentos -->
         <div class="col-md-4 mb-3">
           <ion-card>
@@ -33,14 +33,16 @@
               <!-- Formulario de Departamento -->
               <div *ngIf="selectedDepartment" class="mt-3">
                 <ion-item>
-                  <ion-input placeholder="Nombre del Departamento" [(ngModel)]="selectedDepartment.department_name"></ion-input>
+                  <ion-input placeholder="Nombre del Departamento"
+                    [(ngModel)]="selectedDepartment.department_name"></ion-input>
                 </ion-item>
                 <ion-item>
                   <ion-textarea placeholder="Descripción" [(ngModel)]="selectedDepartment.description"></ion-textarea>
                 </ion-item>
                 <div class="d-flex justify-content-between mt-2">
                   <ion-button color="primary" (click)="saveDepartmentConfig()">Guardar</ion-button>
-                  <ion-button color="danger" *ngIf="selectedDepartment?.department_id" (click)="deleteDepartment()">Eliminar</ion-button>
+                  <ion-button color="danger" *ngIf="selectedDepartment?.department_id"
+                    (click)="deleteDepartment()">Eliminar</ion-button>
                 </div>
               </div>
             </ion-card-content>
@@ -64,20 +66,23 @@
               <!-- Formulario de Puesto -->
               <div *ngIf="isAddingPosition || selectedPosition" class="mt-3">
                 <ion-item>
-                  <ion-input placeholder="Nombre del Puesto" [(ngModel)]="getCurrentPosition().position_name"></ion-input>
+                  <ion-input placeholder="Nombre del Puesto"
+                    [(ngModel)]="getCurrentPosition().position_name"></ion-input>
                 </ion-item>
                 <ion-item>
                   <ion-textarea placeholder="Descripción" [(ngModel)]="getCurrentPosition().description"></ion-textarea>
                 </ion-item>
                 <div class="d-flex justify-content-between mt-2">
                   <ion-button color="primary" (click)="savePositionConfig()">Guardar</ion-button>
-                  <ion-button color="danger" *ngIf="selectedPosition?.position_id" (click)="deletePosition()">Eliminar</ion-button>
+                  <ion-button color="danger" *ngIf="selectedPosition?.position_id"
+                    (click)="deletePosition()">Eliminar</ion-button>
                 </div>
               </div>
             </ion-card-content>
           </ion-card>
         </div>
 
+        <!-- Turnos -->
         <!-- Turnos -->
         <div class="col-md-4 mb-3">
           <ion-card>
@@ -108,14 +113,50 @@
                   <label for="end_time">Hora de Fin</label>
                   <input id="end_time" type="time" class="form-control" [(ngModel)]="getCurrentShift().end_time" />
                 </div>
+
+                <!-- Hora de comida -->
+                <div class="mb-3">
+                  <label for="lunch_start_time">Hora de Inicio de Comida</label>
+                  <input id="lunch_start_time" type="time" class="form-control"
+                    [(ngModel)]="getCurrentShift().lunch_start_time" />
+                </div>
+                <div class="mb-3">
+                  <label for="lunch_end_time">Hora de Fin de Comida</label>
+                  <input id="lunch_end_time" type="time" class="form-control"
+                    [(ngModel)]="getCurrentShift().lunch_end_time" />
+                </div>
+
+                <!-- Checkbox para añadir segunda hora de comida -->
+                <ion-item lines="none">
+                  <ion-label>Añadir segunda hora de comida</ion-label>
+                  <ion-checkbox slot="start" [(ngModel)]="showSecondLunch"></ion-checkbox>
+                </ion-item>
+
+                <!-- Segunda hora de comida (opcional, visible solo si el checkbox está seleccionado) -->
+                <div *ngIf="showSecondLunch">
+                  <div class="mb-3">
+                    <label for="second_lunch_start_time">Inicio de la Segunda Comida</label>
+                    <input id="second_lunch_start_time" type="time" class="form-control"
+                      [(ngModel)]="getCurrentShift().second_lunch_start_time" />
+                  </div>
+                  <div class="mb-3">
+                    <label for="second_lunch_end_time">Fin de la Segunda Comida</label>
+                    <input id="second_lunch_end_time" type="time" class="form-control"
+                      [(ngModel)]="getCurrentShift().second_lunch_end_time" />
+                  </div>
+                </div>
+
                 <div class="d-flex justify-content-between mt-2">
                   <ion-button color="primary" (click)="saveShiftConfig()">Guardar</ion-button>
-                  <ion-button color="danger" *ngIf="selectedShift?.shift_id" (click)="deleteShift()">Eliminar</ion-button>
+                  <ion-button color="danger" *ngIf="selectedShift?.shift_id"
+                    (click)="deleteShift()">Eliminar</ion-button>
                 </div>
               </div>
             </ion-card-content>
           </ion-card>
         </div>
+
+
       </div>
     </div>
   </ion-content>

@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { LoadingController, AlertController } from '@ionic/angular';
+import { LoadingController, AlertController, ModalController } from '@ionic/angular';
 import { AuthService } from '../auth.service';
 import * as moment from 'moment';
+import { ProcessedListsModalComponent } from '../processed-lists-modal/processed-lists-modal.component';
 
 @Component({
   selector: 'app-process-weekly-lists',
@@ -19,8 +20,9 @@ export class ProcessWeeklyListsPage implements OnInit {
     private authService: AuthService,
     private http: HttpClient,
     private loadingController: LoadingController,
-    private alertController: AlertController
-  ) {}
+    private alertController: AlertController,
+    private modalController: ModalController
+  ) { }
 
   ngOnInit() {
     moment.locale('es'); // Configurar moment.js para usar el idioma español
@@ -133,6 +135,8 @@ export class ProcessWeeklyListsPage implements OnInit {
         entry_time: record.entry_time,
         lunch_start_time: record.lunch_start_time,
         lunch_end_time: record.lunch_end_time,
+        second_lunch_start_time: record.second_lunch_start_time,
+        second_lunch_end_time: record.second_lunch_end_time,
         exit_time: record.exit_time,
         incident: record.incident_type,
         project_name: record.project_name,
@@ -187,4 +191,21 @@ export class ProcessWeeklyListsPage implements OnInit {
       }
     );
   }
+
+
+  formatHour(hour: string): string | null {
+    if (!hour || hour === '00:00:00') {
+      return null; // Devuelve null si la hora es '00:00:00' o está vacía
+    }
+    return moment(hour, 'HH:mm:ss').format('hh:mm A'); // Convierte a formato 12 horas con AM/PM
+  }
+  
+
+  async openProcessedListsModal() {
+    const modal = await this.modalController.create({
+      component: ProcessedListsModalComponent
+    });
+    return await modal.present();
+  }
+
 }

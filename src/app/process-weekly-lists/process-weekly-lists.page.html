@@ -9,15 +9,30 @@
     <!-- Selector de Semana Confirmada -->
     <div class="mb-4">
       <h5><strong>Seleccionar Semana Confirmada</strong></h5>
-      <ion-select [(ngModel)]="selectedWeek" (ionChange)="onWeekChange($event.detail.value)" interface="popover">
-        <ion-select-option *ngFor="let week of confirmedWeeks" [value]="week">
-          Semana {{ week.week_number }}
-          <span *ngIf="week?.payroll_period?.start_date && week?.payroll_period?.end_date">
-            ({{ week.payroll_period.start_date }} - {{ week.payroll_period.end_date }})
-          </span>
-        </ion-select-option>
-      </ion-select>
+      <ion-grid>
+        <ion-row>
+          <!-- Selector de Semana Confirmada -->
+          <ion-col size="8" size-md="8" size-sm="12">
+            <ion-select [(ngModel)]="selectedWeek" (ionChange)="onWeekChange($event.detail.value)" interface="popover">
+              <ion-select-option *ngFor="let week of confirmedWeeks" [value]="week">
+                Semana {{ week.week_number }}
+                <span *ngIf="week?.payroll_period?.start_date && week?.payroll_period?.end_date">
+                  ({{ week.payroll_period.start_date }} - {{ week.payroll_period.end_date }})
+                </span>
+              </ion-select-option>
+            </ion-select>
+          </ion-col>
+    
+          <!-- Botón para ver Listas Semanales Procesadas -->
+          <ion-col size="4" size-md="4" size-sm="12" class="button-col">
+            <ion-button expand="block" color="secondary" (click)="openProcessedListsModal()">Listas Semanales Procesadas</ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </div>
+    
+
+ 
 
     <!-- Tabla de Asistencia de la Semana Confirmada -->
     <div class="table-responsive mt-4" *ngIf="selectedWeek">
@@ -31,7 +46,7 @@
             <th rowspan="2" class="text-center align-middle">Código</th>
             <th rowspan="2" class="text-center align-middle">Empleado</th>
             <ng-container *ngFor="let dia of diasSemana">
-              <th colspan="6" class="text-center">{{ dia.display }} ({{ dia.date | date: 'dd/MM/yyyy' }})</th>
+              <th colspan="8" class="text-center">{{ dia.display }} ({{ dia.date | date: 'dd/MM/yyyy' }})</th>
             </ng-container>
           </tr>
           <tr>
@@ -39,6 +54,8 @@
               <th class="text-center">Entrada</th>
               <th class="text-center">Entrada Comida</th>
               <th class="text-center">Salida Comida</th>
+              <th class="text-center">Entrada Segunda Comida</th>
+              <th class="text-center">Salida Segunda Comida</th>
               <th class="text-center">Salida</th>
               <th class="text-center">Incidencia</th>
               <th class="text-center">Empresa y Obra</th>
@@ -50,10 +67,14 @@
             <td class="text-center">{{ emp.employee_code || 'N/A' }}</td>
             <td>{{ emp.first_name || '' }} {{ emp.middle_name || '' }} {{ emp.last_name || '' }}</td>
             <ng-container *ngFor="let dia of diasSemana">
-              <td class="text-center">{{ emp.work_hours?.[dia.date]?.entry_time || '--:--' }}</td>
-              <td class="text-center">{{ emp.work_hours?.[dia.date]?.lunch_start_time || '--:--' }}</td>
-              <td class="text-center">{{ emp.work_hours?.[dia.date]?.lunch_end_time || '--:--' }}</td>
-              <td class="text-center">{{ emp.work_hours?.[dia.date]?.exit_time || '--:--' }}</td>
+              <td class="text-center">{{ formatHour(emp.work_hours?.[dia.date]?.entry_time) || '--:--' }}</td>
+              <td class="text-center">{{ formatHour(emp.work_hours?.[dia.date]?.lunch_start_time) || '--:--' }}</td>
+              <td class="text-center">{{ formatHour(emp.work_hours?.[dia.date]?.lunch_end_time) || '--:--' }}</td>
+              <td class="text-center">{{ formatHour(emp.work_hours?.[dia.date]?.second_lunch_start_time) || '--:--' }}
+              </td>
+              <td class="text-center">{{ formatHour(emp.work_hours?.[dia.date]?.second_lunch_end_time) || '--:--' }}
+              </td>
+              <td class="text-center">{{ formatHour(emp.work_hours?.[dia.date]?.exit_time) || '--:--' }}</td>
               <td class="text-center">{{ emp.work_hours?.[dia.date]?.incident || 'N/A' }}</td>
               <td>{{ emp.work_hours?.[dia.date]?.project_name || 'No Asignado' }}</td>
             </ng-container>
@@ -72,7 +93,20 @@
     background-color: #f0f8ff;
     color: #333;
   }
-  th, td {
+
+  th,
+  td {
     vertical-align: middle;
+  }
+  
+   /* Centrar el botón en pantallas pequeñas */
+   .button-col {
+    text-align: right;
+  }
+
+  @media (max-width: 768px) {
+    .button-col {
+      text-align: center;
+    }
   }
 </style>

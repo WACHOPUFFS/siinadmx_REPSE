@@ -19,8 +19,18 @@ $description = isset($data['description']) ? $data['description'] : '';
 $start_time = $data['start_time'];
 $end_time = $data['end_time'];
 
-// Consulta SQL para insertar un nuevo turno
-$sql = "INSERT INTO shifts (company_id, shift_name, description, start_time, end_time) VALUES (?, ?, ?, ?, ?)";
+// Nuevos campos para las horas de comida (primera y segunda comida)
+$lunch_start_time = isset($data['lunch_start_time']) ? $data['lunch_start_time'] : null;
+$lunch_end_time = isset($data['lunch_end_time']) ? $data['lunch_end_time'] : null;
+$second_lunch_start_time = isset($data['second_lunch_start_time']) ? $data['second_lunch_start_time'] : null;
+$second_lunch_end_time = isset($data['second_lunch_end_time']) ? $data['second_lunch_end_time'] : null;
+
+// Consulta SQL para insertar un nuevo turno, incluyendo las horas de comida
+$sql = "
+    INSERT INTO shifts (company_id, shift_name, description, start_time, end_time, lunch_start_time, lunch_end_time, second_lunch_start_time, second_lunch_end_time) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+";
+
 $stmt = $mysqli->prepare($sql);
 
 if ($stmt === false) {
@@ -28,7 +38,18 @@ if ($stmt === false) {
     exit;
 }
 
-$stmt->bind_param("issss", $company_id, $shift_name, $description, $start_time, $end_time);
+// Vincular los parámetros, permitiendo valores NULL para las horas de comida si no se proporcionan
+$stmt->bind_param("issssssss", 
+    $company_id, 
+    $shift_name, 
+    $description, 
+    $start_time, 
+    $end_time, 
+    $lunch_start_time, 
+    $lunch_end_time, 
+    $second_lunch_start_time, 
+    $second_lunch_end_time
+);
 
 if ($stmt->execute()) {
     echo json_encode(['success' => true, 'message' => 'Turno añadido exitosamente']);

@@ -16,6 +16,11 @@ export class ChangeHoursModalComponent {
   lunchEnd: string;
   exitTime: string;
 
+  // Nuevas propiedades para la segunda hora de comida
+  enableSecondLunch: boolean = false;
+  secondLunchStart: string;
+  secondLunchEnd: string;
+
   constructor(private modalController: ModalController) {}
 
   closeModal() {
@@ -28,7 +33,16 @@ export class ChangeHoursModalComponent {
     const formattedLunchStart = moment(this.lunchStart).format('HH:mm:ss');
     const formattedLunchEnd = moment(this.lunchEnd).format('HH:mm:ss');
     const formattedExitTime = moment(this.exitTime).format('HH:mm:ss');
-  
+
+    // Formatear la segunda hora de comida solo si está habilitada
+    const formattedSecondLunchStart = this.enableSecondLunch && this.secondLunchStart 
+      ? moment(this.secondLunchStart).format('HH:mm:ss') 
+      : null;
+
+    const formattedSecondLunchEnd = this.enableSecondLunch && this.secondLunchEnd 
+      ? moment(this.secondLunchEnd).format('HH:mm:ss') 
+      : null;
+
     // Envía los datos al componente que abre el modal junto con la lista de empleados
     this.modalController.dismiss({
       employees: this.employees, // Devolver todos los empleados seleccionados
@@ -36,6 +50,9 @@ export class ChangeHoursModalComponent {
       lunchStart: formattedLunchStart,
       lunchEnd: formattedLunchEnd,
       exitTime: formattedExitTime,
+      // Enviar los tiempos de la segunda hora de comida si están habilitados
+      secondLunchStart: formattedSecondLunchStart,
+      secondLunchEnd: formattedSecondLunchEnd,
     });
   }
 }

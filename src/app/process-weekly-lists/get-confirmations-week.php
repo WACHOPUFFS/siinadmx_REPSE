@@ -18,10 +18,11 @@ if (!isset($companyId, $periodTypeId)) {
 $companyId = intval($companyId);
 $periodTypeId = intval($periodTypeId);
 
-// Consulta para obtener las semanas confirmadas junto con los datos de payroll_periods
+// Consulta para obtener las semanas confirmadas que NO han sido procesadas (is_processed = 0)
 $sqlConfirmations = "SELECT * FROM week_confirmations 
                      WHERE company_id = $companyId 
-                       AND period_type_id = $periodTypeId";
+                       AND period_type_id = $periodTypeId
+                       AND is_processed = 0";  // Filtrar semanas no procesadas
 
 $resultConfirmations = $mysqli->query($sqlConfirmations);
 

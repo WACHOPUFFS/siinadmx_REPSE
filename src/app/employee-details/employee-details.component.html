@@ -2,9 +2,14 @@
 
   <!-- Contenedor del perfil -->
   <div class="profile-container text-center">
-    <!-- Foto de perfil -->
+  
+    
     <!-- Foto de perfil -->
     <div class="profile-picture-container mb-4">
+      <!-- Folio de registro del empleado (request_id) -->
+      <p *ngIf="employee.request_id" class="folio-text">
+        Folio: {{ employee.request_id }}
+      </p>
       <img [src]="employee.photo || 'assets/image/default-profile.png'" alt="Foto de perfil" class="profile-picture">
       <!-- Input de archivo oculto para la foto -->
       <input type="file" id="photo-input" (change)="onPhotoChange($event)" hidden>
@@ -13,11 +18,34 @@
       <ion-button class="upload-button" (click)="triggerFileInput('photo-input')">Cambiar Foto</ion-button>
     </div>
 
-
     <!-- Nombre del empleado -->
     <h2 class="employee-name">{{ employee.full_name }}</h2>
     <p class="employee-code">Código: {{ employee.employee_code }}</p>
+
+
+
+    <!-- Folio IMSS y Número de Lote -->
+    <p *ngIf="employee.folio_number_imss && employee.lot_number_imss">
+      Folio IMSS: {{ employee.folio_number_imss }} <br>
+      Número de Lote IMSS: {{ employee.lot_number_imss }}
+    </p>
+
+    <!-- Estado en el IMSS -->
+    <p *ngIf="employee.request_id && employee.folio_number_imss && employee.lot_number_imss; else notActiveImss"
+      class="imss-status">
+      Activo en el IMSS
+    </p>
+
+    <!-- Estado no activo en el IMSS -->
+    <ng-template #notActiveImss>
+      <p class="imss-status">No activo en el IMSS</p>
+    </ng-template>
+
+    <ion-button expand="block" color="secondary" (click)="downloadEmployeeData()">
+      Descargar Información del Usuario
+    </ion-button>
   </div>
+
 
   <!-- Tarjeta de información general -->
   <div class="card mb-4">
@@ -159,35 +187,32 @@
     </div>
     <div class="card-body">
       <ion-list>
-        <div class="form-group">
-          <label for="departamento">Departamento</label>
-          <select class="form-control" id="departamento" [(ngModel)]="employee.department_id">
-            <option *ngFor="let departamento of departamentos" [value]="departamento.department_id">
-              {{ departamento.department_name }}
-            </option>
-            <option *ngIf="departamentos.length === 0" disabled>No hay departamentos disponibles</option>
-          </select>
-        </div>
 
-        <div class="form-group">
-          <label for="puesto">Puesto</label>
-          <select class="form-control" id="puesto" [(ngModel)]="employee.position_id">
-            <option *ngFor="let puesto of puestos" [value]="puesto.position_id">
-              {{ puesto.position_name }}
-            </option>
-            <option *ngIf="puestos.length === 0" disabled>No hay puestos disponibles</option>
-          </select>
-        </div>
+        <ion-item>
+          <ion-label>Departamento</ion-label>
+          <ion-select [(ngModel)]="employee.department_id">
+            <ion-select-option *ngFor="let departamento of departamentos" [value]="departamento.department_id">{{
+              departamento.department_name
+              }}</ion-select-option>
+          </ion-select>
+        </ion-item>
 
-        <div class="form-group">
-          <label for="turno">Turno</label>
-          <select class="form-control" id="turno" [(ngModel)]="employee.shift_id">
-            <option *ngFor="let turno of turnos" [value]="turno.shift_id">
-              {{ turno.shift_name }}
-            </option>
-            <option *ngIf="turnos.length === 0" disabled>No hay turnos disponibles</option>
-          </select>
-        </div>
+
+        <ion-item>
+          <ion-label>Puesto</ion-label>
+          <ion-select [(ngModel)]="employee.position_id">
+            <ion-select-option *ngFor="let puesto of puestos" [value]="puesto.position_id">{{ puesto.position_name
+              }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Turno</ion-label>
+          <ion-select [(ngModel)]="employee.shift_id">
+            <ion-select-option *ngFor="let turno of turnos" [value]="turno.shift_id">{{ turno.shift_name
+              }}</ion-select-option>
+          </ion-select>
+        </ion-item>
 
         <ion-item>
           <ion-label>Fecha de Inicio</ion-label>
@@ -202,11 +227,48 @@
             <ion-select-option value="R">Reingreso</ion-select-option>
           </ion-select>
         </ion-item>
+
+        <ion-item>
+          <ion-label>Sueldo Neto</ion-label>
+          <ion-input [(ngModel)]="employee.net_balance" type="number" placeholder="Ingrese el sueldo neto"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Sueldo Diario</ion-label>
+          <ion-input [(ngModel)]="employee.daily_salary" type="number"
+            placeholder="Ingrese el sueldo diario"></ion-input>
+        </ion-item>
+
       </ion-list>
       <ion-button expand="block" color="primary" (click)="saveWorkInfo()">Guardar Cambios de Información
         Laboral</ion-button>
     </div>
   </div>
+
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Contacto de Emergencia</h5>
+    </div>
+    <div class="card-body">
+      <ion-list>
+        <ion-item>
+          <ion-label>Contacto de Emergencia</ion-label>
+          <ion-input [(ngModel)]="employee.emergency_contact_name" placeholder="Contacto de Emergencia"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Número de Emergencia</ion-label>
+          <ion-input [(ngModel)]="employee.emergency_contact_number" type="tel" maxlength="10" minlength="10"
+            inputmode="numeric" placeholder="Número de Emergencia"></ion-input>
+        </ion-item>
+
+      </ion-list>
+      <ion-button expand="block" color="primary" (click)="saveEmergencyContact()">Guardar Contacto de
+        Emergencia</ion-button>
+
+    </div>
+  </div>
+
 
   <!-- Tarjeta de Archivos -->
   <div class="card mb-4">

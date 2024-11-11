@@ -6,25 +6,22 @@ require_once 'conexion.php';
 
 // Obtener los parámetros de la URL
 $companyId = $_GET['company_id'];
-$periodTypeId = $_GET['period_type_id']; // Cambiar period_id a period_type_id
-$weekNumber = $_GET['week_number'];
+$periodId = $_GET['period_id']; // Ahora estamos usando period_id directamente
 
 // Verificar que se recibieron todos los parámetros necesarios
-if (!isset($companyId, $periodTypeId, $weekNumber)) {
+if (!isset($companyId, $periodId)) {
     echo json_encode(['error' => 'Faltan parámetros necesarios.']);
     exit;
 }
 
 // Sanitizar las entradas para evitar inyecciones SQL
 $companyId = intval($companyId);
-$periodTypeId = intval($periodTypeId); // Cambiar periodId a periodTypeId
-$weekNumber = intval($weekNumber);
+$periodId = intval($periodId);
 
-// Consulta para verificar si la semana ya está confirmada
+// Consulta para verificar si el período ya está confirmado
 $sqlConfirm = "SELECT * FROM week_confirmations 
                WHERE company_id = $companyId 
-                 AND period_type_id = $periodTypeId 
-                 AND week_number = $weekNumber";
+                 AND period_id = $periodId";
 
 $resultConfirm = $mysqli->query($sqlConfirm);
 

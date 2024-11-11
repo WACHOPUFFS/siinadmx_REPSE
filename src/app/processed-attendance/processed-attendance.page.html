@@ -8,7 +8,7 @@
   <div class="container mt-4 bg-light p-4 rounded shadow">
     <!-- Selector de Semana Confirmada -->
     <div class="mb-4">
-      <h5><strong>Seleccionar Semana Confirmada</strong></h5>
+      <h5><strong>Seleccionar Semana procesada</strong></h5>
       <ion-select [(ngModel)]="selectedWeek" (ionChange)="onWeekChange($event.detail.value)" interface="popover">
         <ion-select-option *ngFor="let week of processedWeeks" [value]="week">
           Semana {{ week.week_number }}
@@ -25,14 +25,13 @@
         Lista de Asistencia de la Semana {{ selectedWeek.week_number }}
         ({{ selectedWeek.start_date }} - {{ selectedWeek.end_date }})
       </h5>
-      <!-- Añadir ID para capturar la tabla con html2canvas -->
       <table id="attendance-table" class="table table-bordered table-hover table-striped shadow-sm">
         <thead class="thead-dark">
           <tr>
             <th rowspan="2" class="text-center align-middle">Código</th>
             <th rowspan="2" class="text-center align-middle">Empleado</th>
             <ng-container *ngFor="let dia of diasSemana">
-              <th colspan="6" class="text-center">{{ dia.display }} ({{ dia.date | date: 'dd/MM/yyyy' }})</th>
+              <th colspan="8" class="text-center">{{ dia.display }} ({{ dia.date | date: 'dd/MM/yyyy' }})</th>
             </ng-container>
           </tr>
           <tr>
@@ -40,6 +39,8 @@
               <th class="text-center">Entrada</th>
               <th class="text-center">Entrada Comida</th>
               <th class="text-center">Salida Comida</th>
+              <th class="text-center">Entrada Segunda Comida</th>
+              <th class="text-center">Salida Segunda Comida</th>
               <th class="text-center">Salida</th>
               <th class="text-center">Incidencia</th>
               <th class="text-center">Empresa y Obra</th>
@@ -51,10 +52,12 @@
             <td class="text-center">{{ emp.employee_code || 'N/A' }}</td>
             <td>{{ emp.first_name || '' }} {{ emp.middle_name || '' }} {{ emp.last_name || '' }}</td>
             <ng-container *ngFor="let dia of diasSemana">
-              <td class="text-center">{{ emp.work_hours?.[dia.date]?.entry_time || '--:--' }}</td>
-              <td class="text-center">{{ emp.work_hours?.[dia.date]?.lunch_start_time || '--:--' }}</td>
-              <td class="text-center">{{ emp.work_hours?.[dia.date]?.lunch_end_time || '--:--' }}</td>
-              <td class="text-center">{{ emp.work_hours?.[dia.date]?.exit_time || '--:--' }}</td>
+              <td class="text-center">{{ formatHour(emp.work_hours?.[dia.date]?.entry_time) || '--:--' }}</td>
+              <td class="text-center">{{ formatHour(emp.work_hours?.[dia.date]?.lunch_start_time) || '--:--' }}</td>
+              <td class="text-center">{{ formatHour(emp.work_hours?.[dia.date]?.lunch_end_time) || '--:--' }}</td>
+              <td class="text-center">{{ formatHour(emp.work_hours?.[dia.date]?.second_lunch_start_time) || '--:--' }}</td>
+              <td class="text-center">{{ formatHour(emp.work_hours?.[dia.date]?.second_lunch_end_time) || '--:--' }}</td>
+              <td class="text-center">{{ formatHour(emp.work_hours?.[dia.date]?.exit_time) || '--:--' }}</td>
               <td class="text-center">{{ emp.work_hours?.[dia.date]?.incident || 'N/A' }}</td>
               <td>{{ emp.work_hours?.[dia.date]?.project_name || 'No Asignado' }}</td>
             </ng-container>
@@ -72,7 +75,9 @@
       </div>
       <!-- Botones de acción con estilo de Bootstrap -->
       <ion-button color="primary" (click)="generatePDF()" class="mr-2">Imprimir</ion-button>
-      <ion-button color="success" (click)="uploadPDF()">Subir PDF</ion-button>
+      <ion-button color="success" (click)="uploadPDF()" [disabled]="isProcessed">
+        {{ isProcessed ? 'Lista semanal procesada' : 'Procesar lista semanal' }}
+      </ion-button>
     </div>
   </div>
 </ion-content>

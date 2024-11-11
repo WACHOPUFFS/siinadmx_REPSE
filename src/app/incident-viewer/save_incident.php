@@ -26,7 +26,7 @@ if (!$data) {
 }
 
 // Verificar que todos los campos necesarios están presentes
-if (!isset($data['employee_id'], $data['period_id'], $data['day_of_week'], $data['work_week'], $data['incident_type'])) {
+if (!isset($data['employee_id'], $data['period_id'], $data['period_type_id'], $data['day_of_week'], $data['work_week'], $data['incident_type'])) {
     echo json_encode(['error' => 'Missing required fields.']);
     exit;
 }
@@ -34,6 +34,7 @@ if (!isset($data['employee_id'], $data['period_id'], $data['day_of_week'], $data
 // Extraer datos de la solicitud
 $employee_id = intval($data['employee_id']);
 $period_id = intval($data['period_id']);
+$period_type_id = intval($data['period_type_id']);
 $day_of_week = $mysqli->real_escape_string($data['day_of_week']);
 $work_week = $mysqli->real_escape_string($data['work_week']);
 $incident_type = $mysqli->real_escape_string($data['incident_type']);
@@ -46,11 +47,12 @@ try {
     // Construir la consulta SQL para insertar la incidencia
     $sql = "
         INSERT INTO incidents 
-        (employee_id, period_id, day_of_week, work_week, incident_type, description, created_at)
+        (employee_id, period_id, period_type_id, day_of_week, work_week, incident_type, description, created_at)
         VALUES 
         (
             $employee_id, 
             $period_id, 
+            $period_type_id,
             '$day_of_week', 
             '$work_week', 
             '$incident_type', 
@@ -76,3 +78,4 @@ try {
 
 // Cerrar la conexión
 $mysqli->close();
+?>

@@ -18,16 +18,17 @@ if (!isset($companyId, $periodTypeId)) {
 $companyId = intval($companyId);
 $periodTypeId = intval($periodTypeId);
 
-// Consulta para obtener las semanas procesadas
+// Consulta para obtener las semanas procesadas que no han sido confirmadas (is_processed = 0)
 $sqlProcessedWeeks = "SELECT * FROM weeks_processed 
                       WHERE company_id = $companyId 
-                        AND period_type_id = $periodTypeId";
+                        AND period_type_id = $periodTypeId
+                        AND is_processed = 0";
 
 $resultProcessedWeeks = $mysqli->query($sqlProcessedWeeks);
 
 $processedWeeks = [];
 
-// Verificar si se encontraron semanas procesadas
+// Verificar si se encontraron semanas procesadas no confirmadas
 if ($resultProcessedWeeks->num_rows > 0) {
     while ($weekRow = $resultProcessedWeeks->fetch_assoc()) {
         // Añadir la semana procesada a la lista de resultados

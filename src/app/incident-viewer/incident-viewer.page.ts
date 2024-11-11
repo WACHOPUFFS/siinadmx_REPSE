@@ -183,31 +183,34 @@ export class IncidentViewerPage implements OnInit {
   }
 
   saveHours(employee: any, data: any) {
-    // Prepare the work hours data to send to the server
+    // Preparar los datos de las horas de trabajo para enviar al servidor
     const workHoursData = {
-      employee_id: employee.employee_id, // ID of the employee
-      period_id: this.selectedWeek.period_id, // ID of the period from selectedWeek
-      day_of_week: moment(this.selectedDia).format('YYYY-MM-DD'), // Date formatted as 'YYYY-MM-DD'
-      work_week: this.selectedWeek.week_number, // Work week obtained from selectedWeek
-      entry_time: data.entryTime, // Entry time from the modal
-      lunch_start_time: data.lunchStart, // Start time for lunch from the modal
-      lunch_end_time: data.lunchEnd, // End time for lunch from the modal
-      exit_time: data.exitTime // Exit time from the modal
+      employee_id: employee.employee_id, // ID del empleado
+      period_id: this.selectedWeek.period_id, // ID del periodo de selectedWeek
+      day_of_week: moment(this.selectedDia).format('YYYY-MM-DD'), // Fecha formateada como 'YYYY-MM-DD'
+      work_week: this.selectedWeek.week_number, // Semana laboral obtenida de selectedWeek
+      entry_time: data.entryTime, // Hora de entrada del modal
+      lunch_start_time: data.lunchStart, // Hora de inicio de comida del modal
+      lunch_end_time: data.lunchEnd, // Hora de fin de comida del modal
+      exit_time: data.exitTime, // Hora de salida del modal
+      second_lunch_start_time: data.secondLunchStart || null, // Segunda hora de inicio de comida (opcional)
+      second_lunch_end_time: data.secondLunchEnd || null // Segunda hora de fin de comida (opcional)
     };
   
-    // Make an HTTP POST request to save the work hours
+    // Hacer una solicitud HTTP POST para guardar las horas de trabajo
     this.http.post('https://siinad.mx/php/save_work_hours.php', workHoursData)
       .subscribe(
         (response) => {
           console.log('Work hours saved successfully:', response);
-          // Optionally, show a success message
+          // Opcionalmente, mostrar un mensaje de éxito
         },
         (error) => {
           console.error('Error saving work hours:', error);
-          // Optionally, handle the error
+          // Opcionalmente, manejar el error
         }
       );
   }
+  
   
 
   // Asignar incidencia a empleados seleccionados
@@ -247,6 +250,7 @@ export class IncidentViewerPage implements OnInit {
     // Preparar datos para enviar al servidor
     const incidentData = {
       employee_id: employee.employee_id, // ID del empleado
+      period_type_id: this.authService.selectedPeriod.period_type_id,
       period_id: this.selectedWeek.period_id, // ID del periodo obtenido del objeto selectedWeek
        day_of_week: moment(this.selectedDia).format('YYYY-MM-DD'), // Date formatted as 'YYYY-MM-DD
       work_week: this.selectedWeek.week_number, // Semana laboral obtenida de selectedWeek

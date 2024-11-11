@@ -19,20 +19,31 @@ if (isset($data['employee_id']) && isset($data['status'])) {
 
   // Ejecutar la primera consulta
   if ($mysqli->query($query1) === TRUE) {
-    // Si la primera consulta fue exitosa, proceder con la segunda consulta
-    if ($employee_status !== null) {
-      // Actualizar employee_status en la tabla employees
-      $query2 = "UPDATE employees SET employee_status = '$employee_status' WHERE employee_id = $employee_id";
+    // Obtener el folio (request_id) de la solicitud actualizada
+    $query_folio = "SELECT request_id FROM employee_requests WHERE employee_id = $employee_id LIMIT 1";
+    $result_folio = $mysqli->query($query_folio);
+    
+    if ($result_folio->num_rows > 0) {
+      $row_folio = $result_folio->fetch_assoc();
+      $folio = $row_folio['request_id'];
 
-      // Ejecutar la segunda consulta
-      if ($mysqli->query($query2) === TRUE) {
-        echo json_encode(['message' => 'Solicitud y estado de empleado actualizados exitosamente.']);
+      // Si la primera consulta fue exitosa, proceder con la segunda consulta si es necesario
+      if ($employee_status !== null) {
+        // Actualizar employee_status en la tabla employees
+        $query2 = "UPDATE employees SET employee_status = '$employee_status' WHERE employee_id = $employee_id";
+
+        // Ejecutar la segunda consulta
+        if ($mysqli->query($query2) === TRUE) {
+          echo json_encode(['message' => 'Solicitud y estado de empleado actualizados exitosamente.', 'folio' => $folio]);
+        } else {
+          echo json_encode(['error' => 'Error al actualizar el estado de empleado: ' . $mysqli->error]);
+        }
       } else {
-        echo json_encode(['error' => 'Error al actualizar el estado de empleado: ' . $mysqli->error]);
+        // Si no se proporciona employee_status, solo la primera consulta es exitosa
+        echo json_encode(['message' => 'Solicitud actualizada exitosamente.', 'folio' => $folio]);
       }
     } else {
-      // Si no se proporciona employee_status, solo la primera consulta es exitosa
-      echo json_encode(['message' => 'Solicitud actualizada exitosamente.']);
+      echo json_encode(['error' => 'No se encontró la solicitud para este empleado.']);
     }
   } else {
     echo json_encode(['error' => 'Error al actualizar la solicitud: ' . $mysqli->error]);

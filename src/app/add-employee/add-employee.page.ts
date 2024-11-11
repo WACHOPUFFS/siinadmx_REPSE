@@ -13,6 +13,7 @@ interface Empleado {
   apellidoPaterno: string;
   apellidoMaterno: string;
   fechaNacimiento: string;
+  lugarNacimiento: string;
   estadoCivil: string;
   sexo: string;
   curp: string;
@@ -23,7 +24,14 @@ interface Empleado {
   contactoEmergencia: string;
   numEmergencia: string;
   fechaInicio: string;
+
+  // Campos bancarios
+  numeroCuenta: string;
+  nombreBanco: string;
+  sucursalBanco: string;
+  clabeInterbancaria: string;
 }
+
 
 @Component({
   selector: 'app-add-employee',
@@ -31,6 +39,8 @@ interface Empleado {
   styleUrls: ['./add-employee.page.scss'],
 })
 export class AddEmployeePage implements OnInit {
+  isSubmitting = false; // Variable para controlar el envío
+
   empleado: Empleado = {
     departamento: '',
     puesto: '',
@@ -39,6 +49,7 @@ export class AddEmployeePage implements OnInit {
     apellidoPaterno: '',
     apellidoMaterno: '',
     fechaNacimiento: '',
+    lugarNacimiento: '',
     estadoCivil: '',
     sexo: '',
     curp: '',
@@ -48,8 +59,15 @@ export class AddEmployeePage implements OnInit {
     telefono: '',
     contactoEmergencia: '',
     numEmergencia: '',
-    fechaInicio: ''
+    fechaInicio: '',
+
+    // Campos bancarios
+    numeroCuenta: '',
+    nombreBanco: '',
+    sucursalBanco: '',
+    clabeInterbancaria: ''
   };
+
   departamentos: any[] = [];
   puestos: any[] = [];
   turnos: any[] = [];
@@ -60,21 +78,77 @@ export class AddEmployeePage implements OnInit {
   files: { [key: string]: File } = {};
   allFieldsCompleted: boolean = false;
 
+  solicitudes: any[] = [];
+
   constructor(
     private http: HttpClient,
     private toastController: ToastController,
     private navCtrl: NavController,
     private authService: AuthService,
     private alertController: AlertController
-  ) {}
+  ) { }
 
   ngOnInit() {
+    this.fetchSolicitudesUltimos15Dias();
     this.fetchDepartamentos();
     this.fetchPuestos();
     this.fetchTurnos();
     this.fetchGenders();
     this.fetchMaritalStatuses();
   }
+
+  fetchSolicitudesUltimos15Dias() {
+    const companyId = this.authService.selectedId;  // ID de la empresa
+    const userId = this.authService.userId;  // ID del usuario que inició sesión (asegúrate de que esto esté disponible)
+    const today = new Date();
+    const fifteenDaysAgo = new Date();
+    fifteenDaysAgo.setDate(today.getDate() - 15);
+
+    const params = {
+      company_id: companyId,
+      user_id: userId,  // Se añade el parámetro del usuario
+      fechaInicio: fifteenDaysAgo.toISOString().split('T')[0],
+      fechaFin: today.toISOString().split('T')[0],
+    };
+
+    this.http.get<any>('https://siinad.mx/php/get_employee_requests.php', { params }).subscribe(
+      data => {
+        console.log('Solicitudes registradas:', data); // Verifica los datos recibidos
+
+        // Verificar si 'data.solicitudes' es un array antes de asignarlo
+        if (data && Array.isArray(data.solicitudes)) {
+          this.solicitudes = data.solicitudes;
+        } else {
+          console.error('El dato recibido no es un array de solicitudes');
+          this.solicitudes = []; // Asigna un array vacío si no es un array
+        }
+      },
+      error => {
+        console.error('Error al cargar solicitudes registradas', error);
+        this.solicitudes = [];
+      }
+    );
+
+
+  }
+
+
+  getStatusDescription(status: string): string {
+    switch (status.toLowerCase()) {  // Usar toLowerCase() para asegurarnos de que no haya errores por mayúsculas/minúsculas
+      case 'incomplete':
+        return 'Solicitud incompleta - Pendiente de información adicional';
+      case 'pending':
+        return 'Solicitud pendiente - En espera de aprobación por el administrador';
+      case 'complete':
+        return 'Solicitud completa - En espera de procesamiento por el administrativo';
+      case 'finish':
+        return 'Solicitud finalizada - Empleado dado de alta';
+      default:
+        return 'Estado desconocido';
+    }
+  }
+  
+
 
   fetchDepartamentos() {
     const companyId = this.authService.selectedId;
@@ -89,7 +163,7 @@ export class AddEmployeePage implements OnInit {
       }
     );
   }
-  
+
   fetchPuestos() {
     const companyId = this.authService.selectedId;
     this.http.get<any[]>(`https://siinad.mx/php/get_positions.php?company_id=${companyId}`).subscribe(
@@ -103,7 +177,7 @@ export class AddEmployeePage implements OnInit {
       }
     );
   }
-  
+
   fetchTurnos() {
     const companyId = this.authService.selectedId;
     this.http.get<any[]>(`https://siinad.mx/php/get_shifts.php?company_id=${companyId}`).subscribe(
@@ -117,7 +191,7 @@ export class AddEmployeePage implements OnInit {
       }
     );
   }
-  
+
 
   fetchGenders() {
     this.http.get<any[]>('https://siinad.mx/php/get_genders.php').subscribe(
@@ -133,7 +207,7 @@ export class AddEmployeePage implements OnInit {
     );
   }
 
-  
+
 
   onFileChange(event: any, fileType: string) {
     const file = event.target.files[0];
@@ -149,50 +223,33 @@ export class AddEmployeePage implements OnInit {
   }
 
   async onSubmit(form: NgForm) {
+    if (this.isSubmitting) return; // Evita doble envío
+    this.isSubmitting = true; // Bloquea envíos adicionales
+
     if (form.valid) {
+      const status = this.allFieldsCompleted ? 'Pending' : 'Incomplete';
       const data = {
-        departamento: this.empleado.departamento,
-        puesto: this.empleado.puesto,
-        turno: this.empleado.turno,
-        nombre: this.empleado.nombre,
-        apellidoPaterno: this.empleado.apellidoPaterno,
-        apellidoMaterno: this.empleado.apellidoMaterno,
-        fechaNacimiento: this.empleado.fechaNacimiento,
-        estadoCivil: this.empleado.estadoCivil,
-        sexo: this.empleado.sexo,
-        curp: this.empleado.curp,
-        numeroSeguroSocial: this.empleado.numeroSeguroSocial,
-        rfc: this.empleado.rfc,
-        correoElectronico: this.empleado.correoElectronico,
-        telefono: this.empleado.telefono,
-        contactoEmergencia: this.empleado.contactoEmergencia,
-        numEmergencia: this.empleado.numEmergencia,
-        fechaInicio: this.empleado.fechaInicio,
+        ...this.empleado,
         companyId: this.authService.selectedId,
-        status: this.allFieldsCompleted ? 'Pending' : 'Incomplete'
+        userId: this.authService.userId,
+        status
       };
 
       this.http.post('https://siinad.mx/php/submit_employee.php', data).subscribe(
         async (response: any) => {
           const employeeId = response.employee_id;
+          const requestId = response.request_id;
           if (employeeId) {
             await this.uploadFiles(employeeId);
-            if (this.allFieldsCompleted) {
-              const toast = await this.toastController.create({
-                message: 'Empleado registrado y solicitud enviada exitosamente.',
-                duration: 2000,
-                color: 'success'
-              });
-              toast.present();
-              this.goBack();
-            } else {
-              const alert = await this.alertController.create({
-                header: 'Información Incompleta',
-                message: 'Tienes 3 días para completar la información restante.',
-                buttons: ['OK']
-              });
-              await alert.present();
-            }
+            const alert = await this.alertController.create({
+              header: status === 'Pending' ? 'Solicitud Enviada' : 'Información Guardada',
+              message: status === 'Pending'
+                ? `Empleado registrado exitosamente. Folio de solicitud: ${requestId}.`
+                : `Información guardada. Tienes 3 días para completar la solicitud. Folio: ${requestId}`,
+              buttons: ['OK']
+            });
+            await alert.present();
+            this.goBack();
           } else {
             const toast = await this.toastController.create({
               message: 'Error al registrar empleado.',
@@ -201,6 +258,7 @@ export class AddEmployeePage implements OnInit {
             });
             toast.present();
           }
+          this.isSubmitting = false; // Libera el bloqueo
         },
         async error => {
           const toast = await this.toastController.create({
@@ -209,6 +267,7 @@ export class AddEmployeePage implements OnInit {
             color: 'danger'
           });
           toast.present();
+          this.isSubmitting = false; // Libera el bloqueo
         }
       );
     } else {
@@ -219,8 +278,12 @@ export class AddEmployeePage implements OnInit {
       });
       toast.present();
       this.validateAllFormFields(form);
+      this.isSubmitting = false; // Libera el bloqueo
     }
   }
+
+
+
 
   checkAllFieldsCompleted() {
     this.allFieldsCompleted = !!(
@@ -237,69 +300,7 @@ export class AddEmployeePage implements OnInit {
     );
   }
 
-  async enviarSolicitud() {
-    if (this.allFieldsCompleted) {
-      const data = {
-        departamento: this.empleado.departamento,
-        puesto: this.empleado.puesto,
-        turno: this.empleado.turno,
-        nombre: this.empleado.nombre,
-        apellidoPaterno: this.empleado.apellidoPaterno,
-        apellidoMaterno: this.empleado.apellidoMaterno,
-        fechaNacimiento: this.empleado.fechaNacimiento,
-        estadoCivil: this.empleado.estadoCivil,
-        sexo: this.empleado.sexo,
-        curp: this.empleado.curp,
-        numeroSeguroSocial: this.empleado.numeroSeguroSocial,
-        rfc: this.empleado.rfc,
-        correoElectronico: this.empleado.correoElectronico,
-        telefono: this.empleado.telefono,
-        contactoEmergencia: this.empleado.contactoEmergencia,
-        numEmergencia: this.empleado.numEmergencia,
-        fechaInicio: this.empleado.fechaInicio,
-        companyId: this.authService.selectedId,
-        status: 'Pending'
-      };
 
-      this.http.post('https://siinad.mx/php/submit_employee.php', data).subscribe(
-        async (response: any) => {
-          const employeeId = response.employee_id;
-          if (employeeId) {
-            await this.uploadFiles(employeeId);
-            const toast = await this.toastController.create({
-              message: 'Empleado registrado y solicitud enviada exitosamente.',
-              duration: 2000,
-              color: 'success'
-            });
-            toast.present();
-            this.goBack();
-          } else {
-            const toast = await this.toastController.create({
-              message: 'Error al registrar empleado.',
-              duration: 2000,
-              color: 'danger'
-            });
-            toast.present();
-          }
-        },
-        async error => {
-          const toast = await this.toastController.create({
-            message: 'Error al registrar empleado.',
-            duration: 2000,
-            color: 'danger'
-          });
-          toast.present();
-        }
-      );
-    } else {
-      const toast = await this.toastController.create({
-        message: 'Por favor, complete todos los campos obligatorios.',
-        duration: 2000,
-        color: 'danger'
-      });
-      toast.present();
-    }
-  }
 
   uploadFiles(employeeId: number) {
     const formData = new FormData();

@@ -38,7 +38,7 @@ $checkSql = "SELECT status FROM day_confirmations
                AND period_type_id = $periodTypeId
                AND day_of_week = '$dayOfWeek'
                AND week_number = $weekNumber 
-               AND status = 'confirmed'";
+               AND status = '$status'";
 $result = $mysqli->query($checkSql);
 
 if ($result->num_rows > 0) {
@@ -61,7 +61,19 @@ if ($mysqli->query($insertSql)) {
                                AND work_week = $weekNumber 
                                AND day_of_week = '$dayOfWeek'"; // Solo actualizar si el estado es `pending`
     if ($mysqli->query($updateAssignmentsSql)) {
-        echo json_encode(['success' => 'Día confirmado exitosamente y registros de empleados actualizados.']);
+        // Actualizar los registros en la tabla de incidencias
+        $updateIncidentsSql = "UPDATE incidents 
+                               SET status = 'confirmed' 
+                               WHERE period_id = $periodId 
+                                 AND period_type_id = $periodTypeId 
+                                 AND day_of_week = '$dayOfWeek' 
+                                 AND work_week = $weekNumber";
+
+        if ($mysqli->query($updateIncidentsSql)) {
+            echo json_encode(['success' => 'Día confirmado exitosamente y registros de empleados e incidencias actualizados.']);
+        } else {
+            echo json_encode(['error' => 'Error al actualizar los registros de incidencias.']);
+        }
     } else {
         echo json_encode(['error' => 'Error al actualizar los registros de empleados en employee_assignments.']);
     }

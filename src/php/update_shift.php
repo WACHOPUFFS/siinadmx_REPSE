@@ -20,8 +20,19 @@ $description = isset($data['description']) ? $data['description'] : '';
 $start_time = $data['start_time'];
 $end_time = $data['end_time'];
 
+// Nuevos campos para las horas de comida (primera y segunda comida)
+$lunch_start_time = isset($data['lunch_start_time']) ? $data['lunch_start_time'] : null;
+$lunch_end_time = isset($data['lunch_end_time']) ? $data['lunch_end_time'] : null;
+$second_lunch_start_time = isset($data['second_lunch_start_time']) ? $data['second_lunch_start_time'] : null;
+$second_lunch_end_time = isset($data['second_lunch_end_time']) ? $data['second_lunch_end_time'] : null;
+
 // Consulta SQL para actualizar el turno asegurando que coincida el company_id
-$sql = "UPDATE shifts SET shift_name = ?, description = ?, start_time = ?, end_time = ? WHERE shift_id = ? AND company_id = ?";
+$sql = "
+    UPDATE shifts 
+    SET shift_name = ?, description = ?, start_time = ?, end_time = ?, lunch_start_time = ?, lunch_end_time = ?, second_lunch_start_time = ?, second_lunch_end_time = ? 
+    WHERE shift_id = ? AND company_id = ?
+";
+
 $stmt = $mysqli->prepare($sql);
 
 if ($stmt === false) {
@@ -29,7 +40,19 @@ if ($stmt === false) {
     exit;
 }
 
-$stmt->bind_param("ssssii", $shift_name, $description, $start_time, $end_time, $shift_id, $company_id);
+// Vincular los parámetros, asegurando que se permita NULL para las horas de comida si no se proporcionan
+$stmt->bind_param("sssssssiii", 
+    $shift_name, 
+    $description, 
+    $start_time, 
+    $end_time, 
+    $lunch_start_time, 
+    $lunch_end_time, 
+    $second_lunch_start_time, 
+    $second_lunch_end_time, 
+    $shift_id, 
+    $company_id
+);
 
 if ($stmt->execute()) {
     if ($stmt->affected_rows > 0) {

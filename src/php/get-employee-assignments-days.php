@@ -42,8 +42,33 @@ if ($result->num_rows > 0) {
     }
 }
 
+// Consulta para obtener empleados con incidencias en el día específico
+$sqlIncidents = "SELECT i.incident_id, i.employee_id, e.employee_code, e.first_name, e.last_name, e.middle_name,
+                        i.incident_type, i.description, i.created_at
+                 FROM incidents i
+                 JOIN employees e ON i.employee_id = e.employee_id
+                 WHERE i.period_id = $periodId
+                   AND i.day_of_week = '$date'";
+
+$resultIncidents = $mysqli->query($sqlIncidents);
+
+$empleadosIncidentes = [];
+
+// Verificar si se obtuvieron resultados en la consulta de incidencias
+if ($resultIncidents->num_rows > 0) {
+    while ($row = $resultIncidents->fetch_assoc()) {
+        $empleadosIncidentes[] = $row;
+    }
+}
+
+// Combinar los resultados de empleados asignados y empleados con incidencias
+$response = [
+    'empleados_asignados' => $empleadosDia,
+    'empleados_incidencias' => $empleadosIncidentes
+];
+
 // Devolver los empleados como JSON
-echo json_encode($empleadosDia);
+echo json_encode($response);
 
 $mysqli->close();
 ?>

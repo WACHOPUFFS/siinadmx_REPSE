@@ -287,7 +287,8 @@ const routes: Routes = [
   {
     path: 'employee-view',
     loadChildren: () => import('./employee-view/employee-view.module').then( m => m.EmployeeViewPageModule)
-  }
+  },
+  
 ];
 
 @NgModule({

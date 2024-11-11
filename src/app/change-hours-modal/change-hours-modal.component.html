@@ -60,6 +60,48 @@
       </ng-template>
     </ion-modal>
 
+    <!-- Checkbox para habilitar segunda hora de comida -->
+    <ion-item lines="none">
+      <ion-label>Añadir segunda hora de comida</ion-label>
+      <ion-checkbox slot="start" [(ngModel)]="enableSecondLunch"></ion-checkbox>
+    </ion-item>
+
+    <!-- Segunda Hora de Inicio de Comida (opcional) -->
+    <div *ngIf="enableSecondLunch">
+      <div class="row mb-3 align-items-center">
+        <div class="col-6">
+          <label class="form-label"><strong>Inicio de Segunda Comida</strong></label>
+        </div>
+        <div class="col-6 text-end">
+          <ion-datetime-button datetime="second-lunch-start-datetime"></ion-datetime-button>
+        </div>
+      </div>
+
+      <!-- Modal para Inicio de Segunda Comida -->
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime id="second-lunch-start-datetime" [(ngModel)]="secondLunchStart" presentation="time"></ion-datetime>
+        </ng-template>
+      </ion-modal>
+
+      <!-- Segunda Hora de Fin de Comida (opcional) -->
+      <div class="row mb-3 align-items-center">
+        <div class="col-6">
+          <label class="form-label"><strong>Fin de Segunda Comida</strong></label>
+        </div>
+        <div class="col-6 text-end">
+          <ion-datetime-button datetime="second-lunch-end-datetime"></ion-datetime-button>
+        </div>
+      </div>
+
+      <!-- Modal para Fin de Segunda Comida -->
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime id="second-lunch-end-datetime" [(ngModel)]="secondLunchEnd" presentation="time"></ion-datetime>
+        </ng-template>
+      </ion-modal>
+    </div>
+
     <!-- Hora de Salida -->
     <div class="row mb-3 align-items-center">
       <div class="col-6">

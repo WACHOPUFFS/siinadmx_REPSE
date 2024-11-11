@@ -11,371 +11,542 @@
   <div class="back-button" (click)="goBack()">
     <ion-icon name="arrow-back"></ion-icon>
   </div>
-
-  <div class="container mt-4">
-    <div class="d-flex justify-content-center mb-4">
-      <h5><strong>Editar Empleado Pendiente</strong></h5>
-    </div>
-    <div class="row justify-content-center">
-      <div class="col-lg-12">
-        <div class="form-group">
-          <ion-item>
-            <ion-label>Seleccionar Empleado</ion-label>
-            <ion-select id="employeeSelect" (ionChange)="onSelectEmployee($event)" placeholder="Seleccionar Empleado">
-              <ion-select-option value="" disabled selected>Seleccionar Empleado</ion-select-option>
-              <ion-select-option *ngFor="let empleado of empleadosPendientes" [value]="empleado.employee_id">
-                {{ empleado.first_name }} {{ empleado.last_name }}
-              </ion-select-option>
-            </ion-select>
-          </ion-item>
+  <ion-grid>
+    <ion-row>
+      <!-- Columna izquierda con contenido adicional -->
+      <ion-col size="12" size-md="3" class="left-column">
+        <div class="container mt-4">
+          <!-- Columna con la lista de solicitudes de empleado registradas en los últimos 15 días -->
+          <div class="side-content">
+            <div class="d-flex justify-content-center mb-4">
+              <h5><strong>Solicitudes Registradas (Últimos 15 días)</strong></h5>
+            </div>
+            <ion-list>
+              <ion-item *ngFor="let solicitud of solicitudes">
+                <ion-label>
+                  <h2>Folio: {{ solicitud.request_id }}</h2>
+                  <p>Empleado: {{ solicitud.full_name }}</p>
+                  <p>Departamento: {{ solicitud.department_name }}</p>
+                  <p>Puesto: {{ solicitud.position_name }}</p>
+                  <p>Estado: {{ getStatusDescription(solicitud.request_status) }}</p>
+                  <p>Fecha de Solicitud: {{ solicitud.request_created_at | date:'short' }}</p>
+                  <p>Última Actualización: {{ solicitud.request_updated_at | date:'short' }}</p>
+                </ion-label>
+              </ion-item>
+            </ion-list>
+          </div>
         </div>
+      </ion-col>
+      <div class="container mt-4">
+        <div class="d-flex justify-content-center mb-4">
+          <h5><strong>Editar Empleado Pendiente</strong></h5>
+        </div>
+        <div class="row justify-content-center">
+          <div class="col-lg-12">
+            <div class="form-group">
+              <ion-item>
+                <ion-label>Seleccionar Empleado</ion-label>
+                <ion-select id="employeeSelect" (ionChange)="onSelectEmployee($event)"
+                  placeholder="Seleccionar Empleado">
+                  <ion-select-option value="" disabled selected>Seleccionar Empleado</ion-select-option>
+                  <ion-select-option *ngFor="let empleado of empleadosPendientes" [value]="empleado.employee_id">
+                    {{ empleado.first_name }} {{ empleado.last_name }}
+                  </ion-select-option>
+                </ion-select>
+              </ion-item>
+            </div>
 
-        <div *ngIf="selectedEmployee">
-          <div class="card shadow-lg p-4 mb-4">
-            <div class="card-body">
-              <form #empleadoForm="ngForm" (ngSubmit)="onSubmit(empleadoForm)">
-                <div class="form-group mt-3">
-                  <label for="departamento">Departamento</label>
-                  <select name="departamento" class="form-select" [(ngModel)]="selectedEmployee.department_id"
-                     required
-                    [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')">
-                    <option value="" disabled selected>Seleccionar</option>
-                    <option *ngFor="let departamento of departamentos" [value]="departamento.department_id">
-                      {{ departamento.department_name }}
-                    </option>
-                  </select>
-                </div>
-                <div class="form-group mt-3">
-                  <label for="puesto">Puesto</label>
-                  <select name="puesto" class="form-select" [(ngModel)]="selectedEmployee.position_id"
-                     required
-                    [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')">
-                    <option value="" disabled selected>Seleccionar</option>
-                    <option *ngFor="let puesto of puestos" [value]="puesto.position_id">{{ puesto.position_name }}
-                    </option>
-                  </select>
-                </div>
-                <div class="form-group mt-3">
-                  <label for="turno">Turno</label>
-                  <select name="turno" class="form-select" [(ngModel)]="selectedEmployee.shift_id"
-                    (change)="checkAllFieldsCompleted()" required
-                    [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')">
-                    <option value="" disabled selected>Seleccionar</option>
-                    <option *ngFor="let turno of turnos" [value]="turno.shift_id">{{ turno.shift_name }}</option>
-                  </select>
-                </div>
-                <div class="form-group mt-3">
-                  <label for="nombre">Nombre*</label>
-                  <input type="text" placeholder="Nombre" class="input form-control rounded-pill mb-3 p-2 px-3"
-                    name="nombre" [(ngModel)]="selectedEmployee.first_name" (input)="checkAllFieldsCompleted()" required
-                    [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
-                </div>
-                <div class="form-group mt-3">
-                  <label for="apellidoPaterno">Apellido Paterno*</label>
-                  <input type="text" placeholder="Apellido Paterno"
-                    class="input form-control rounded-pill mb-3 p-2 px-3" name="apellidoPaterno"
-                    [(ngModel)]="selectedEmployee.last_name" (input)="checkAllFieldsCompleted()" required
-                    [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
-                </div>
-                <div class="form-group mt-3">
-                  <label for="apellidoMaterno">Apellido Materno*</label>
-                  <input type="text" placeholder="Apellido Materno"
-                    class="input form-control rounded-pill mb-3 p-2 px-3" name="apellidoMaterno"
-                    [(ngModel)]="selectedEmployee.middle_name" (input)="checkAllFieldsCompleted()" required
-                    [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
-                </div>
-                <div class="form-group mt-3">
-                  <label for="fechaNacimiento">Fecha de Nacimiento</label>
-                  <input type="date" placeholder="Fecha de Nacimiento"
-                    class="input form-control rounded-pill mb-3 p-2 px-3" name="fechaNacimiento"
-                    [(ngModel)]="selectedEmployee.birth_date" (input)="checkAllFieldsCompleted()"
-                    [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
-                </div>
-                <div class="form-group mt-3">
-                  <label for="estadoCivil">Estado Civil</label>
-                  <select name="estadoCivil" class="form-select" [(ngModel)]="selectedEmployee.marital_status_id"
-                    (change)="checkAllFieldsCompleted()"
-                    [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')">
-                    <option value="" disabled>Seleccionar</option>
-                    <option *ngFor="let status of maritalStatuses" [value]="status.status_id">{{ status.status_name }}
-                    </option>
-                  </select>
-                </div>
-                <div class="form-group mt-3">
-                  <label for="sexo">Género</label>
-                  <select name="sexo" class="form-select" [(ngModel)]="selectedEmployee.gender_id"
-                    (change)="checkAllFieldsCompleted()"
-                    [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')">
-                    <option value="" disabled>Seleccionar</option>
-                    <option *ngFor="let gender of genders" [value]="gender.gender_id">{{ gender.gender_name }}</option>
-                  </select>
-                </div>
-                <div class="form-group mt-3">
-                  <label for="curp">CURP*</label>
-                  <input type="text" placeholder="CURP" class="input form-control rounded-pill mb-3 p-2 px-3"
-                    name="curp" [(ngModel)]="selectedEmployee.curp" maxlength="18" minlength="18"
-                    (input)="checkAllFieldsCompleted()" required
-                    [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
-                  <small id="curpValidation" class="text-danger">{{ curpValidationMessage }}</small>
-                </div>
-                <div class="form-group mt-3">
-                  <label for="numeroSeguroSocial">Número de Seguro Social*</label>
-                  <input type="text" placeholder="Número de Seguro Social"
-                    class="input form-control rounded-pill mb-3 p-2 px-3" name="numeroSeguroSocial"
-                    [(ngModel)]="selectedEmployee.social_security_number" maxlength="11" minlength="11"
-                    (input)="checkAllFieldsCompleted()"
-                    [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
-                </div>
-                <div class="form-group mt-3">
-                  <label for="rfc">RFC*</label>
-                  <input type="text" placeholder="RFC" class="input rounded-pill form-control mb-3 p-2 px-3" name="rfc"
-                    [(ngModel)]="selectedEmployee.rfc" maxlength="13" minlength="13" (input)="checkAllFieldsCompleted()"
-                    required [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
-                </div>
-                <div class="form-group mt-3">
-                  <label for="correoElectronico">Correo Electrónico<span
-                      *ngIf="sharedService.hasPermission('Empleados', 'Aceptar solicitudes de empleados')">*</span></label>
-                  <input type="email" placeholder="Correo electrónico"
-                    class="input rounded-pill form-control my-3 p-2 px-3" name="correoElectronico"
-                    [(ngModel)]="selectedEmployee.email" (input)="checkAllFieldsCompleted()"
-                    [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
-                </div>
-                <div class="form-group mt-3">
-                  <label for="telefono">Número de Teléfono<span
-                      *ngIf="sharedService.hasPermission('Empleados', 'Aceptar solicitudes de empleados')">*</span></label>
-                  <input type="tel" placeholder="Número de Teléfono"
-                    class="input rounded-pill form-control mb-3 p-2 px-3" name="telefono"
-                    [(ngModel)]="selectedEmployee.phone_number" maxlength="10" minlength="10"
-                    (input)="checkAllFieldsCompleted()"
-                    [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
-                </div>
-
-                <!-- Campos adicionales según permisos -->
-                <div *ngIf="sharedService.hasPermission('Empleados', 'Aceptar solicitudes de empleados')"
-                  class="form-group mt-3">
-                  <label for="netBalance">Sueldo Neto*</label>
-                  <input type="number" placeholder="Saldo Neto" class="input rounded-pill form-control mb-3 p-2 px-3"
-                    name="netBalance" [(ngModel)]="selectedEmployee.net_balance" (input)="checkAllFieldsCompleted()" />
-                </div>
-
-                <div *ngIf="sharedService.hasPermission('Empleados', 'Procesar empleados')">
-                  <div class="form-group mt-3">
-                    <label for="dailySalary">Sueldo Diario*</label>
-                    <input type="number" placeholder="Salario Diario"
-                      class="input rounded-pill form-control mb-3 p-2 px-3" name="dailySalary"
-                      [(ngModel)]="selectedEmployee.daily_salary" (input)="checkAllFieldsCompleted()" />
-                  </div>
-                  <div class="form-group mt-3">
-                    <label for="employeeCode">Código del Empleado*</label>
-                    <input type="text" placeholder="Código del Empleado"
-                      class="input rounded-pill form-control mb-3 p-2 px-3" name="employeeCode"
-                      [(ngModel)]="selectedEmployee.employee_code" (input)="checkAllFieldsCompleted()" />
-                  </div>
-                </div>
-
-                <div class="form-group mt-3">
-                  <label for="fechaInicio">Fecha de Inicio*</label>
-                  <input type="date" placeholder="Fecha de Inicio" class="input rounded-pill form-control mb-3 p-2 px-3"
-                    name="fechaInicio" [(ngModel)]="selectedEmployee.start_date" (input)="checkAllFieldsCompleted()"
-                    required [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
-                </div>
-
-                <!-- Archivos -->
-                <div class="form-group mt-3">
-                  <label>Identificación INE (frente)*</label>
-                  <div *ngIf="employeeFiles['ineFrente']">
-                    <ul>
-                      <li *ngFor="let file of employeeFiles['ineFrente']">
-                        {{ file.file_name }}
-                        <button type="button" class="btn btn-danger btn-sm"
-                          (click)="eliminarArchivo(file.file_id)">Eliminar</button>
-                      </li>
-                    </ul>
-                  </div>
-                  <input type="file" class="form-control rounded-pill" (change)="onFileChange($event, 'ineFrente')"
-                    [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
-                </div>
-
-                <div class="form-group mt-3">
-                  <label>Identificación INE (Reverso)*</label>
-                  <div *ngIf="employeeFiles['ineReverso']">
-                    <ul>
-                      <li *ngFor="let file of employeeFiles['ineReverso']">
-                        {{ file.file_name }}
-                        <button type="button" class="btn btn-danger btn-sm"
-                          (click)="eliminarArchivo(file.file_id)">Eliminar</button>
-                      </li>
-                    </ul>
-                  </div>
-                  <input type="file" class="form-control rounded-pill" (change)="onFileChange($event, 'ineReverso')"
-                    [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
-                </div>
-
-                <div class="form-group mt-3">
-                  <label>Constancia de Situación Fiscal*</label>
-                  <div *ngIf="employeeFiles['constanciaFiscal']">
-                    <ul>
-                      <li *ngFor="let file of employeeFiles['constanciaFiscal']">
-                        {{ file.file_name }}
-                        <button type="button" class="btn btn-danger btn-sm"
-                          (click)="eliminarArchivo(file.file_id)">Eliminar</button>
-                      </li>
-                    </ul>
-                  </div>
-                  <input type="file" class="form-control rounded-pill"
-                    (change)="onFileChange($event, 'constanciaFiscal')"
-                    [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
-                </div>
-
-                <!-- Campos de archivo adicionales -->
-                <div class="form-group mt-3">
-                  <label>Número de Seguro Social y Unidad Médica</label>
-                  <div *ngIf="employeeFiles['numSeguroSocialArchivo']">
-                    <ul>
-                      <li *ngFor="let file of employeeFiles['numSeguroSocialArchivo']">
-                        {{ file.file_name }}
-                        <button type="button" class="btn btn-danger btn-sm"
-                          (click)="eliminarArchivo(file.file_id)">Eliminar</button>
-                      </li>
-                    </ul>
-                  </div>
-                  <input type="file" class="form-control rounded-pill"
-                    (change)="onFileChange($event, 'numSeguroSocialArchivo')"
-                    [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
-                </div>
-
-                <div class="form-group mt-3">
-                  <label>Acta de Nacimiento</label>
-                  <div *ngIf="employeeFiles['actaNacimiento']">
-                    <ul>
-                      <li *ngFor="let file of employeeFiles['actaNacimiento']">
-                        {{ file.file_name }}
-                        <button type="button" class="btn btn-danger btn-sm"
-                          (click)="eliminarArchivo(file.file_id)">Eliminar</button>
-                      </li>
-                    </ul>
-                  </div>
-                  <input type="file" class="form-control rounded-pill" (change)="onFileChange($event, 'actaNacimiento')"
-                    [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
-                </div>
-
-                <div class="form-group mt-3">
-                  <label>Comprobante de Domicilio</label>
-                  <div *ngIf="employeeFiles['comprobanteDomicilio']">
-                    <ul>
-                      <li *ngFor="let file of employeeFiles['comprobanteDomicilio']">
-                        {{ file.file_name }}
-                        <button type="button" class="btn btn-danger btn-sm"
-                          (click)="eliminarArchivo(file.file_id)">Eliminar</button>
-                      </li>
-                    </ul>
-                  </div>
-                  <input type="file" class="form-control rounded-pill"
-                    (change)="onFileChange($event, 'comprobanteDomicilio')"
-                    [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
-                </div>
+            <div *ngIf="selectedEmployee">
+              <div class="card shadow-lg p-4 mb-4">
+                <div class="card-body">
+                  <form #empleadoForm="ngForm" (ngSubmit)="onSubmit(empleadoForm)">
+                    <div class="form-group mt-3">
+                      <div *ngIf="sharedService.hasPermission('Empleados', 'Procesar empleados')">
+                        <label for="employeeCode">Código del Empleado*</label>
+                        <input type="text" placeholder="Código del Empleado"
+                          class="input rounded-pill form-control mb-3 p-2 px-3" name="employeeCode"
+                          [(ngModel)]="selectedEmployee.employee_code" (input)="checkAllFieldsCompleted()" />
+                      </div>
+                    </div>
+                    <div class="container mt-4">
+                      <h4>Datos Personales</h4>
+                      <hr />
+                      <div class="form-group mt-3">
+                        <label for="nombre">Nombre*</label>
+                        <input type="text" placeholder="Nombre" class="input form-control rounded-pill mb-3 p-2 px-3"
+                          name="nombre" [(ngModel)]="selectedEmployee.first_name" (input)="checkAllFieldsCompleted()"
+                          required [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                      </div>
+                      <div class="form-group mt-3">
+                        <label for="apellidoPaterno">Apellido Paterno*</label>
+                        <input type="text" placeholder="Apellido Paterno"
+                          class="input form-control rounded-pill mb-3 p-2 px-3" name="apellidoPaterno"
+                          [(ngModel)]="selectedEmployee.last_name" (input)="checkAllFieldsCompleted()" required
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                      </div>
+                      <div class="form-group mt-3">
+                        <label for="apellidoMaterno">Apellido Materno*</label>
+                        <input type="text" placeholder="Apellido Materno"
+                          class="input form-control rounded-pill mb-3 p-2 px-3" name="apellidoMaterno"
+                          [(ngModel)]="selectedEmployee.middle_name" (input)="checkAllFieldsCompleted()" required
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                      </div>
+                      <div class="form-group mt-3">
+                        <label for="fechaNacimiento">Fecha de Nacimiento</label>
+                        <input type="date" placeholder="Fecha de Nacimiento"
+                          class="input form-control rounded-pill mb-3 p-2 px-3" name="fechaNacimiento"
+                          [(ngModel)]="selectedEmployee.birth_date" (input)="checkAllFieldsCompleted()"
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                      </div>
 
 
-                <div class="form-group mt-3">
-                  <label>Cuenta Interbancaria<span
-                      *ngIf="sharedService.hasPermission('Empleados', 'Aceptar solicitudes de empleados')">*</span></label>
-                  <div *ngIf="employeeFiles['cuentaInterbancaria']">
-                    <ul>
-                      <li *ngFor="let file of employeeFiles['cuentaInterbancaria']">
-                        {{ file.file_name }}
-                        <button type="button" class="btn btn-danger btn-sm"
-                          (click)="eliminarArchivo(file.file_id)">Eliminar</button>
-                      </li>
-                    </ul>
-                  </div>
-                  <input type="file" class="form-control rounded-pill"
-                    (change)="onFileChange($event, 'cuentaInterbancaria')"
-                    [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
-                </div>
+                      <div class="form-group mt-3">
+                        <label for="lugarNacimiento">Lugar de Nacimiento</label>
+                        <input type="text" placeholder="Lugar de Nacimiento"
+                          class="input form-control rounded-pill mb-3 p-2 px-3" name="lugarNacimiento"
+                          [(ngModel)]="selectedEmployee.birth_place" (input)="checkAllFieldsCompleted()"
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                      </div>
 
 
-                <div class="form-group mt-3">
-                  <label for="tieneInfonavit">¿Tienes Infonavit?</label>
-                  <select id="tieneInfonavit" class="form-control rounded-pill mb-3"
-                    (change)="mostrarOcultarCampo($event)"
-                    [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')">
-                    <option value="no">No</option>
-                    <option value="si">Sí</option>
-                  </select>
-                </div>
+                      <div class="form-group mt-3">
+                        <label for="curp">CURP*</label>
+                        <input type="text" placeholder="CURP" class="input form-control rounded-pill mb-3 p-2 px-3"
+                          name="curp" [(ngModel)]="selectedEmployee.curp" maxlength="18" minlength="18"
+                          (input)="checkAllFieldsCompleted()" required
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                        <small id="curpValidation" class="text-danger">{{ curpValidationMessage }}</small>
+                      </div>
 
-                <div [hidden]="!mostrarInfonavit" class="form-group mt-3">
-                  <label for="retencionInfonavit">Carta de Retención de Infonavit</label>
-                  <div *ngIf="employeeFiles['retencionInfonavit']">
-                    <ul>
-                      <li *ngFor="let file of employeeFiles['retencionInfonavit']">
-                        {{ file.file_name }}
-                        <button type="button" class="btn btn-danger btn-sm"
-                          (click)="eliminarArchivo(file.file_id)">Eliminar</button>
-                      </li>
-                    </ul>
-                  </div>
-                  <input type="file" class="form-control rounded-pill"
-                    (change)="onFileChange($event, 'retencionInfonavit')"
-                    [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
-                </div>
+                      <div class="form-group mt-3">
+                        <label for="rfc">RFC*</label>
+                        <input type="text" placeholder="RFC" class="input rounded-pill form-control mb-3 p-2 px-3"
+                          name="rfc" [(ngModel)]="selectedEmployee.rfc" maxlength="13" minlength="13"
+                          (input)="checkAllFieldsCompleted()" required
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                      </div>
 
-                <div class="form-group mt-3">
-                  <label for="antecedentesPenales">Carta de No Antecedentes Penales</label>
-                  <div *ngIf="employeeFiles['antecedentesPenales']">
-                    <ul>
-                      <li *ngFor="let file of employeeFiles['antecedentesPenales']">
-                        {{ file.file_name }}
-                        <button type="button" class="btn btn-danger btn-sm"
-                          (click)="eliminarArchivo(file.file_id)">Eliminar</button>
-                      </li>
-                    </ul>
-                  </div>
-                  <input type="file" class="form-control rounded-pill"
-                    (change)="onFileChange($event, 'antecedentesPenales')"
-                    [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
-                </div>
 
-                <div class="form-group mt-3">
-                  <label for="comprobanteEstudios">Comprobante de Estudios</label>
-                  <div *ngIf="employeeFiles['comprobanteEstudios']">
-                    <ul>
-                      <li *ngFor="let file of employeeFiles['comprobanteEstudios']">
-                        {{ file.file_name }}
-                        <button type="button" class="btn btn-danger btn-sm"
-                          (click)="eliminarArchivo(file.file_id)">Eliminar</button>
-                      </li>
-                    </ul>
-                  </div>
-                  <input type="file" class="form-control rounded-pill"
-                    (change)="onFileChange($event, 'comprobanteEstudios')"
-                    [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
-                </div>
+                      <div class="form-group mt-3">
+                        <label for="telefono">Número de Teléfono<span
+                            *ngIf="sharedService.hasPermission('Empleados', 'Aceptar solicitudes de empleados')">*</span></label>
+                        <input type="tel" placeholder="Número de Teléfono"
+                          class="input rounded-pill form-control mb-3 p-2 px-3" name="telefono"
+                          [(ngModel)]="selectedEmployee.phone_number" maxlength="10" minlength="10"
+                          (input)="checkAllFieldsCompleted()"
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                      </div>
 
-                <!-- Botones de acción -->
-                <div class="mt-3 text-center">
-                  <button type="submit" class="btn btn-primary rounded-pill w-75 fw-bold shadow py-2 mt-2">Actualizar
-                    solicitud Empleado</button>
-                  <button  (click)="enviarSolicitudPendiente()"
-                    class="btn btn-success rounded-pill w-75 fw-bold shadow py-2 mt-2"
-                    [disabled]="!allFieldsCompleted">{{ buttonNameSucessEmployee }}</button>
-                  <button *ngIf="sharedService.hasPermission('Empleados', 'Editar solicitudes de empleados')"
-                   (click)="eliminarSolicitud()" class="btn btn-danger rounded-pill w-75 fw-bold shadow py-2 mt-2">
-                   Eliminar Solicitud</button>
-                  <button *ngIf="sharedService.hasPermission('Empleados', 'Aceptar solicitudes de empleados')"
-                    (click)="rechazarSolicitud()" class="btn btn-warning rounded-pill w-75 fw-bold shadow py-2 mt-2">
-                    Rechazar Solicitud
-                  </button>
-                  <button (click)="selectEmployee(null)"
-                    class="btn btn-secondary rounded-pill w-75 fw-bold shadow py-2 mt-2">Cancelar</button>
+                      <div class="form-group mt-3">
+                        <label for="correoElectronico">Correo Electrónico<span
+                            *ngIf="sharedService.hasPermission('Empleados', 'Aceptar solicitudes de empleados')">*</span></label>
+                        <input type="email" placeholder="Correo electrónico"
+                          class="input rounded-pill form-control my-3 p-2 px-3" name="correoElectronico"
+                          [(ngModel)]="selectedEmployee.email" (input)="checkAllFieldsCompleted()"
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                      </div>
+
+
+                      <div class="form-group mt-3">
+                        <label for="sexo">Género</label>
+                        <select name="sexo" class="form-select" [(ngModel)]="selectedEmployee.gender_id"
+                          (change)="checkAllFieldsCompleted()"
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')">
+                          <option value="" disabled>Seleccionar</option>
+                          <option *ngFor="let gender of genders" [value]="gender.gender_id">{{ gender.gender_name }}
+                          </option>
+                        </select>
+                      </div>
+
+                      <div class="form-group mt-3">
+                        <label for="estadoCivil">Estado Civil</label>
+                        <select name="estadoCivil" class="form-select" [(ngModel)]="selectedEmployee.marital_status_id"
+                          (change)="checkAllFieldsCompleted()"
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')">
+                          <option value="" disabled>Seleccionar</option>
+                          <option *ngFor="let status of maritalStatuses" [value]="status.status_id">{{
+                            status.status_name }}
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="container mt-4">
+                      <h4>Información Financiera y Bancaria</h4>
+                      <hr />
+                      <div class="form-group mt-3">
+                        <label for="numeroSeguroSocial">Número de Seguro Social*</label>
+                        <input type="text" placeholder="Número de Seguro Social"
+                          class="input form-control rounded-pill mb-3 p-2 px-3" name="numeroSeguroSocial"
+                          [(ngModel)]="selectedEmployee.social_security_number" maxlength="11" minlength="11"
+                          (input)="checkAllFieldsCompleted()"
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                      </div>
+
+                      <div class="form-group mt-3">
+                        <label for="numeroCuenta">Número de Cuenta Bancaria</label>
+                        <input type="number" placeholder="10 a 12 dígitos"
+                          class="input form-control rounded-pill mb-3 p-2 px-3" name="numeroCuenta"
+                          [(ngModel)]="selectedEmployee.bank_account_number" maxlength="12" inputmode="numeric"
+                          (input)="checkAllFieldsCompleted()"
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                      </div>
+
+                      <div class="form-group mt-3">
+                        <label for="nombreBanco">Banco</label>
+                        <input type="text" placeholder="Nombre del Banco"
+                          class="input form-control rounded-pill mb-3 p-2 px-3" name="nombreBanco"
+                          [(ngModel)]="selectedEmployee.bank_name" (input)="checkAllFieldsCompleted()"
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                      </div>
+
+                      <div class="form-group mt-3">
+                        <label for="sucursalBanco">Sucursal</label>
+                        <input type="text" placeholder="Sucursal del Banco"
+                          class="input form-control rounded-pill mb-3 p-2 px-3" name="sucursalBanco"
+                          [(ngModel)]="selectedEmployee.bank_branch" (input)="checkAllFieldsCompleted()"
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                      </div>
+
+                      <div class="form-group mt-3">
+                        <label for="clabeInterbancaria">CLABE Interbancaria</label>
+                        <input type="number" placeholder="18 dígitos"
+                          class="input form-control rounded-pill mb-3 p-2 px-3" name="clabeInterbancaria"
+                          [(ngModel)]="selectedEmployee.clabe" maxlength="18" inputmode="numeric"
+                          (input)="checkAllFieldsCompleted()"
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                      </div>
+                    </div>
+                    <div class="container mt-4">
+                      <h4>Información de Trabajo</h4>
+                      <hr />
+                      <div class="form-group mt-3">
+                        <label for="departamento">Departamento</label>
+                        <select name="departamento" class="form-select" [(ngModel)]="selectedEmployee.department_id"
+                          required [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')">
+                          <option value="" disabled selected>Seleccionar</option>
+                          <option *ngFor="let departamento of departamentos" [value]="departamento.department_id">
+                            {{ departamento.department_name }}
+                          </option>
+                        </select>
+                      </div>
+                      <div class="form-group mt-3">
+                        <label for="puesto">Puesto</label>
+                        <select name="puesto" class="form-select" [(ngModel)]="selectedEmployee.position_id" required
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')">
+                          <option value="" disabled selected>Seleccionar</option>
+                          <option *ngFor="let puesto of puestos" [value]="puesto.position_id">{{ puesto.position_name }}
+                          </option>
+                        </select>
+                      </div>
+                      <div class="form-group mt-3">
+                        <label for="turno">Turno</label>
+                        <select name="turno" class="form-select" [(ngModel)]="selectedEmployee.shift_id"
+                          (change)="checkAllFieldsCompleted()" required
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')">
+                          <option value="" disabled selected>Seleccionar</option>
+                          <option *ngFor="let turno of turnos" [value]="turno.shift_id">{{ turno.shift_name }}</option>
+                        </select>
+                      </div>
+
+                      <div class="form-group mt-3">
+                        <label for="fechaInicio">Fecha de Inicio*</label>
+                        <input type="date" placeholder="Fecha de Inicio"
+                          class="input rounded-pill form-control mb-3 p-2 px-3" name="fechaInicio"
+                          [(ngModel)]="selectedEmployee.start_date" (input)="checkAllFieldsCompleted()" required
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                      </div>
+
+                      <!-- Campos adicionales según permisos -->
+                      <div
+                        *ngIf="sharedService.hasPermission('Empleados', 'Aceptar solicitudes de empleados') || sharedService.hasPermission('Empleados', 'Procesar empleados')"
+                        class="form-group mt-3">
+                        <label for="netBalance">Sueldo Neto*</label>
+                        <input type="number" placeholder="Sueldo Neto"
+                          class="input rounded-pill form-control mb-3 p-2 px-3" name="netBalance"
+                          [(ngModel)]="selectedEmployee.net_balance" (input)="checkAllFieldsCompleted()" />
+                      </div>
+
+                      <div *ngIf="sharedService.hasPermission('Empleados', 'Procesar empleados')">
+                        <div class="form-group mt-3">
+                          <label for="dailySalary">Sueldo Diario*</label>
+                          <input type="number" placeholder="Sueldo Diario"
+                            class="input rounded-pill form-control mb-3 p-2 px-3" name="dailySalary"
+                            [(ngModel)]="selectedEmployee.daily_salary" (input)="checkAllFieldsCompleted()" />
+                        </div>
+
+                      </div>
+                    </div>
+
+                    <div class="container mt-4">
+                      <h4>Contacto de Emergencia</h4>
+                      <hr />
+                      <div class="form-group mt-3">
+                        <label for="contactoEmergencia">Contacto de Emergencia</label>
+                        <input type="text" placeholder="Contacto de Emergencia"
+                          class="input rounded-pill form-control mb-3 p-2 px-3" name="contactoEmergencia"
+                          [(ngModel)]="selectedEmployee.emergency_contact_name" (input)="checkAllFieldsCompleted()"
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                      </div>
+
+                      <div class="form-group mt-3">
+                        <label for="numEmergencia">Número de Emergencia</label>
+                        <input type="tel" placeholder="Número de Emergencia"
+                          class="input rounded-pill form-control mb-3 p-2 px-3" name="numEmergencia"
+                          [(ngModel)]="selectedEmployee.emergency_contact_number" maxlength="10" minlength="10"
+                          (input)="checkAllFieldsCompleted()"
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                      </div>
+
+                    </div>
+                    <div class="container mt-4">
+                      <h4>Archivos del empleado</h4>
+                      <hr />
+                      <!-- Archivos -->
+                      <div class="form-group mt-3">
+                        <label>Identificación INE (frente)*</label>
+                        <div *ngIf="employeeFiles['ineFrente']">
+                          <ul>
+                            <li *ngFor="let file of employeeFiles['ineFrente']">
+                              {{ file.file_name }}
+                              <button type="button" class="btn btn-danger btn-sm"
+                                (click)="eliminarArchivo(file.file_id)">Eliminar</button>
+                              <button type="button" class="btn btn-primary btn-sm ms-2"
+                                (click)="downloadFile(file.file_path)">
+                                Descargar
+                              </button>
+
+                            </li>
+                          </ul>
+                        </div>
+                        <input type="file" class="form-control rounded-pill"
+                          (change)="onFileChange($event, 'ineFrente')"
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                      </div>
+
+                      <div class="form-group mt-3">
+                        <label>Identificación INE (Reverso)*</label>
+                        <div *ngIf="employeeFiles['ineReverso']">
+                          <ul>
+                            <li *ngFor="let file of employeeFiles['ineReverso']">
+                              {{ file.file_name }}
+                              <button type="button" class="btn btn-danger btn-sm"
+                                (click)="eliminarArchivo(file.file_id)">Eliminar</button>
+                              <button type="button" class="btn btn-primary btn-sm ms-2"
+                                (click)="downloadFile(file.file_path)">
+                                Descargar
+                              </button>
+                            </li>
+                          </ul>
+                        </div>
+                        <input type="file" class="form-control rounded-pill"
+                          (change)="onFileChange($event, 'ineReverso')"
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                      </div>
+
+                      <div class="form-group mt-3">
+                        <label>Constancia de Situación Fiscal*</label>
+                        <div *ngIf="employeeFiles['constanciaFiscal']">
+                          <ul>
+                            <li *ngFor="let file of employeeFiles['constanciaFiscal']">
+                              {{ file.file_name }}
+                              <button type="button" class="btn btn-danger btn-sm"
+                                (click)="eliminarArchivo(file.file_id)">Eliminar</button>
+                              <button type="button" class="btn btn-primary btn-sm ms-2"
+                                (click)="downloadFile(file.file_path)">
+                                Descargar
+                              </button>
+                            </li>
+                          </ul>
+                        </div>
+                        <input type="file" class="form-control rounded-pill"
+                          (change)="onFileChange($event, 'constanciaFiscal')"
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                      </div>
+
+                      <!-- Campos de archivo adicionales -->
+                      <div class="form-group mt-3">
+                        <label>Número de Seguro Social y Unidad Médica</label>
+                        <div *ngIf="employeeFiles['numSeguroSocialArchivo']">
+                          <ul>
+                            <li *ngFor="let file of employeeFiles['numSeguroSocialArchivo']">
+                              {{ file.file_name }}
+                              <button type="button" class="btn btn-danger btn-sm"
+                                (click)="eliminarArchivo(file.file_id)">Eliminar</button>
+                              <button type="button" class="btn btn-primary btn-sm ms-2"
+                                (click)="downloadFile(file.file_path)">
+                                Descargar
+                              </button>
+                            </li>
+                          </ul>
+                        </div>
+                        <input type="file" class="form-control rounded-pill"
+                          (change)="onFileChange($event, 'numSeguroSocialArchivo')"
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                      </div>
+
+                      <div class="form-group mt-3">
+                        <label>Acta de Nacimiento</label>
+                        <div *ngIf="employeeFiles['actaNacimiento']">
+                          <ul>
+                            <li *ngFor="let file of employeeFiles['actaNacimiento']">
+                              {{ file.file_name }}
+                              <button type="button" class="btn btn-danger btn-sm"
+                                (click)="eliminarArchivo(file.file_id)">Eliminar</button>
+                              <button type="button" class="btn btn-primary btn-sm ms-2"
+                                (click)="downloadFile(file.file_path)">
+                                Descargar
+                              </button>
+                            </li>
+                          </ul>
+                        </div>
+                        <input type="file" class="form-control rounded-pill"
+                          (change)="onFileChange($event, 'actaNacimiento')"
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                      </div>
+
+                      <div class="form-group mt-3">
+                        <label>Comprobante de Domicilio</label>
+                        <div *ngIf="employeeFiles['comprobanteDomicilio']">
+                          <ul>
+                            <li *ngFor="let file of employeeFiles['comprobanteDomicilio']">
+                              {{ file.file_name }}
+                              <button type="button" class="btn btn-danger btn-sm"
+                                (click)="eliminarArchivo(file.file_id)">Eliminar</button>
+                              <button type="button" class="btn btn-primary btn-sm ms-2"
+                                (click)="downloadFile(file.file_path)">
+                                Descargar
+                              </button>
+                            </li>
+                          </ul>
+                        </div>
+                        <input type="file" class="form-control rounded-pill"
+                          (change)="onFileChange($event, 'comprobanteDomicilio')"
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                      </div>
+
+
+                      <div class="form-group mt-3">
+                        <label>Cuenta Interbancaria<span
+                            *ngIf="sharedService.hasPermission('Empleados', 'Aceptar solicitudes de empleados')">*</span></label>
+                        <div *ngIf="employeeFiles['cuentaInterbancaria']">
+                          <ul>
+                            <li *ngFor="let file of employeeFiles['cuentaInterbancaria']">
+                              {{ file.file_name }}
+                              <button type="button" class="btn btn-danger btn-sm"
+                                (click)="eliminarArchivo(file.file_id)">Eliminar</button>
+                              <button type="button" class="btn btn-primary btn-sm ms-2"
+                                (click)="downloadFile(file.file_path)">
+                                Descargar
+                              </button>
+                            </li>
+                          </ul>
+                        </div>
+                        <input type="file" class="form-control rounded-pill"
+                          (change)="onFileChange($event, 'cuentaInterbancaria')"
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                      </div>
+
+
+                      <div class="form-group mt-3">
+                        <label for="tieneInfonavit">¿Tienes Infonavit?</label>
+                        <select id="tieneInfonavit" class="form-control rounded-pill mb-3"
+                          (change)="mostrarOcultarCampo($event)"
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')">
+                          <option value="no">No</option>
+                          <option value="si">Sí</option>
+                        </select>
+                      </div>
+
+                      <div [hidden]="!mostrarInfonavit" class="form-group mt-3">
+                        <label for="retencionInfonavit">Carta de Retención de Infonavit</label>
+                        <div *ngIf="employeeFiles['retencionInfonavit']">
+                          <ul>
+                            <li *ngFor="let file of employeeFiles['retencionInfonavit']">
+                              {{ file.file_name }}
+                              <button type="button" class="btn btn-danger btn-sm"
+                                (click)="eliminarArchivo(file.file_id)">Eliminar</button>
+                              <button type="button" class="btn btn-primary btn-sm ms-2"
+                                (click)="downloadFile(file.file_path)">
+                                Descargar
+                              </button>
+                            </li>
+                          </ul>
+                        </div>
+                        <input type="file" class="form-control rounded-pill"
+                          (change)="onFileChange($event, 'retencionInfonavit')"
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                      </div>
+
+                      <div class="form-group mt-3">
+                        <label for="antecedentesPenales">Carta de No Antecedentes Penales</label>
+                        <div *ngIf="employeeFiles['antecedentesPenales']">
+                          <ul>
+                            <li *ngFor="let file of employeeFiles['antecedentesPenales']">
+                              {{ file.file_name }}
+                              <button type="button" class="btn btn-danger btn-sm"
+                                (click)="eliminarArchivo(file.file_id)">Eliminar</button>
+                              <button type="button" class="btn btn-primary btn-sm ms-2"
+                                (click)="downloadFile(file.file_path)">
+                                Descargar
+                              </button>
+                            </li>
+                          </ul>
+                        </div>
+                        <input type="file" class="form-control rounded-pill"
+                          (change)="onFileChange($event, 'antecedentesPenales')"
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                      </div>
+
+                      <div class="form-group mt-3">
+                        <label for="comprobanteEstudios">Comprobante de Estudios</label>
+                        <div *ngIf="employeeFiles['comprobanteEstudios']">
+                          <ul>
+                            <li *ngFor="let file of employeeFiles['comprobanteEstudios']">
+                              {{ file.file_name }}
+                              <button type="button" class="btn btn-danger btn-sm"
+                                (click)="eliminarArchivo(file.file_id)">Eliminar</button>
+                              <button type="button" class="btn btn-primary btn-sm ms-2"
+                                (click)="downloadFile(file.file_path)">
+                                Descargar
+                              </button>
+                            </li>
+                          </ul>
+                        </div>
+                        <input type="file" class="form-control rounded-pill"
+                          (change)="onFileChange($event, 'comprobanteEstudios')"
+                          [disabled]="sharedService.hasPermission('Empleados', 'Procesar empleados')" />
+                      </div>
+
+                      <!-- Botones de acción -->
+                      <div class="mt-3 text-center">
+                        <button type="submit"
+                          class="btn btn-primary rounded-pill w-75 fw-bold shadow py-2 mt-2">Actualizar
+                          solicitud Empleado</button>
+                        <button (click)="enviarSolicitudPendiente(empleadoForm)"
+                          class="btn btn-success rounded-pill w-75 fw-bold shadow py-2 mt-2"
+                          [disabled]="!allFieldsCompleted">{{ buttonNameSucessEmployee }}</button>
+                        <button *ngIf="sharedService.hasPermission('Empleados', 'Editar solicitudes de empleados')"
+                          (click)="eliminarSolicitud()"
+                          class="btn btn-danger rounded-pill w-75 fw-bold shadow py-2 mt-2">
+                          Eliminar Solicitud</button>
+                        <button *ngIf="sharedService.hasPermission('Empleados', 'Aceptar solicitudes de empleados')"
+                          (click)="rechazarSolicitud()"
+                          class="btn btn-warning rounded-pill w-75 fw-bold shadow py-2 mt-2">
+                          Rechazar Solicitud
+                        </button>
+                        <button (click)="selectEmployee(null)"
+                          class="btn btn-secondary rounded-pill w-75 fw-bold shadow py-2 mt-2">Cancelar</button>
+                      </div>
+                    </div>
+                  </form>
                 </div>
-              </form>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    </ion-row>
+  </ion-grid>
 </ion-content>
 
 <style>
@@ -438,5 +609,17 @@
 
   .hidden {
     display: none;
+  }
+
+  .left-column {
+    position: -webkit-sticky;
+    /* Para compatibilidad con Safari */
+    position: sticky;
+    top: 10px;
+    /* Distancia desde la parte superior */
+    height: calc(100vh - 20px);
+    /* Para asegurarse de que ocupe toda la altura */
+    overflow-y: auto;
+    /* Para permitir el desplazamiento si el contenido es largo */
   }
 </style>
